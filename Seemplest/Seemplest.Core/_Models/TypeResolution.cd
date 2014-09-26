@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Seemplest.Core.TypeResolution.TrivialTypeResolver">
+    <Position X="1" Y="2.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TypeResolution\TrivialTypeResolver.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Seemplest.Core.TypeResolution.ChainedTypeResolverBase">
+    <Position X="3.75" Y="2.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAQAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TypeResolution\ChainedTypeResolverBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Seemplest.Core.TypeResolution.DefaultTypeResolver">
+    <Position X="3.75" Y="5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAgAQAIAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TypeResolution\DefaultTypeResolver.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Seemplest.Core.TypeResolution.ITypeResolver">
+    <Position X="2.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TypeResolution\ITypeResolver.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

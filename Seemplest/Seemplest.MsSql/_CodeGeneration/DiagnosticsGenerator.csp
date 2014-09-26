@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<codeSmith xmlns="http://www.codesmithtools.com/schema/csp.xsd">
+  <variables>
+    <add key="ConnectionString1" value="Data Source=.\SQLEXPRESS;Initial Catalog=Seemplest.Test;Integrated Security=True" />
+  </variables>
+  <propertySets>
+    <propertySet name="TraceRecord" output="..\Records\TraceRecord.cs" template="DataRecord.cst">
+      <property name="ClassSuffix">Record</property>
+      <property name="Namespace">Seemplest.MsSql.Records</property>
+      <property name="SourceTable">
+        <connectionString>$(ConnectionString1)</connectionString>
+        <providerType>SchemaExplorer.SqlSchemaProvider,SchemaExplorer.SqlSchemaProvider</providerType>
+        <table>
+      <owner>Diagnostics</owner>
+      <name>Trace</name>
+    </table>
+      </property>
+      <property name="OutputFile">C:\Work\Community\Seemplest\Seemplest.MsSql\Records\DataRecord.cs</property>
+    </propertySet>
+  </propertySets>
+</codeSmith>

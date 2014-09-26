@@ -1,0 +1,1 @@
+﻿--- schemas: Config, Messages, Diagnostics

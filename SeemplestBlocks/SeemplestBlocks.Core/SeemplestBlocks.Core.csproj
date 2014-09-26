@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1A0D7245-0D79-4A5C-8042-ED6202F6B267}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SeemplestBlocks.Core</RootNamespace>
+    <AssemblyName>SeemplestBlocks.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AppConfig\AppConfigReader.cs" />
+    <Compile Include="AppConfig\ConfigurationCategoryAttribute.cs" />
+    <Compile Include="AppConfig\ConfigurationKeyAttribute.cs" />
+    <Compile Include="AppConfig\ConfigurationPropertyValueReader.cs" />
+    <Compile Include="AppConfig\ConfigurationService.cs" />
+    <Compile Include="AppConfig\DataAccess\CategoryData.cs" />
+    <Compile Include="AppConfig\DataAccess\ConfigurationDataOperations.cs" />
+    <Compile Include="AppConfig\DataAccess\ConfigurationValueRecord.cs" />
+    <Compile Include="AppConfig\DataAccess\ConfigurationVersionRecord.cs" />
+    <Compile Include="AppConfig\DataAccess\CurrentConfigurationVersionRecord.cs" />
+    <Compile Include="AppConfig\DataAccess\IConfigurationDataOperations.cs" />
+    <Compile Include="AppConfig\DataAccess\ListDefinitionRecord.cs" />
+    <Compile Include="AppConfig\DataAccess\ListItemDefinitionRecord.cs" />
+    <Compile Include="AppConfig\DataAccess\LocaleRecord.cs" />
+    <Compile Include="AppConfig\DataAccess\LocalizedResourceRecord.cs" />
+    <Compile Include="AppConfig\Exceptions\CurrentVersionNotFoundException.cs" />
+    <Compile Include="AppConfig\Exceptions\DuplicatedLocaleCodeException.cs" />
+    <Compile Include="AppConfig\Exceptions\DuplicatedLocaleDisplayNameException.cs" />
+    <Compile Include="AppConfig\Exceptions\ListDefinitionNotFoundException.cs" />
+    <Compile Include="AppConfig\Exceptions\LocaleNotFoundException.cs" />
+    <Compile Include="AppConfig\IConfigurationHandler.cs" />
+    <Compile Include="AppConfig\IConfigurationReader.cs" />
+    <Compile Include="AppConfig\IConfigurationService.cs" />
+    <Compile Include="AppConfig\LocalizedResourceManager.cs" />
+    <Compile Include="AppConfig\MsSqlConfigurationHandler.cs" />
+    <Compile Include="Diagnostics\CommonDiagnosticsAspectsAttribute.cs" />
+    <Compile Include="Diagnostics\PerformanceCounterAttribute.cs" />
+    <Compile Include="Diagnostics\TraceAttribute.cs" />
+    <Compile Include="Diagnostics\Tracer.cs" />
+    <Compile Include="Diagnostics\TracerConfiguration.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Security\DataAccess\ISecurityDataOperations.cs" />
+    <Compile Include="Security\DataAccess\SecurityDataOperations.cs" />
+    <Compile Include="Security\DataAccess\UserAccountRecord.cs" />
+    <Compile Include="Security\DataAccess\UserRecord.cs" />
+    <Compile Include="Security\ISecurityService.cs" />
+    <Compile Include="Security\IUserIdContextProvider.cs" />
+    <Compile Include="Security\SecurityService.cs" />
+    <Compile Include="ServiceInfrastructure\CoreSqlDataAccessOperationBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Seemplest\Seemplest.Core\Seemplest.Core.csproj">
+      <Project>{ffa9f4ed-c258-4033-96e9-fc8be8ad719a}</Project>
+      <Name>Seemplest.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Seemplest\Seemplest.MsSql\Seemplest.MsSql.csproj">
+      <Project>{c81edbc6-5989-4232-8b23-57831056e6eb}</Project>
+      <Name>Seemplest.MsSql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SeemplestBlocks.Dto\SeemplestBlocks.Dto.csproj">
+      <Project>{194ec220-c7e4-45ac-b076-e25bf94882bd}</Project>
+      <Name>SeemplestBlocks.Dto</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

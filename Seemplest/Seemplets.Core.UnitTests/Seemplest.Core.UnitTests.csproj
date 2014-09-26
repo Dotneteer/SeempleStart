@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A4B8DCB7-9341-4047-A4AA-CA6F2A1ECB4E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Seemplest.Core.UnitTests</RootNamespace>
+    <AssemblyName>Seemplest.Core.UnitTests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>True</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="SoftwareApproach.TestingExtensions">
+      <HintPath>..\..\packages\VisualStudioTestingExtensions.1.2.0.0\lib\net40\SoftwareApproach.TestingExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <Choose>
+    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="Cache\TimeConstrainedCacheTest.cs" />
+    <Compile Include="Common\AttributeSetTest.cs" />
+    <Compile Include="Common\ConfigurationHelperTest.cs" />
+    <Compile Include="Common\TypeConversionHelperTest.cs" />
+    <Compile Include="Configuration\AppConfigurationSettingsTest.cs" />
+    <Compile Include="Configuration\ConfigurationSettingsBaseTest.cs" />
+    <Compile Include="Configuration\PropertySettingsCollectionTest.cs" />
+    <Compile Include="Configuration\AppConfigProviderTest.cs" />
+    <Compile Include="Configuration\AppConfigurationManagerTest.cs" />
+    <Compile Include="Configuration\ConstructorParameterSettingsCollectionTest.cs" />
+    <Compile Include="Configuration\EnvironmentInfoTest.cs" />
+    <Compile Include="Configuration\ResourceConnection\DefaultResourceConnectionFactoryTest.cs" />
+    <Compile Include="Configuration\ResourceConnection\SingleValueResourceConnectionSettingsTest.cs" />
+    <Compile Include="Configuration\ResourceConnection\ResourceConnectionProviderCollectionTest.cs" />
+    <Compile Include="Configuration\ResourceConnection\ResourceConnectionProviderSettingsTest.cs" />
+    <Compile Include="Configuration\ResourceConnection\ResourceConnectionFactorySettingsTest.cs" />
+    <Compile Include="Configuration\ResourceConnection\DefaultResourceConnectionProviderRegistryTest.cs" />
+    <Compile Include="Configuration\ResourceConnection\ResourceConnectionProviderRegistryTest.cs" />
+    <Compile Include="Configuration\ResourceConnection\ResourceConnectionFactoryTest.cs" />
+    <Compile Include="DataAccess\DataServices\DataAccessFactoryTest.cs" />
+    <Compile Include="DataAccess\DataServices\DefaultDataAccessFactoryTest.cs" />
+    <Compile Include="DataAccess\DataRecordTest.cs" />
+    <Compile Include="DependencyInjection\PerCallLifetimeManagerTest.cs" />
+    <Compile Include="DependencyInjection\SampleObject.cs" />
+    <Compile Include="DependencyInjection\SingletonLifetimeManagerTest.cs" />
+    <Compile Include="DependencyInjection\PerThreadLifetimeManagerTest.cs" />
+    <Compile Include="DependencyInjection\ServiceContainerTest.cs" />
+    <Compile Include="DependencyInjection\ServiceRegistrySettingsTest.cs" />
+    <Compile Include="DependencyInjection\InjectedParameterSettingsCollectionTest.cs" />
+    <Compile Include="DependencyInjection\ServiceContainerSettingsTest.cs" />
+    <Compile Include="DependencyInjection\ServiceRegistryTest.cs" />
+    <Compile Include="DependencyInjection\OverridableServiceRegistryBaseTest.cs" />
+    <Compile Include="DependencyInjection\ServiceManagerTest.cs" />
+    <Compile Include="Interception\InterceptorTest.cs" />
+    <Compile Include="Interception\AspectChainTest.cs" />
+    <Compile Include="Interception\MethodDescriptorTest.cs" />
+    <Compile Include="Interception\InterceptorAspectsTest.cs" />
+    <Compile Include="PerformanceCounters\PerformanceCounterCreationDataTest.cs" />
+    <Compile Include="PerformanceCounters\PerformanceCounterManagerTest.cs" />
+    <Compile Include="PerformanceCounters\PerformanceCounterHandleTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Queue\MemoryNamedQueueProviderTest.cs" />
+    <Compile Include="Queue\MemoryNamedQueueTest.cs" />
+    <Compile Include="ServiceObjects\ServiceCallContextTest.cs" />
+    <Compile Include="ServiceObjects\EmptyContextServiceFactoryTest.cs" />
+    <Compile Include="ServiceObjects\ServiceObjectValidationTest.cs" />
+    <Compile Include="ServiceObjects\Validation\ValidatorTest.cs" />
+    <Compile Include="Tasks\Configuration\BackgroundTaskHostSettingsTest.cs" />
+    <Compile Include="Tasks\Configuration\TaskExecutionContextSettingsTest.cs" />
+    <Compile Include="Tasks\Converters\SelfArgumentConverterTest.cs" />
+    <Compile Include="Tasks\Converters\SelfResultConverterTest.cs" />
+    <Compile Include="Tasks\ScheduledTaskTest.cs" />
+    <Compile Include="Tasks\ScheduledTaskProcessorTest.cs" />
+    <Compile Include="Tasks\QueuedTaskProcessorTest.cs" />
+    <Compile Include="TypeResolution\DefaultTypeResolverTest.cs" />
+    <Compile Include="TypeResolution\TypeResolverTest.cs" />
+    <Compile Include="TypeResolution\TypeResolverConfigurationSettingsTest.cs" />
+    <Compile Include="FileTraceLoggerTest.cs" />
+    <Compile Include="WindowsEventLog\WindowsEventLogManagerTest.cs" />
+    <Compile Include="WindowsEventLog\WindowsEventLogTest.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Seemplest.Core\Seemplest.Core.csproj">
+      <Project>{ffa9f4ed-c258-4033-96e9-fc8be8ad719a}</Project>
+      <Name>Seemplest.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Seemplest.MsSql\Seemplest.MsSql.csproj">
+      <Project>{c81edbc6-5989-4232-8b23-57831056e6eb}</Project>
+      <Name>Seemplest.MsSql</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.CodedUITestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

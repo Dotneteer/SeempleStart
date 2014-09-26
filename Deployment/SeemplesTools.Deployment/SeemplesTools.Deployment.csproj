@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B9E86581-2BE1-4EE5-8F49-455B09613B4C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SeemplesTools.Deployment</RootNamespace>
+    <AssemblyName>SeemplesTools.Deployment</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Commands\DeployDatabaseCommandBase.cs" />
+    <Compile Include="Commands\DropLogicalDatabasesCommand.cs" />
+    <Compile Include="Commands\CreateLogicalDatabasesCommand.cs" />
+    <Compile Include="Commands\CreateSqlDatabaseCommand.cs" />
+    <Compile Include="Commands\DropSqlDatabaseCommand.cs" />
+    <Compile Include="Common\DatabaseHelper.cs" />
+    <Compile Include="Common\DatabaseVersion.cs" />
+    <Compile Include="Common\DatabaseNameVersionPair.cs" />
+    <Compile Include="Common\ParameterHelper.cs" />
+    <Compile Include="Common\ProgressHelper.cs" />
+    <Compile Include="ConsoleUi\ConsoleRunner.cs" />
+    <Compile Include="ConsoleUi\ConsoleUserInterface.cs" />
+    <Compile Include="DatabaseUpgrade\DependencyType.cs" />
+    <Compile Include="DatabaseUpgrade\StepGroup.cs" />
+    <Compile Include="DatabaseUpgrade\Steps\DropSchemasStep.cs" />
+    <Compile Include="DatabaseUpgrade\Steps\CreateSchemasStep.cs" />
+    <Compile Include="DatabaseUpgrade\DependencyGraph.cs" />
+    <Compile Include="DatabaseUpgrade\DependencyNode.cs" />
+    <Compile Include="DatabaseUpgrade\Steps\GrantRightsStep.cs" />
+    <Compile Include="DatabaseUpgrade\Steps\InitialStep.cs" />
+    <Compile Include="DatabaseUpgrade\Steps\RunScriptStep.cs" />
+    <Compile Include="DatabaseUpgrade\Steps\SetMetadataStep.cs" />
+    <Compile Include="Common\VersionHelper.cs" />
+    <Compile Include="DatabaseUpgrade\Steps\Step.cs" />
+    <Compile Include="DatabaseUpgrade\UnresolvedDependency.cs" />
+    <Compile Include="DatabaseUpgrade\UpgradePathGraph.cs" />
+    <Compile Include="DatabaseUpgrade\UpgradePathNode.cs" />
+    <Compile Include="Infrastructure\CommandAttribute.cs" />
+    <Compile Include="Infrastructure\CommandStatus.cs" />
+    <Compile Include="Infrastructure\Command.cs" />
+    <Compile Include="Infrastructure\ContainerCommand.cs" />
+    <Compile Include="Infrastructure\DatabaseCommand.cs" />
+    <Compile Include="Infrastructure\DatabaseTransaction.cs" />
+    <Compile Include="Infrastructure\DeploymentTransaction.cs" />
+    <Compile Include="Infrastructure\DeploymentUserInterface.cs" />
+    <Compile Include="Infrastructure\IDeploymentUserInterface.cs" />
+    <Compile Include="Infrastructure\ICommandContainer.cs" />
+    <Compile Include="Infrastructure\LeafCommand.cs" />
+    <Compile Include="Infrastructure\ParameterException.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

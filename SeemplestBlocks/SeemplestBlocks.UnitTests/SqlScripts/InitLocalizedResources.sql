@@ -1,0 +1,22 @@
+﻿delete from [Config].[LocalizedResource]
+insert into [Config].[LocalizedResource]([Locale], [Category], [ResourceKey], [Value]) values
+('def', 'Message', '1', 'Value1'),
+('def', 'Message', '2', 'Value2'),
+('def', 'Message', '3', 'Value3'),
+('def', 'Error', '1', 'Value1'),
+('def', 'Error', '2', 'Value2'),
+('hu', 'Message', '1', 'Egy'),
+('hu', 'Message', '2', 'Kettő'),
+('hu', 'Message', '3', 'Három'),
+('hu', 'Error', '1', 'Egy'),
+('hu', 'Error', '2', 'Kettő'),
+('en', 'Message', '1', 'One'),
+('en', 'Message', '2', 'Two'),
+('en', 'Message', '3', 'Three'),
+('en', 'Error', '1', 'One'),
+('en', 'Error', '2', 'Two'),
+('en-us', 'Message', '1', 'One US'),
+('en-us', 'Message', '2', 'Two US'),
+('en-us', 'Message', '3', 'Three US'),
+('en-us', 'Error', '1', 'One US'),
+('en-us', 'Error', '2', 'Two US')
