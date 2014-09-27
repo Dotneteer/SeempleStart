@@ -3,6 +3,7 @@ using System.Reflection;
 using SeemplestBlocks.Deployment.Commands;
 using SeemplesTools.Deployment.ConsoleUi;
 using SeemplesTools.Deployment.Infrastructure;
+using Setup.Commands;
 
 namespace Setup
 {
@@ -14,7 +15,8 @@ namespace Setup
                 new List<Assembly>
                 {
                     typeof (Command).Assembly,
-                    typeof (DeploySbDatabaseCommand).Assembly
+                    typeof (DeploySbDatabaseCommand).Assembly,
+                    typeof (DeployYwDatabaseCommand).Assembly
                 });
         }
     }

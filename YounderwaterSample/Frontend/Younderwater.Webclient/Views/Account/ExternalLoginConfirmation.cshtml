@@ -1,0 +1,36 @@
+﻿@using Younderwater.Builders
+@using Younderwater.Builders.Infrastructure
+@using Younderwater.Builders.NgBsMvc
+@using Younderwater.Webclient.Models
+@model ExternalLoginConfirmationViewModel
+
+<div class="row" data-active-menu="LogIn" data-active-title="Confirm External Login">
+    <div class="col-md-9">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <p>
+                    You've successfully authenticated with <strong>@ViewBag.LoginProvider</strong>.
+                    Please enter the user name and email address used for this site below and click
+                    the Register button to finish logging in.
+                </p>
+            </div>
+            <div class="panel-body">
+                @using (var f = Html.Begin(new NgBsMvcForm("confirmLoginForm", "ExternalLoginConfirmation", "Account")
+                .Horizontal().LabelMd(3).InputMd(6)))
+                {
+                    @Html.AntiForgeryToken();
+                    @Html.BsDismissibleValidationSummary();
+
+                    @f.InputFor(m => m.UserName, autoFocus: AutoFocus.OnFormValid, validate: Validate.WhenDirty)
+                    @f.InputFor(m => m.Email, autoFocus: AutoFocus.OnFormInvalid, validate: Validate.WhenDirty)
+                    @f.SubmitButton("Register")
+                    <p>
+                        <div class="col-md-offset-3">
+                            @Html.ActionLink("Register as a new user", "Register")
+                        </div>
+                    </p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

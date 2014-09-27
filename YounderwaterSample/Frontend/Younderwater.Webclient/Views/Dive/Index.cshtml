@@ -1,0 +1,110 @@
+﻿@using Younderwater.Builders
+@using Younderwater.Builders.NgBs
+<style>
+    .popupPosition {
+        margin-top: 100px;
+    }
+</style>
+
+<div ng-controller="MyDivesCtrl">
+    <div class="row" data-active-menu="DiveLog" data-active-title="Your online dive log" style="margin-bottom: 24px;">
+        <div class="col-sm-6">
+            <button class="btn btn-info" ng-click="openDiveEditor(null, false)">
+                <i class="glyphicon glyphicon-plus-sign"></i> Add a new dive log entry
+            </button>
+        </div>
+        <div class="col-sm-3 col-sm-offset-3">
+            <div class="input-group">
+                <input type="text" placeholder="Search" class="form-control" ng-model="searchKey" id="Search" name="Search" />
+                <span class="input-group-addon">
+                    <i class="glyphicon glyphicon-search"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-4" ng-repeat="dive in dives | diveSearch:searchKey | orderBy:'-date'">
+            <div class="dive-card" ng-click="openDiveEditor(dive, true)">
+                <p class="diveSite">{{dive.diveSite | longText}}</p>
+                <p class="location">{{dive.location | longText}}</p>
+                <p class="diveNumber">{{dive.maxDepth}}m | {{dive.bottomTime}}min</p>
+                <p>{{dive.date | date}}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/ng-template" id="editDive">
+    @using (var f = Html.BeginModal(new NgBsForm("editDive")))
+    {
+        using (f.Header())
+        {
+            <h4 class="modal-title" id="modalTitle" ng-show="isEdit">Edit '{{dive.diveSite}}' on {{dive.date | date}}</h4>
+            <h4 class="modal-title" id="modalTitle" ng-hide="isEdit">Add new dive log entry</h4>
+        }
+        using (f.Body())
+        {
+            <div class="form-group">
+                <label for="diveSite">Dive Site</label><span class="requiredSign"></span>
+                <input id="diveSite" name="diveSite" class="form-control" ng-model="dive.diveSite" required maxlength="64" />
+            </div>
+            <div class="form-group">
+                <label for="location">Location</label><span class="requiredSign"></span>
+                <input id="location" name="location" class="form-control" ng-model="dive.location" required maxlength="64" />
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label for="diveDate">Dive Date</label><span class="requiredSign"></span>
+                        <div class="input-group">
+                            <input id="diveDate" name="diveDate" type="text" class="form-control" placeholder="Date"
+                                   datepicker-popup="yyyy/MM/dd" is-open="$parent.datePopupOpen" min-date="minDate" datepicker-options="dateOptions" close-text="Close"
+                                   ng-model="dive.date" required />
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-info" ng-click="openDatePopup($event)"><i class="fa fa-calendar"></i></button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <label for="maxDepth">Max. Depth</label><span class="requiredSign"></span>
+                        <div class="input-group">
+                            <input id="maxDepth" name="maxDepth" class="form-control" ng-model="dive.maxDepth" required />
+                            <span class="input-group-addon">(m)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <label for="bottomTime">Bottom Time</label><span class="requiredSign"></span>
+                        <div class="input-group">
+                            <input id="bottomTime" name="bottomTime" class="form-control" ng-model="dive.bottomTime" required />
+                            <span class="input-group-addon">(min)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="comment">Comment</label>
+                <textarea id="comment" name="comment" class="form-control" rows="3" ng-model="dive.comment" maxlength="4096"></textarea>
+            </div>
+        }
+        using (f.Footer())
+        {
+            <div class="pull-left">
+                <button class="btn btn-danger" ng-click="removeDive()">Delete</button>
+            </div>
+            <div class="pull-right">
+                <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+                <button class="btn btn-success" ng-disabled="editDive.$invalid" ng-show="isEdit" ng-click="ok()">Save</button>
+                <button class="btn btn-success" ng-disabled="editDive.$invalid" ng-hide="isEdit" ng-click="ok()">Add to dive log</button>
+            </div>
+        }
+    }
+</script>
+
+@section scripts
+{
+    <script src="~/app/dive/dive.ng.js"></script>
+}

@@ -1,0 +1,40 @@
+﻿@using Younderwater.Webclient.Models;
+@model ManageAccountViewModel
+
+<div class="row" data-active-menu="ManageUser" data-active-title="Manage Your Account">
+
+    @if (!string.IsNullOrEmpty(ViewBag.StatusMessage))
+    {
+        <div class="col-md-12">
+            <p class="alert alert-info">@ViewBag.StatusMessage</p>
+        </div>
+    }
+
+    <div class="col-md-4 col-sm-6">
+        <div class="command-card command-card-success">
+            <h3>Manage Password</h3>
+            <div ng-hide="accountInfo.hasPassword">
+                <p>Your password has not been set.</p>
+                <a class="btn btn-default" href="@Url.Action("SetPassword", "Manage")">Set your password</a>
+            </div>
+            <div ng-show="accountInfo.hasPassword">
+                <p>You have already set your password.</p>
+                <a class="btn btn-default" href="@Url.Action("ChangePassword", "Manage")">Change your password</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-sm-6">
+        <div class="command-card command-card-info">
+            <h3>External Logins</h3>
+            <div ng-show="accountInfo.logins.length == 0">
+                <p>You have no external logins.</p>
+            </div>
+            <div ng-hide="accountInfo.logins.length == 0">
+                <p>You have @Model.Logins.Count external logins.</p>
+                <a class="btn btn-default" href="@Url.Action("ManageLogins", "Manage")">
+                    Manage your logins
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

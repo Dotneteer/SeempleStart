@@ -1,0 +1,85 @@
+﻿@using Younderwater.Webclient.Models
+@model ManageLoginsViewModel
+
+<div class="row" data-active-menu="ManageUser" data-active-title="Manage your external logins">
+    <div class="col-lg-8 col-md-10 col-sm-12">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h4>Registered Logins</h4>
+            </div>
+            <div class="panel-body">
+                <p class="text-info">
+                    You have external logins associated with your local account. Here you can remove
+                    those ones that you want to detach from your local account.
+                </p>
+                @if (Model.CurrentLogins.Count > 0)
+                {
+                    <div class="row">
+                        @foreach (var account in Model.CurrentLogins)
+                        {
+                            <div class="col-md-6 col-sm-6 col-lg-6">
+                                <div class="command-card command-card-default" style="height: 56px;">
+                                    @if (ViewBag.ShowRemoveButton)
+                                    {
+                                        using (Html.BeginForm("RemoveLogin", "Manage"))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <div>
+                                                @Html.Hidden("loginProvider", account.LoginProvider)
+                                                @Html.Hidden("providerKey", account.ProviderKey)
+                                                <button type="submit" class="btn btn-danger pull-right">
+                                                    <span class="fa fa-times"></span>
+                                                </button>
+                                            </div>
+                                        }
+                                    }
+                                    <div class="pull-left" style="margin-top: 4px;">
+                                        <img width="24" height="24" src="~/Content/Images/LoginProviders/@(account.LoginProvider).png"
+                                             style="margin-right: 8px;" />
+                                        @account.LoginProvider
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                }
+            </div>
+        </div>
+        @if (Model.CurrentLogins.Count > 0 && Model.OtherLogins.Count > 0)
+        {
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4>Available login providers</h4>
+                </div>
+                <div class="panel-body">
+                    <p class="text-info">
+                        You have a number of other authentication providers that you can use
+                        to authenticate yourself and attach the login information to your local account.
+                    </p>
+                    <div class="row">
+                        @using (Html.BeginForm("LinkLogin", "Manage"))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div id="socialLoginList">
+                                @foreach (var p in Model.OtherLogins)
+                                {
+                                    <div class="col-lg-8 col-md-10 col-sm-12">
+                                        <button type="submit" class="btn loginprovider" id="@p.AuthenticationType" name="provider"
+                                                value="@p.AuthenticationType"
+                                                data-toggle="tooltip"
+                                                title="Log in using your @p.Caption account">
+                                            <img width="24" height="24" src="~/Content/Images/LoginProviders/@(p.AuthenticationType).png"
+                                                 style="margin-right: 8px;" />
+                                            @p.AuthenticationType
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,67 @@
+﻿@using Microsoft.Owin.Security
+@using Younderwater.Builders
+@using Younderwater.Builders.Infrastructure
+@using Younderwater.Builders.NgBsMvc
+@using Younderwater.Webclient.Models
+@model LoginViewModel
+
+<div class="row" data-active-menu="LogIn" data-active-title="Log in to Younderwater">
+    <section class="col-md-8" id="loginForm">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h4>Use your local account</h4>
+            </div>
+            <div class="panel-body">
+                @using (var f = Html.Begin(new NgBsMvcForm("loginForm", "Login", "Account").Horizontal().LabelMd(3).InputMd(9)))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.BsDismissibleValidationSummary()
+
+                    @f.InputFor(m => m.UserName, autoFocus: AutoFocus.OnFormValid, validate: Validate.WhenDirty)
+                    @f.InputFor(m => m.Password, autoFocus: AutoFocus.OnFormInvalid, validate: Validate.WhenDirty)
+                    @f.InputFor(m => m.RememberMe, InputTagType.CheckBox)
+                    @f.SubmitButton("Login", BsButtonTheme.Primary)
+                }
+            </div>
+            <div class="panel-footer">
+                <div>
+                    @Html.ActionLink("Register as a new user", "Register")
+                </div>
+            </div>
+        </div>
+    </section>
+    @{
+        var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
+        var authenticationDescriptions = loginProviders as AuthenticationDescription[] ?? loginProviders.ToArray();
+        if (authenticationDescriptions.Any())
+        {
+            <section id="socialLoginForm" class="col-md-8">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h4>Use one of these external login providers</h4>
+                    </div>
+                    <div class="panel-body">
+                        @using (Html.BeginForm("ExternalLogin", "Account", new { Model.ReturnUrl }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div id="socialLoginList">
+                                <p>
+                                    @foreach (var p in authenticationDescriptions)
+                                    {
+                                        <button type="submit" class="btn loginprovider" id="@p.AuthenticationType" name="provider"
+                                                value="@p.AuthenticationType"
+                                                data-toggle ="tooltip"
+                                                title="Log in using your @p.Caption account" style="margin-right: 8px;">
+                                            <img width="24" height="24" src="~/Content/Images/LoginProviders/@(p.AuthenticationType).png" style="margin-right: 8px;" />
+                                            @p.AuthenticationType
+                                        </button>
+                                    }
+                                </p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </section>
+        }
+    }
+</div>

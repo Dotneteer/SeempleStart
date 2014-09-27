@@ -1,0 +1,131 @@
+﻿.current-spot {
+  background-color: #fbbf69;
+  margin-bottom: 24px;
+}
+.current-spot h2 {
+  margin-top: 12px;
+  margin-bottom: 14px;
+}
+.current-spot h3 {
+  margin-top: 12px;
+  margin-bottom: 14px;
+}
+label.required::after {
+  content: ' *';
+}
+div.alert ul li {
+  margin-left: -24px;
+  margin-right: -24px;
+  list-style: none;
+}
+.tooltip-inner {
+  max-width: 300px;
+}
+.errorhint {
+  background-color: #bd362f;
+}
+.loginprovider {
+  background-color: #e0e0e0;
+  border: 1px solid #999999;
+}
+.loginprovider:hover {
+  background-color: #bfbfbf;
+}
+.command-card {
+  height: 150px;
+  padding: 12px 16px;
+}
+.command-card h2,
+.command-card h3,
+.command-card h4 {
+  color: white;
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+.command-card p {
+  color: white;
+  margin-bottom: 16px;
+}
+.command-card-info {
+  background-color: #0088cc;
+  height: 150px;
+  padding: 12px 16px;
+}
+.command-card-info h2,
+.command-card-info h3,
+.command-card-info h4 {
+  color: #ffffff;
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+.command-card-info p {
+  color: #ffffff;
+  margin-bottom: 16px;
+}
+.command-card-success {
+  background-color: #51a351;
+  height: 150px;
+  padding: 12px 16px;
+}
+.command-card-success h2,
+.command-card-success h3,
+.command-card-success h4 {
+  color: #ffffff;
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+.command-card-success p {
+  color: #ffffff;
+  margin-bottom: 16px;
+}
+.command-card-danger {
+  background-color: #bd362f;
+  height: 150px;
+  padding: 12px 16px;
+}
+.command-card-danger h2,
+.command-card-danger h3,
+.command-card-danger h4 {
+  color: #ffffff;
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+.command-card-danger p {
+  color: #ffffff;
+  margin-bottom: 16px;
+}
+.command-card-default {
+  background-color: #d9d9d9;
+  height: 150px;
+  padding: 12px 16px;
+}
+.command-card-default h2,
+.command-card-default h3,
+.command-card-default h4 {
+  color: #000000;
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+.command-card-default p {
+  color: #000000;
+  margin-bottom: 16px;
+}
+.dive-card {
+  background-color: #0044CC;
+  color: white;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+.diveSite {
+  font-size: 1.4em;
+  margin-bottom: 0;
+}
+.location {
+  font-size: 1.2em;
+}
+.diveNumber {
+  font-size: 3em;
+  color: #F89406;
+}
+/*# sourceMappingURL=site.css.map */

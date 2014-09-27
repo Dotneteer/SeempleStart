@@ -30,6 +30,8 @@
     <Content Include="0.2\Schema\Tables\Queue.sql" />
     <Content Include="0.2\Schema\Tables\QueueMessage.sql" />
     <Content Include="0.2\Schema\Tables\Trace.sql" />
+    <Content Include="0.2\Schema\Tables\User.sql" />
+    <Content Include="0.2\Schema\Tables\UserAccount.sql" />
   </ItemGroup>
   <UsingTask AssemblyFile="..\..\Deployment\MSBuildTasks\MSBuild.Unicopy.dll" TaskName="MSBuild.Unicopy" />
   <Target Name="Build">

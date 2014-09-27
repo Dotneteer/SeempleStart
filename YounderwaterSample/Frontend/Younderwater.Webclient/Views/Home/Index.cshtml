@@ -1,0 +1,50 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+    ViewBag.DisableOuterContainer = true;
+}
+
+<div class="jumbotron" style="margin-top: 50px;" data-active-menu="Home">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <img class="img-responsive" src="~/Content/Images/Hawkfish.jpg" alt="Hawkfish" />
+            </div>
+            <div class="col-sm-8">
+                <h2>Welcome to Younderwater!</h2>
+                <p class="lead">
+                    If you're a scuba diver or a diver-to-be, this site is the one you wanna check every day.
+                    Either you search for great diving locations or friends to go for a marvellous diving trip with,
+                    start with Younderwater.
+                </p>
+                <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="padding-bottom: 50px;">
+    <div class="row">
+        <div class="col-md-4">
+            <h2>Log your dives</h2>
+            <p>
+                Younderwater offers a free online scuba diving log for you.
+            </p>
+            <p><a class="btn btn-default" href="#">Learn more &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+            <h2>Share your experience</h2>
+            <p>Share your dives and photos with your friends.</p>
+            <p><a class="btn btn-default" href="#">Learn more &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+            <h2>Find great dive sites</h2>
+            <p>Use the experience of the communityt to find your next diving destination.</p>
+            <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script src="~/app/main/mainView.ng.js"></script>
+}

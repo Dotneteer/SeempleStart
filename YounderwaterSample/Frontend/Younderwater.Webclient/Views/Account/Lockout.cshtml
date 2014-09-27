@@ -1,0 +1,11 @@
+﻿@using Microsoft.AspNet.Identity.Owin
+@model ExternalLoginInfo
+
+<div class="row" data-active-menu="LogIn" data-active-title="Lockout">
+    <div class="col-md-12">
+        <h4 class="alert alert-danger">
+            You've successfully authenticated with <strong>@Model.Login.LoginProvider</strong>.
+            Unfortuntely, your Younderwater user account (@Model.DefaultUserName) is locked out.
+        </h4>
+    </div>
+</div>
