@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace SeemplesTools.HtmlBuilders.Infrastructure
 {
@@ -45,5 +46,10 @@ namespace SeemplesTools.HtmlBuilders.Infrastructure
         /// (indented and written into a separate line).
         /// </remarks>
         List<RenderedSegment> Complete();
+
+        /// <summary>
+        /// Renders the full markup of the buildable object
+        /// </summary>
+        MvcHtmlString Markup { get; }
     }
 }

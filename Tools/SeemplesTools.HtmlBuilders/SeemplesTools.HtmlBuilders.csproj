@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bs\BsButtonTheme.cs" />
+    <Compile Include="Bs\BsIconAlignment.cs" />
     <Compile Include="Forms\FormBuilderHelper.cs" />
     <Compile Include="Forms\IBsForm.cs" />
     <Compile Include="Forms\IFormBuilder.cs" />
@@ -61,7 +62,6 @@
     <Compile Include="Infrastructure\HtmlBuildableBase.cs" />
     <Compile Include="Infrastructure\HtmlBuilderBase.cs" />
     <Compile Include="Infrastructure\HtmlBuilderConfiguration.cs" />
-    <Compile Include="Infrastructure\HtmlBuildResult.cs" />
     <Compile Include="Infrastructure\HtmlComment.cs" />
     <Compile Include="Infrastructure\HtmlElement.cs" />
     <Compile Include="Infrastructure\HtmlElementBase.cs" />
@@ -69,10 +69,13 @@
     <Compile Include="Infrastructure\HtmlTag.cs" />
     <Compile Include="Infrastructure\HtmlText.cs" />
     <Compile Include="Infrastructure\HtmlTextBuildableBase.cs" />
-    <Compile Include="Infrastructure\IBuildResult.cs" />
     <Compile Include="Infrastructure\IHtmlBuildable.cs" />
     <Compile Include="Infrastructure\IHtmlBuilder.cs" />
     <Compile Include="Infrastructure\IHtmlBuilderContext.cs" />
+    <Compile Include="Ng\INgAware.cs" />
+    <Compile Include="Ng\NgBuilder.cs" />
+    <Compile Include="Ng\NgButton.cs" />
+    <Compile Include="Ng\NgHtmlElement.cs" />
     <Compile Include="Ng\NgTag.cs" />
     <Compile Include="Infrastructure\RenderedSegment.cs" />
     <Compile Include="Infrastructure\TypeExtensions.cs" />

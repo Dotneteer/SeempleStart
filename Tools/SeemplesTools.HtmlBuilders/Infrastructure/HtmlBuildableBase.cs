@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Web.Mvc;
 
 namespace SeemplesTools.HtmlBuilders.Infrastructure
 {
@@ -77,5 +79,44 @@ namespace SeemplesTools.HtmlBuilders.Infrastructure
         /// already done it.
         /// </remarks>
         public abstract List<RenderedSegment> Complete();
+
+        /// <summary>
+        /// Renders the full markup of the buildable object
+        /// </summary>
+        public MvcHtmlString Markup
+        {
+            get
+            {
+                var segments = Render();
+                segments.AddRange(Complete());
+                return FormatSegments(segments);
+            }
+        }
+
+        /// <summary>
+        /// Formats the specified segments into an MvcHtmlString instance
+        /// </summary>
+        /// <param name="segments">Segments to format</param>
+        /// <returns>MvcHtmlString representation</returns>
+        public static MvcHtmlString FormatSegments(IEnumerable<RenderedSegment> segments)
+        {
+            var output = new StringBuilder();
+            foreach (var segment in segments)
+            {
+                if (HtmlBuilderConfiguration.UseLineBreaks)
+                {
+                    var line = string.Format("{0}{1}",
+                        new String(HtmlBuilderConfiguration.IndentChar,
+                            HtmlBuilderConfiguration.IndentWidth * (segment.Depth)),
+                        segment.Segment);
+                    output.AppendLine(line);
+                }
+                else
+                {
+                    output.Append(segment.Segment);
+                }
+            }
+            return new MvcHtmlString(output.ToString());
+        }
     }
 }

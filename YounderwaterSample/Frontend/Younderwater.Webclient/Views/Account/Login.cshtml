@@ -1,9 +1,10 @@
 ﻿@using Microsoft.Owin.Security
-@using Younderwater.Builders
-@using Younderwater.Builders.Infrastructure
-@using Younderwater.Builders.NgBsMvc
-@using Younderwater.Webclient.Models
-@model LoginViewModel
+@using SeemplesTools.HtmlBuilders.Bs
+@using SeemplesTools.HtmlBuilders.Infrastructure
+@using SeemplesTools.HtmlBuilders.Ng
+@using SeemplesTools.HtmlBuilders.NgBsMvc
+@using AutoFocus = SeemplesTools.HtmlBuilders.Infrastructure.AutoFocus
+@model Younderwater.Webclient.Models.LoginViewModel
 
 <div class="row" data-active-menu="LogIn" data-active-title="Log in to Younderwater">
     <section class="col-md-8" id="loginForm">
@@ -17,8 +18,8 @@
                     @Html.AntiForgeryToken()
                     @Html.BsDismissibleValidationSummary()
 
-                    @f.InputFor(m => m.UserName, autoFocus: AutoFocus.OnFormValid, validate: Validate.WhenDirty)
-                    @f.InputFor(m => m.Password, autoFocus: AutoFocus.OnFormInvalid, validate: Validate.WhenDirty)
+                    @f.InputFor(m => m.UserName, autoFocus: AutoFocus.OnFormValid, validate: ValidationOption.WhenDirty)
+                    @f.InputFor(m => m.Password, autoFocus: AutoFocus.OnFormInvalid, validate: ValidationOption.WhenDirty)
                     @f.InputFor(m => m.RememberMe, InputTagType.CheckBox)
                     @f.SubmitButton("Login", BsButtonTheme.Primary)
                 }

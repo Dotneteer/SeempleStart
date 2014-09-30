@@ -26,7 +26,7 @@ namespace SeemplesTools.HtmlBuilders.Infrastructure
         /// <summary>
         /// The element this builder builds
         /// </summary>
-        protected readonly TElement Form;
+        protected readonly TElement Element;
 
         /// <summary>
         /// The output stream
@@ -51,7 +51,7 @@ namespace SeemplesTools.HtmlBuilders.Infrastructure
         /// </summary>
         IHtmlBuildable IHtmlBuilder.Buildable
         {
-            get { return Form; }
+            get { return Element; }
         }
 
         /// <summary>
@@ -63,13 +63,13 @@ namespace SeemplesTools.HtmlBuilders.Infrastructure
         /// Initializes this builder instance
         /// </summary>
         /// <param name="htmlHelper">HtmlHelper to use</param>
-        /// <param name="form">Element to build</param>
+        /// <param name="element">Element to build</param>
         /// <param name="buildOnConstruction">
         /// Shows whether this builder should build the buildable immediately after 
         /// successful construction
         /// </param>
         /// <param name="parentBuilderContext"></param>
-        protected HtmlBuilderBase(HtmlHelper<TModel> htmlHelper, TElement form, 
+        protected HtmlBuilderBase(HtmlHelper<TModel> htmlHelper, TElement element, 
             bool buildOnConstruction = true,
             IHtmlBuilderContext parentBuilderContext = null)
         {
@@ -77,15 +77,15 @@ namespace SeemplesTools.HtmlBuilders.Infrastructure
             {
                 throw new ArgumentNullException("htmlHelper");
             }
-            if (form == null)
+            if (element == null)
             {
-                throw new ArgumentNullException("form");
+                throw new ArgumentNullException("element");
             }
 
             HtmlHelper = htmlHelper;
             ParentBuilderContext = parentBuilderContext;
-            Form = form;
-            Form.SetContext(this);
+            Element = element;
+            Element.SetContext(this);
             Depth = parentBuilderContext == null ? 0 : parentBuilderContext.Depth + 1;
             TextWriter = htmlHelper.ViewContext.Writer;
             BuildOnConstruction = buildOnConstruction;
@@ -198,7 +198,7 @@ namespace SeemplesTools.HtmlBuilders.Infrastructure
         /// </remarks>
         public void Render(RenderedSegment segment)
         {
-            TextWriter.Write(HtmlBuildResult.FormatSegments(new List<RenderedSegment> {segment}));
+            TextWriter.Write(HtmlBuildableBase.FormatSegments(new List<RenderedSegment> { segment }));
         }
 
         /// <summary>
@@ -231,7 +231,7 @@ namespace SeemplesTools.HtmlBuilders.Infrastructure
         /// </summary>
         public MvcHtmlString StartTag
         {
-            get { return HtmlBuildResult.FormatSegments((((IHtmlBuilder) this).Buildable).Render()); }
+            get { return HtmlBuildableBase.FormatSegments((((IHtmlBuilder)this).Buildable).Render()); }
         }
 
         /// <summary>
@@ -239,7 +239,7 @@ namespace SeemplesTools.HtmlBuilders.Infrastructure
         /// </summary>
         public MvcHtmlString EndTag
         {
-            get { return HtmlBuildResult.FormatSegments((((IHtmlBuilder)this).Buildable).Complete()); }
+            get { return HtmlBuildableBase.FormatSegments((((IHtmlBuilder)this).Buildable).Complete()); }
         }
 
         /// <summary>

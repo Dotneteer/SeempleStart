@@ -50,27 +50,6 @@ namespace SeemplesTools.HtmlBuilders.NgBsMvc
         /// <param name="expression">Property expression</param>
         /// <param name="inputTagType">Type of the input tag</param>
         /// <param name="autoFocus">Autofocus type</param>
-        /// <param name="validationOption">Validation type</param>
-        public IBuildResult BuildInputFor<TProperty>(
-            Expression<Func<TModel, TProperty>> expression,
-            InputTagType inputTagType = InputTagType.Text,
-            AutoFocus autoFocus = AutoFocus.None,
-            ValidationOption validationOption = ValidationOption.Always)
-        {
-            // --- Obtain field metadata
-            var modelMetadata = ModelMetadata.FromLambdaExpression(expression, HtmlHelper.ViewData);
-            return _form.IsHorizontal
-                ? _buildHelper.BuildHorizontalInput(modelMetadata, inputTagType, autoFocus, validationOption)
-                : _buildHelper.BuildColumnarInput(modelMetadata, inputTagType, autoFocus, validationOption);
-        }
-
-        /// <summary>
-        /// Renders an input tag for the specified model element
-        /// </summary>
-        /// <typeparam name="TProperty">Property type of the element</typeparam>
-        /// <param name="expression">Property expression</param>
-        /// <param name="inputTagType">Type of the input tag</param>
-        /// <param name="autoFocus">Autofocus type</param>
         /// <param name="validate">Validation type</param>
         public MvcHtmlString InputFor<TProperty>(
             Expression<Func<TModel, TProperty>> expression,
@@ -78,8 +57,10 @@ namespace SeemplesTools.HtmlBuilders.NgBsMvc
             AutoFocus autoFocus = AutoFocus.None,
             ValidationOption validate = ValidationOption.Always)
         {
-            // --- Obtain field metadata
-            return BuildInputFor(expression, inputTagType, autoFocus, validate).Result;
+            var modelMetadata = ModelMetadata.FromLambdaExpression(expression, HtmlHelper.ViewData);
+            return _form.IsHorizontal
+                ? _buildHelper.BuildHorizontalInput(modelMetadata, inputTagType, autoFocus, validate)
+                : _buildHelper.BuildColumnarInput(modelMetadata, inputTagType, autoFocus, validate);
         }
 
         /// <summary>
@@ -112,7 +93,7 @@ namespace SeemplesTools.HtmlBuilders.NgBsMvc
             button.Attr(NgTag.NgDisabled, string.Format("{0}.$invalid", _form.FormName));
             div.AddChild(button);
 
-            return new HtmlBuildResult(HtmlHelper, formGroup).Result;
+            return formGroup.Markup;
         }
     }
 }

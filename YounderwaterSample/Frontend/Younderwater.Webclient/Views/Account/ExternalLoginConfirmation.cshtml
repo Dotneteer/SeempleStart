@@ -1,7 +1,8 @@
-﻿@using Younderwater.Builders
-@using Younderwater.Builders.Infrastructure
-@using Younderwater.Builders.NgBsMvc
+﻿@using SeemplesTools.HtmlBuilders.Infrastructure
+@using SeemplesTools.HtmlBuilders.Ng
+@using SeemplesTools.HtmlBuilders.NgBsMvc
 @using Younderwater.Webclient.Models
+@using AutoFocus = SeemplesTools.HtmlBuilders.Infrastructure.AutoFocus
 @model ExternalLoginConfirmationViewModel
 
 <div class="row" data-active-menu="LogIn" data-active-title="Confirm External Login">
@@ -21,8 +22,8 @@
                     @Html.AntiForgeryToken();
                     @Html.BsDismissibleValidationSummary();
 
-                    @f.InputFor(m => m.UserName, autoFocus: AutoFocus.OnFormValid, validate: Validate.WhenDirty)
-                    @f.InputFor(m => m.Email, autoFocus: AutoFocus.OnFormInvalid, validate: Validate.WhenDirty)
+                    @f.InputFor(m => m.UserName, autoFocus: AutoFocus.OnFormValid, validate: ValidationOption.WhenDirty)
+                    @f.InputFor(m => m.Email, autoFocus: AutoFocus.OnFormInvalid, validate: ValidationOption.WhenDirty)
                     @f.SubmitButton("Register")
                     <p>
                         <div class="col-md-offset-3">

@@ -68,7 +68,7 @@ namespace SeemplesTools.HtmlBuilders.Ng
         /// <param name="message">Optional message</param>
         /// <param name="htmlAttributes">Optional HTML attributes</param>
         /// <returns>The HTML output</returns>
-        public static MvcHtmlString BsDismissibleValidationSummary<TModel>(this HtmlHelper<TModel> htmlHelper, 
+        public static MvcHtmlString BsDismissibleValidationSummary<TModel>(this HtmlHelper<TModel> htmlHelper,
             bool excludePropertyErrors = false, string message = "", object htmlAttributes = null)
         {
             if (htmlHelper.ViewData.ModelState.IsValid)
@@ -99,5 +99,5 @@ namespace SeemplesTools.HtmlBuilders.Ng
             divTag.InnerHtml = sb.ToString();
             return new MvcHtmlString(divTag.ToString());
         }
-   }
+    }
 }

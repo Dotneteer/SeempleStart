@@ -4,7 +4,6 @@ using Newtonsoft.Json;
 using SeemplesTools.HtmlBuilders.Bs;
 using SeemplesTools.HtmlBuilders.Infrastructure;
 using SeemplesTools.HtmlBuilders.Ng;
-using SeemplesTools.HtmlBuilders.NgBsMvc;
 
 namespace SeemplesTools.HtmlBuilders.Forms
 {
@@ -53,7 +52,7 @@ namespace SeemplesTools.HtmlBuilders.Forms
         /// <param name="inputTagType">Type of the input tag</param>
         /// <param name="autoFocus">Autofocus type</param>
         /// <param name="validationOption">Validation type</param>
-        public IBuildResult BuildHorizontalInput(ModelMetadata modelMetadata, InputTagType inputTagType,
+        public MvcHtmlString BuildHorizontalInput(ModelMetadata modelMetadata, InputTagType inputTagType,
             AutoFocus autoFocus, ValidationOption validationOption)
         {
             // --- The form group that encapsulates the label and the control
@@ -114,8 +113,7 @@ namespace SeemplesTools.HtmlBuilders.Forms
                     .AddChild(new HtmlText(modelMetadata.DisplayName ?? modelMetadata.PropertyName))
                     .AddChild(hiddenInput);
             }
-
-            return new HtmlBuildResult(_formBuilder.HtmlHelper, formGroup);
+            return formGroup.Markup;
         }
 
         /// <summary>
@@ -125,10 +123,10 @@ namespace SeemplesTools.HtmlBuilders.Forms
         /// <param name="inputTagType">Type of the input tag</param>
         /// <param name="autoFocus">Autofocus type</param>
         /// <param name="validationOption">Validation type</param>
-        public IBuildResult BuildColumnarInput(ModelMetadata modelMetadata, InputTagType inputTagType,
+        public MvcHtmlString BuildColumnarInput(ModelMetadata modelMetadata, InputTagType inputTagType,
             AutoFocus autoFocus, ValidationOption validationOption)
         {
-            return HtmlBuildResult.Empty;
+            return MvcHtmlString.Empty;
         }
 
         public HtmlElementBase<BsHtmlElement> CreateInput(InputTagType inputTagType, AutoFocus autoFocus,

@@ -5,7 +5,6 @@ using SeemplesTools.HtmlBuilders.Bs;
 using SeemplesTools.HtmlBuilders.Forms;
 using SeemplesTools.HtmlBuilders.Infrastructure;
 using SeemplesTools.HtmlBuilders.Ng;
-using SeemplesTools.HtmlBuilders.NgBsMvc;
 
 namespace SeemplesTools.HtmlBuilders.NgBs
 {
@@ -52,35 +51,16 @@ namespace SeemplesTools.HtmlBuilders.NgBs
         /// <param name="inputTagType">Type of the input tag</param>
         /// <param name="autoFocus">Autofocus type</param>
         /// <param name="validationOption">Validation type</param>
-        public IBuildResult BuildInputFor<TProperty>(
-            Expression<Func<TModel, TProperty>> expression,
-            InputTagType inputTagType = InputTagType.Text,
-            AutoFocus autoFocus = AutoFocus.None,
-            ValidationOption validationOption = ValidationOption.Always)
-        {
-            // --- Obtain field metadata
-            var modelMetadata = ModelMetadata.FromLambdaExpression(expression, HtmlHelper.ViewData);
-            return _form.IsHorizontal
-                ? _buildHelper.BuildHorizontalInput(modelMetadata, inputTagType, autoFocus, validationOption)
-                : _buildHelper.BuildColumnarInput(modelMetadata, inputTagType, autoFocus, validationOption);
-        }
-
-        /// <summary>
-        /// Renders an input tag for the specified model element
-        /// </summary>
-        /// <typeparam name="TProperty">Property type of the element</typeparam>
-        /// <param name="expression">Property expression</param>
-        /// <param name="inputTagType">Type of the input tag</param>
-        /// <param name="autoFocus">Autofocus type</param>
-        /// <param name="validationOption">Validation type</param>
         public MvcHtmlString InputFor<TProperty>(
             Expression<Func<TModel, TProperty>> expression,
             InputTagType inputTagType = InputTagType.Text,
             AutoFocus autoFocus = AutoFocus.None,
             ValidationOption validationOption = ValidationOption.Always)
         {
-            // --- Obtain field metadata
-            return BuildInputFor(expression, inputTagType, autoFocus, validationOption).Result;
+            var modelMetadata = ModelMetadata.FromLambdaExpression(expression, HtmlHelper.ViewData);
+            return _form.IsHorizontal
+                ? _buildHelper.BuildHorizontalInput(modelMetadata, inputTagType, autoFocus, validationOption)
+                : _buildHelper.BuildColumnarInput(modelMetadata, inputTagType, autoFocus, validationOption);
         }
 
         /// <summary>
@@ -113,7 +93,7 @@ namespace SeemplesTools.HtmlBuilders.NgBs
             button.Attr(NgTag.NgDisabled, string.Format("{0}.$invalid", _form.FormName));
             div.AddChild(button);
 
-            return new HtmlBuildResult(HtmlHelper, formGroup).Result;
+            return formGroup.Markup;
         }
    }
 }

@@ -1,25 +1,26 @@
-﻿@using Younderwater.Builders
-@using Younderwater.Builders.NgBs
+﻿@using SeemplesTools.HtmlBuilders.Bs
+@using SeemplesTools.HtmlBuilders.Ng
+@using SeemplesTools.HtmlBuilders.NgBs
 <style>
     .popupPosition {
         margin-top: 100px;
     }
 </style>
 
-<div ng-controller="MyDivesCtrl">
-    <div class="row" data-active-menu="DiveLog" data-active-title="Your online dive log" style="margin-bottom: 24px;">
+<div ng-controller="MyDivesCtrl" data-active-menu="DiveLog" data-active-title="Your online dive log" style="margin-bottom: 24px;">
+    <div class="row">
         <div class="col-sm-6">
-            <button class="btn btn-info" ng-click="openDiveEditor(null, false)">
-                <i class="glyphicon glyphicon-plus-sign"></i> Add a new dive log entry
-            </button>
+            @Html.NgButton(new NgButton("Add a new dive log entry", BsButtonTheme.Info)
+                .Icon(BsClass.GlyphFa.PlusCircle, BsIconAlignment.Right).NgClick("openDiveEditor(null, false)"))
         </div>
         <div class="col-sm-3 col-sm-offset-3">
-            <div class="input-group">
+            @Html.NgSearchButton("searchKey")
+            @*<div class="input-group">
                 <input type="text" placeholder="Search" class="form-control" ng-model="searchKey" id="Search" name="Search" />
                 <span class="input-group-addon">
-                    <i class="glyphicon glyphicon-search"></i>
+                    <i class="fa fa-search"></i>
                 </span>
-            </div>
+            </div>*@
         </div>
     </div>
     <div class="row">
@@ -104,7 +105,7 @@
     }
 </script>
 
-@section scripts
+@section Scripts
 {
     <script src="~/app/dive/dive.ng.js"></script>
 }

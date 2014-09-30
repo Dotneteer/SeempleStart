@@ -30,6 +30,8 @@ namespace SeemplesTools.HtmlBuilders.Bs
             public const string Toggle = "data-toggle";
             public const string FormControl = "form-control";
             public const string CheckBox = "checkbox";
+            public const string InputGroup = "input-group";
+            public const string InputGroupAddOn = "input-group-addon";
         }
 
         public const string Button = "btn";
@@ -143,6 +145,8 @@ namespace SeemplesTools.HtmlBuilders.Bs
         {
             private const string GLYPHBASE = "glyphicon glyphicon-";
             public const string WarningSign = GLYPHBASE + "warning-sign";
+            public const string PlusSign = GLYPHBASE + "plus-sign";
+
         }
 
         /// <summary>
@@ -152,6 +156,8 @@ namespace SeemplesTools.HtmlBuilders.Bs
         {
             private const string GLYPHBASE = "fa fa-";
             public const string ExclamationCircle = GLYPHBASE + "exclamation-circle";
+            public const string PlusCircle = GLYPHBASE + "plus-circle";
+            public const string Search = GLYPHBASE + "search";
         }
 
         /// <summary>

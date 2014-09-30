@@ -21,6 +21,7 @@
         public const string AutoFocus = "autofocus";
         public const string Checked = "checked";
         public const string Class = "class";
+        public const string Placeholder = "placeholder";
     }
     // ReSharper restore InconsistentNaming
 }
