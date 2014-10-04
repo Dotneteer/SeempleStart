@@ -1,0 +1,59 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <img class="img-responsive" src="~/Content/Images/Cloud.jpg" alt="SeemplestCloud" />
+            </div>
+            <div class="col-sm-8">
+                <h2>@Resources.HomeJumbo_Title</h2>
+                <p class="lead">@Resources.HomeJumbo_Description</p>
+                <p><a href="http://asp.net" class="btn btn-primary btn-lg">@Html.Raw(Resources.Gen_LearnMore)</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <h3>@Resources.Package_Free_Title</h3>
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-success">@Resources.Package_Free_Price</li>
+                <li class="list-group-item">@Resources.Package_Free_MaxUser</li>
+                <li class="list-group-item">@Resources.Package_Free_MaxInvoinces</li>
+            </ul>
+            <p><a class="btn btn-default" href="#">@Html.Raw(Resources.Gen_TryIt)</a></p>
+        </div>
+        <div class="col-md-3">
+            <h3>@Resources.Package_Micro_Title</h3>
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-success">@Resources.Package_Micro_Price</li>
+                <li class="list-group-item">@Resources.Package_Micro_MaxUser</li>
+                <li class="list-group-item">@Resources.Package_Micro_MaxInvoices</li>
+            </ul>
+            <p><a class="btn btn-primary" href="#">@Html.Raw(Resources.Gen_GetStarted)</a></p>
+        </div>
+        <div class="col-md-3">
+            <h3>@Resources.Package_Small_Title</h3>
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-success">@Resources.Package_Small_Price</li>
+                <li class="list-group-item">@Resources.Package_Small_MaxUser</li>
+                <li class="list-group-item">@Resources.Package_Small_MaxInvoices</li>
+            </ul>
+            <p><a class="btn btn-primary" href="#">@Html.Raw(Resources.Gen_GetStarted)</a></p>
+        </div>
+        <div class="col-md-3">
+            <h3>@Resources.Package_Premium_Title</h3>
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-success">@Resources.Package_Premium_Price</li>
+                <li class="list-group-item">@Resources.Package_Premium_MaxUser</li>
+                <li class="list-group-item">@Resources.Package_Premium_MaxInvoices</li>
+            </ul>
+            <p><a class="btn btn-primary" href="#">@Html.Raw(Resources.Gen_GetStarted)</a></p>
+        </div>
+    </div>    
+</div>
