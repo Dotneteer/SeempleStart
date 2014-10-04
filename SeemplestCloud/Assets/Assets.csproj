@@ -1,0 +1,194 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Default</Configuration>
+    <ProjectGuid>{F259FC6B-BE1E-4700-AE4A-C2CB4B6CE91D}</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <OutputPath>bin\Default\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="bootstrap-3.2.0\.editorconfig" />
+    <None Include="bootstrap-3.2.0\.gitattributes" />
+    <None Include="bootstrap-3.2.0\.gitignore" />
+    <None Include="bootstrap-3.2.0\.travis.yml" />
+    <None Include="bootstrap-3.2.0\bower.json" />
+    <None Include="bootstrap-3.2.0\composer.json" />
+    <None Include="bootstrap-3.2.0\dist\css\bootstrap-theme.css.map" />
+    <None Include="bootstrap-3.2.0\dist\css\bootstrap.css.map" />
+    <None Include="bootstrap-3.2.0\dist\fonts\fontawesome-webfont.eot" />
+    <None Include="bootstrap-3.2.0\dist\fonts\fontawesome-webfont.ttf" />
+    <None Include="bootstrap-3.2.0\dist\fonts\fontawesome-webfont.woff" />
+    <None Include="bootstrap-3.2.0\dist\fonts\FontAwesome.otf" />
+    <None Include="bootstrap-3.2.0\dist\fonts\glyphicons-halflings-regular.eot" />
+    <None Include="bootstrap-3.2.0\dist\fonts\glyphicons-halflings-regular.ttf" />
+    <None Include="bootstrap-3.2.0\dist\fonts\glyphicons-halflings-regular.woff" />
+    <None Include="bootstrap-3.2.0\fonts\fontawesome-webfont.eot" />
+    <None Include="bootstrap-3.2.0\fonts\fontawesome-webfont.ttf" />
+    <None Include="bootstrap-3.2.0\fonts\fontawesome-webfont.woff" />
+    <None Include="bootstrap-3.2.0\fonts\FontAwesome.otf" />
+    <None Include="bootstrap-3.2.0\fonts\glyphicons-halflings-regular.eot" />
+    <None Include="bootstrap-3.2.0\fonts\glyphicons-halflings-regular.ttf" />
+    <None Include="bootstrap-3.2.0\fonts\glyphicons-halflings-regular.woff" />
+    <None Include="bootstrap-3.2.0\grunt\.jshintrc" />
+    <None Include="bootstrap-3.2.0\grunt\sauce_browsers.yml" />
+    <None Include="bootstrap-3.2.0\js\.jscsrc" />
+    <None Include="bootstrap-3.2.0\js\.jshintrc" />
+    <None Include="bootstrap-3.2.0\js\tests\unit\.jshintrc" />
+    <None Include="bootstrap-3.2.0\less\.csscomb.json" />
+    <None Include="bootstrap-3.2.0\less\.csslintrc" />
+    <None Include="bootstrap-3.2.0\less\alerts.less" />
+    <None Include="bootstrap-3.2.0\less\badges.less" />
+    <None Include="bootstrap-3.2.0\less\bootstrap.less" />
+    <None Include="bootstrap-3.2.0\less\breadcrumbs.less" />
+    <None Include="bootstrap-3.2.0\less\button-groups.less" />
+    <None Include="bootstrap-3.2.0\less\buttons.less" />
+    <None Include="bootstrap-3.2.0\less\carousel.less" />
+    <None Include="bootstrap-3.2.0\less\close.less" />
+    <None Include="bootstrap-3.2.0\less\code.less" />
+    <None Include="bootstrap-3.2.0\less\component-animations.less" />
+    <None Include="bootstrap-3.2.0\less\Content\bootstrap.css.map" />
+    <None Include="bootstrap-3.2.0\less\dropdowns.less" />
+    <None Include="bootstrap-3.2.0\less\extensions\Content\font-awesome.css.map" />
+    <None Include="bootstrap-3.2.0\less\extensions\font-awesome.less" />
+    <None Include="bootstrap-3.2.0\less\extrafonts.less" />
+    <None Include="bootstrap-3.2.0\less\forms.less" />
+    <None Include="bootstrap-3.2.0\less\glyphicons.less" />
+    <None Include="bootstrap-3.2.0\less\grid.less" />
+    <None Include="bootstrap-3.2.0\less\input-groups.less" />
+    <None Include="bootstrap-3.2.0\less\jumbotron.less" />
+    <None Include="bootstrap-3.2.0\less\labels.less" />
+    <None Include="bootstrap-3.2.0\less\list-group.less" />
+    <None Include="bootstrap-3.2.0\less\media.less" />
+    <None Include="bootstrap-3.2.0\less\mixins.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\alerts.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\background-variant.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\border-radius.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\buttons.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\center-block.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\clearfix.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\forms.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\gradients.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\grid-framework.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\grid.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\hide-text.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\image.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\labels.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\list-group.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\nav-divider.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\nav-vertical-align.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\opacity.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\pagination.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\panels.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\progress-bar.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\reset-filter.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\resize.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\responsive-visibility.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\size.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\tab-focus.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\table-row.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\text-emphasis.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\text-overflow.less" />
+    <None Include="bootstrap-3.2.0\less\mixins\vendor-prefixes.less" />
+    <None Include="bootstrap-3.2.0\less\modals.less" />
+    <None Include="bootstrap-3.2.0\less\navbar.less" />
+    <None Include="bootstrap-3.2.0\less\navs.less" />
+    <None Include="bootstrap-3.2.0\less\normalize.less" />
+    <None Include="bootstrap-3.2.0\less\pager.less" />
+    <None Include="bootstrap-3.2.0\less\pagination.less" />
+    <None Include="bootstrap-3.2.0\less\panels.less" />
+    <None Include="bootstrap-3.2.0\less\popovers.less" />
+    <None Include="bootstrap-3.2.0\less\print.less" />
+    <None Include="bootstrap-3.2.0\less\progress-bars.less" />
+    <None Include="bootstrap-3.2.0\less\responsive-embed.less" />
+    <None Include="bootstrap-3.2.0\less\responsive-utilities.less" />
+    <None Include="bootstrap-3.2.0\less\scaffolding.less" />
+    <None Include="bootstrap-3.2.0\less\tables.less" />
+    <None Include="bootstrap-3.2.0\less\theme.less" />
+    <None Include="bootstrap-3.2.0\less\thumbnails.less" />
+    <None Include="bootstrap-3.2.0\less\tooltip.less" />
+    <None Include="bootstrap-3.2.0\less\type.less" />
+    <None Include="bootstrap-3.2.0\less\utilities.less" />
+    <None Include="bootstrap-3.2.0\less\variables.less" />
+    <None Include="bootstrap-3.2.0\less\wells.less" />
+    <None Include="bootstrap-3.2.0\LICENSE" />
+    <None Include="bootstrap-3.2.0\package.json" />
+    <None Include="bootstrap-3.2.0\test-infra\npm-shrinkwrap.json" />
+    <None Include="bootstrap-3.2.0\test-infra\README.md" />
+    <None Include="bootstrap-3.2.0\test-infra\S3Cachefile.json" />
+    <None Include="bootstrap-3.2.0\test-infra\s3_cache.py" />
+    <None Include="bootstrap-3.2.0\test-infra\uncached-npm-install.sh" />
+    <None Include="bootstrap-3.2.0\_config.yml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bootstrap-3.2.0\dist\css\bootstrap-theme.css" />
+    <Content Include="bootstrap-3.2.0\dist\css\bootstrap-theme.min.css" />
+    <Content Include="bootstrap-3.2.0\dist\css\bootstrap.css" />
+    <Content Include="bootstrap-3.2.0\dist\css\bootstrap.min.css" />
+    <Content Include="bootstrap-3.2.0\dist\fonts\fontawesome-webfont.svg" />
+    <Content Include="bootstrap-3.2.0\dist\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="bootstrap-3.2.0\dist\js\bootstrap.js" />
+    <Content Include="bootstrap-3.2.0\dist\js\bootstrap.min.js" />
+    <Content Include="bootstrap-3.2.0\fonts\fontawesome-webfont.svg" />
+    <Content Include="bootstrap-3.2.0\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="bootstrap-3.2.0\Gruntfile.js" />
+    <Content Include="bootstrap-3.2.0\grunt\bs-glyphicons-data-generator.js" />
+    <Content Include="bootstrap-3.2.0\grunt\bs-lessdoc-parser.js" />
+    <Content Include="bootstrap-3.2.0\grunt\bs-raw-files-generator.js" />
+    <Content Include="bootstrap-3.2.0\howToBuild.txt" />
+    <Content Include="bootstrap-3.2.0\js\affix.js" />
+    <Content Include="bootstrap-3.2.0\js\alert.js" />
+    <Content Include="bootstrap-3.2.0\js\button.js" />
+    <Content Include="bootstrap-3.2.0\js\carousel.js" />
+    <Content Include="bootstrap-3.2.0\js\collapse.js" />
+    <Content Include="bootstrap-3.2.0\js\dropdown.js" />
+    <Content Include="bootstrap-3.2.0\js\modal.js" />
+    <Content Include="bootstrap-3.2.0\js\popover.js" />
+    <Content Include="bootstrap-3.2.0\js\scrollspy.js" />
+    <Content Include="bootstrap-3.2.0\js\tab.js" />
+    <Content Include="bootstrap-3.2.0\js\tests\index.html" />
+    <Content Include="bootstrap-3.2.0\js\tests\unit\affix.js" />
+    <Content Include="bootstrap-3.2.0\js\tests\unit\alert.js" />
+    <Content Include="bootstrap-3.2.0\js\tests\unit\button.js" />
+    <Content Include="bootstrap-3.2.0\js\tests\unit\carousel.js" />
+    <Content Include="bootstrap-3.2.0\js\tests\unit\collapse.js" />
+    <Content Include="bootstrap-3.2.0\js\tests\unit\dropdown.js" />
+    <Content Include="bootstrap-3.2.0\js\tests\unit\modal.js" />
+    <Content Include="bootstrap-3.2.0\js\tests\unit\phantom.js" />
+    <Content Include="bootstrap-3.2.0\js\tests\unit\popover.js" />
+    <Content Include="bootstrap-3.2.0\js\tests\unit\scrollspy.js" />
+    <Content Include="bootstrap-3.2.0\js\tests\unit\tab.js" />
+    <Content Include="bootstrap-3.2.0\js\tests\unit\tooltip.js" />
+    <Content Include="bootstrap-3.2.0\js\tests\vendor\jquery.min.js" />
+    <Content Include="bootstrap-3.2.0\js\tests\vendor\qunit.css" />
+    <Content Include="bootstrap-3.2.0\js\tests\vendor\qunit.js" />
+    <Content Include="bootstrap-3.2.0\js\tests\visual\affix.html" />
+    <Content Include="bootstrap-3.2.0\js\tests\visual\alert.html" />
+    <Content Include="bootstrap-3.2.0\js\tests\visual\button.html" />
+    <Content Include="bootstrap-3.2.0\js\tests\visual\carousel.html" />
+    <Content Include="bootstrap-3.2.0\js\tests\visual\collapse.html" />
+    <Content Include="bootstrap-3.2.0\js\tests\visual\dropdown.html" />
+    <Content Include="bootstrap-3.2.0\js\tests\visual\modal.html" />
+    <Content Include="bootstrap-3.2.0\js\tests\visual\popover.html" />
+    <Content Include="bootstrap-3.2.0\js\tests\visual\scrollspy.html" />
+    <Content Include="bootstrap-3.2.0\js\tests\visual\tab.html" />
+    <Content Include="bootstrap-3.2.0\js\tests\visual\tooltip.html" />
+    <Content Include="bootstrap-3.2.0\js\tooltip.js" />
+    <Content Include="bootstrap-3.2.0\js\transition.js" />
+    <Content Include="bootstrap-3.2.0\less\Content\bootstrap.css" />
+    <Content Include="bootstrap-3.2.0\less\Content\bootstrap.min.css" />
+    <Content Include="bootstrap-3.2.0\less\Content\variables.css" />
+    <Content Include="bootstrap-3.2.0\less\Content\variables.min.css" />
+    <Content Include="bootstrap-3.2.0\less\extensions\Content\font-awesome.css" />
+    <Content Include="bootstrap-3.2.0\less\extensions\Content\font-awesome.min.css" />
+    <Content Include="bootstrap-3.2.0\test-infra\requirements.txt" />
+    <Content Include="Libs\Unicopy\MSBuild.Unicopy.dll" />
+    <Content Include="Libs\Unicopy\MSBuild.Unicopy.pdb" />
+  </ItemGroup>
+  <ItemGroup />
+  <Target Name="Build">
+  </Target>
+  <Target Name="Clean">
+  </Target>
+  <Target Name="Rebuild" DependsOnTargets="Clean; Build" />
+</Project>

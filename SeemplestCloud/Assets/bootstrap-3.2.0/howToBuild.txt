@@ -1,0 +1,27 @@
+Grunt is based on Node.js. If you have not installed Node.js, follow these steps:
+
+1. Get the appropriate binaries for your platform from http://nodejs.org/download.
+2. Run the setup program, and install Node.js.
+3. Open a command line and type node. When the Node.js console starts, type the following command at the prompt:
+
+function test() {return "Hello from Node"; }; test();
+
+Node immediately evaluates and executes this short JavaScript code, and displays its output, the return value of the test() function:
+
+'Hello from Node'
+
+If you see this message, your Node.js installation is ready. Press Ctrl+C to exit from the node console.
+
+Building the Bootstrap Package
+
+It is time to install Grunt and prepare the Bootstrap build. Follow these steps:
+
+1. Select the Node.js installation folder at the command line prompt, and type:
+
+npm install –g grunt-cli
+
+This command uses the node package manager (npm) to download, install, and configure the package required to run Grunt. After the setup, you are ready to finalize the preparation of your build environment.
+2. At the command line, select the root folder of your Bootstrap download, and run npm install. This command looks up the package.json file in this folder, downloads and installs all packages and other components referenced there, unless they are already installed. It may take one or two minutes, maybe a bit more.
+3. Now, type grunt dist. This command starts Grunt, end executes its dist command, which—among the other activities—compiles the LESS source and prepares the dist folder with the css, font, and js subfolders. When you take a look into the files in these folders, you can recognize the same files that you downloaded from the Bootstrap website—although their dates show that these files and folders have been just recently created.
+
+Congratulations, you have just created your Bootstrap build!
