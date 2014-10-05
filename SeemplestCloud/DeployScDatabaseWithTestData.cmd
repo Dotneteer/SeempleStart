@@ -1,0 +1,3 @@
+Deployment\Setup\bin\Debug\Setup.exe deploy-sb-database -sql-instance:.\SQLEXPRESS2012 -sql-database:SeemplestCloud.Poc -paths:..\SeemplestBlocks\SeemplestBlocks.Database\bin\Default -test-data:true
+Deployment\Setup\bin\Debug\Setup.exe deploy-sc-database -sql-instance:.\SQLEXPRESS2012 -sql-database:SeemplestCloud.Poc -paths:..\SeemplestCloud\Databases\SeemplestCloud.Database\bin\Default -test-data:true
+pause

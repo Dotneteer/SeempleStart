@@ -101,6 +101,12 @@
               <referencedTypeMoniker Id="e6a91ba1-ee16-49f3-94be-cce1c70c41bb" LastKnownName="BankAccountNo" />
             </type_NamedElement>
           </property>
+          <property Id="0a64dadf-9e02-46fc-bac4-c3747dd8f21f" name="IsSuspended" isLeaf="false" isStatic="false" isReadOnly="false" isUnique="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+            <elementDefinition Id="ecca7598-92ba-42c2-916c-b992246863bc" />
+            <type_NamedElement>
+              <referencedTypeMoniker Id="0a54961f-8773-42b0-abd8-539f381961ce" LastKnownName="Boolean" />
+            </type_NamedElement>
+          </property>
         </ownedAttributesInternal>
       </class>
     </logicalClassDesignerModelHasTypes>
@@ -192,11 +198,8 @@
               <referencedTypeMoniker Id="2099952c-f503-4d6d-a59d-b1b798cd8090" LastKnownName="DateTime" />
             </type_NamedElement>
           </property>
-          <property Id="6dab081e-1e28-42e8-8757-d297aca9044b" name="AuthFailureCount" isLeaf="false" isStatic="false" isReadOnly="false" isUnique="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+          <property Id="6dab081e-1e28-42e8-8757-d297aca9044b" name="AccessFailedCount" isLeaf="false" isStatic="false" isReadOnly="false" isUnique="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
             <elementDefinition Id="befff385-c489-4944-9ce5-b1a030169e94" />
-            <type_NamedElement>
-              <referencedTypeMoniker Id="430adc58-5c90-4c48-bc2b-baf87d8eeb95" LastKnownName="Integer" />
-            </type_NamedElement>
           </property>
           <property Id="d99d5df9-de0f-422e-84f5-cba7ac716782" name="LockedOut" isLeaf="false" isStatic="false" isReadOnly="false" isUnique="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
             <elementDefinition Id="dd4cbaf8-1fd0-458e-ad35-c82262e7dfd3" />
@@ -214,6 +217,12 @@
             <elementDefinition Id="2a637ab9-736e-411c-af92-ef78b2fc0a12" />
             <type_NamedElement>
               <referencedTypeMoniker Id="eefa0238-e39b-45e3-bd6a-5ef6512287d5" LastKnownName="Boolean" />
+            </type_NamedElement>
+          </property>
+          <property Id="fba96ab5-aeb7-4e66-8b11-37b892bb8787" name="Comment" isLeaf="false" isStatic="false" isReadOnly="false" isUnique="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+            <elementDefinition Id="a295610e-398d-41e9-ae4b-66240dfc03f9" />
+            <type_NamedElement>
+              <referencedTypeMoniker Id="1817df78-9f6f-4e6a-80ce-f8d5b6319146" LastKnownName="String" />
             </type_NamedElement>
           </property>
         </ownedAttributesInternal>
@@ -320,11 +329,6 @@
       </referencedType>
     </packageHasNamedElement>
     <packageHasNamedElement>
-      <referencedType Id="430adc58-5c90-4c48-bc2b-baf87d8eeb95" name="Integer" isAbstract="false" isLeaf="false" cachedFullName="Integer">
-        <elementDefinition Id="220a3521-e091-4221-bae9-3ef9018e845c" />
-      </referencedType>
-    </packageHasNamedElement>
-    <packageHasNamedElement>
       <referencedType Id="0a54961f-8773-42b0-abd8-539f381961ce" name="Boolean" isAbstract="false" isLeaf="false" cachedFullName="Boolean">
         <elementDefinition Id="8943dc84-709e-4f62-b15a-a3273aa6f165" />
       </referencedType>
@@ -354,6 +358,22 @@
             </relationshipOwnedElementsInternal>
             <elementDefinition Id="5f73d065-6ab2-431f-941b-e0ea2b5d5664" />
           </association>
+          <association Id="b71da34c-98aa-4460-a6fd-46b5520a4ce5" isDerived="false" sourceEndRoleName="" targetEndRoleName="" isLeaf="false" isAbstract="false">
+            <enumerationMoniker Id="c9a56856-a974-4d62-a8c2-f7e0da9afd3b" LastKnownName="InvitationType" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="f09551ca-cff5-4425-9ff4-663207fc6a1b" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="bafbd757-21e7-4ad4-a64f-5d782d90fe16" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="bb4d9529-99d8-46d9-961f-d042a9d75426" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="a88e9bc8-e422-468a-9100-d01442afc957" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="be12c4ff-8648-46ac-977b-14cb017db599" />
+          </association>
         </targetEnds>
         <ownedAttributesInternal>
           <property Id="9f093fe7-5d3b-4836-aeb9-82a6afec100a" name="InvitedUserEmail" isLeaf="false" isStatic="false" isReadOnly="false" isUnique="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
@@ -366,6 +386,12 @@
             <elementDefinition Id="4caf80ea-aa37-4cdb-9049-15723e1854e5" />
             <type_NamedElement>
               <referencedTypeMoniker Id="9041b420-d6f0-4c52-9a43-d21c9e63a79c" LastKnownName="DateTime" />
+            </type_NamedElement>
+          </property>
+          <property Id="886f13f8-e017-44df-ab47-0c4528727ebf" name="InvitationCode" isLeaf="false" isStatic="false" isReadOnly="false" isUnique="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+            <elementDefinition Id="0425019c-7a28-4919-83a1-2adc6ad150ea" />
+            <type_NamedElement>
+              <referencedTypeMoniker Id="e86e5021-517f-427e-917e-4c84779b01c1" LastKnownName="string" />
             </type_NamedElement>
           </property>
         </ownedAttributesInternal>
@@ -429,6 +455,27 @@
         <elementDefinition Id="8943dc84-709e-4f62-b15a-a3273aa6f165" />
       </referencedType>
     </packageHasNamedElement>
+    <packageHasNamedElement>
+      <referencedType Id="e86e5021-517f-427e-917e-4c84779b01c1" name="string" isAbstract="false" isLeaf="false" cachedFullName="string">
+        <elementDefinition Id="94eb6dd6-b3b0-47b1-88e6-bab8e6bf36df" />
+      </referencedType>
+    </packageHasNamedElement>
+    <logicalClassDesignerModelHasTypes>
+      <enumeration Id="c9a56856-a974-4d62-a8c2-f7e0da9afd3b" name="InvitationType" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="54b2c796-d37d-4365-a1f6-af27459a7581" />
+        <ownedLiterals>
+          <enumerationLiteral Id="924412db-25e3-4597-973f-5616e037a0aa" name="ServiceUser">
+            <elementDefinition Id="63237865-63e3-43d2-b609-3abc2829d1c7" />
+          </enumerationLiteral>
+          <enumerationLiteral Id="697d4772-69b1-4422-8401-433f47f6ca7b" name="User">
+            <elementDefinition Id="f7298f0c-c1a1-4813-af55-250fdd6dddad" />
+          </enumerationLiteral>
+          <enumerationLiteral Id="1875f975-cb35-4d75-b735-77fff0aaaafe" name="PasswordReset">
+            <elementDefinition Id="fb805eba-6310-4ad6-be04-71a2b7c4ca01" />
+          </enumerationLiteral>
+        </ownedLiterals>
+      </enumeration>
+    </logicalClassDesignerModelHasTypes>
   </packagedElements>
   <package Id="f5e96240-768a-4d3e-b7ab-2680706a89c1" name="SeemplestCloud.Models">
     <elementDefinition Id="6bb6124c-82b5-4eaf-b5d3-c0ab9d0e7bbf" />

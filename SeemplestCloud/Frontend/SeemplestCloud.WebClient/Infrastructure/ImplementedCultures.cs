@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using SeemplestBlocks.Core.Internationalization;
 
 namespace SeemplestCloud.WebClient.Infrastructure
 {
@@ -34,6 +35,16 @@ namespace SeemplestCloud.WebClient.Infrastructure
         public static ReadOnlyCollection<CultureDescriptor> GetCultureDescriptors()
         {
             return new ReadOnlyCollection<CultureDescriptor>(s_Cultures);
+        }
+
+        /// <summary>
+        /// Get the current culture descriptor
+        /// </summary>
+        /// <returns></returns>
+        public static CultureDescriptor GetCurrentCultureDescriptor()
+        {
+            var currentCulture = CultureHelper.GetCurrentCulture();
+            return s_Cultures.FirstOrDefault(c => c.Code == currentCulture);
         }
 
         /// <summary>

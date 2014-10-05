@@ -23,14 +23,7 @@ namespace SeemplestCloud.WebClient
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/appInit").Include(
-                "~/app/root/root.ng.js",
-                "~/app/main/mainView.ng.js",
-                "~/app/core/commonTypes.js",
-                "~/app/core/commonDirectives.ng.js",
-                "~/app/core/commonFilters.ng.js",
-                "~/app/account/account.ng.dto.js",
-                "~/app/core/ywapi.service.intf.js",
-                "~/app/core/ywapi.service.js"
+                "~/app/rootInit.ng.js"
                 ));
 
             // Set EnableOptimizations to false for debugging. For more information,

@@ -201,11 +201,31 @@
             <relationshipOwnedElementsInternal>
               <associationHasOwnedEnds>
                 <memberEnd Id="fa07713f-7c97-4cc1-9e8d-2d3cccd3ece6" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="Composite" isComposite="false" isNavigableOwned="false">
+                  <lowerValueInternal>
+                    <literalString Id="aa02d636-e312-4b5a-8cd9-c1b7f77403b2" name="Lower" value="*">
+                      <elementDefinition Id="8db5bbb1-ec6a-470b-94ad-8cb277eee9f7" />
+                    </literalString>
+                  </lowerValueInternal>
+                  <upperValueInternal>
+                    <literalString Id="cce29613-143d-44a4-bc85-c1321621a59a" name="Upper" value="*">
+                      <elementDefinition Id="9996929f-f4ef-4103-9bec-f1b1fda301e9" />
+                    </literalString>
+                  </upperValueInternal>
                   <elementDefinition Id="1d3a40bd-b8c4-4a82-8f2a-64bc1402da8f" />
                 </memberEnd>
               </associationHasOwnedEnds>
               <associationHasOwnedEnds>
                 <memberEnd Id="83312d8b-08fe-4723-93f2-3ca1151aebb6" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="true" isNavigableOwned="false">
+                  <lowerValueInternal>
+                    <literalString Id="5c2495d7-e650-4a91-b9b0-35dab7249d56" name="Lower" value="*">
+                      <elementDefinition Id="6209a75b-14c7-4ff6-97b3-6f3a70a5db29" />
+                    </literalString>
+                  </lowerValueInternal>
+                  <upperValueInternal>
+                    <literalString Id="ebf3f504-d0dd-45a0-a04e-fe14b903c84b" name="Upper" value="*">
+                      <elementDefinition Id="ac796087-a59e-4f2b-9e8f-e2233ffae18f" />
+                    </literalString>
+                  </upperValueInternal>
                   <elementDefinition Id="e40989cc-d738-4743-bd7f-78529c1523e2" />
                 </memberEnd>
               </associationHasOwnedEnds>
@@ -244,7 +264,7 @@
               <referencedTypeMoniker Id="c7d37ce1-c820-42aa-80a2-4818dfd15ff3" LastKnownName="DateTime" />
             </type_NamedElement>
           </property>
-          <property Id="94cb8230-cd76-4202-82b4-5dcfc1059bf9" name="AuthFailureCount" isLeaf="false" isStatic="false" isReadOnly="false" isUnique="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+          <property Id="94cb8230-cd76-4202-82b4-5dcfc1059bf9" name="AccessFailedCount" isLeaf="false" isStatic="false" isReadOnly="false" isUnique="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
             <elementDefinition Id="befff385-c489-4944-9ce5-b1a030169e94" />
             <type_NamedElement>
               <referencedTypeMoniker Id="f4395a18-1611-4cba-9550-394e1ee8ac29" LastKnownName="Integer" />
@@ -306,6 +326,16 @@
             <relationshipOwnedElementsInternal>
               <associationHasOwnedEnds>
                 <memberEnd Id="6727f33a-cc09-40d9-88c9-a37d9ba84166" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="Composite" isComposite="false" isNavigableOwned="false">
+                  <lowerValueInternal>
+                    <literalString Id="eb75dc0a-ace5-4aca-af3b-dfa33ef89c45" name="Lower" value="*">
+                      <elementDefinition Id="617b9ec9-ea4c-4041-ba2b-976788ea841e" />
+                    </literalString>
+                  </lowerValueInternal>
+                  <upperValueInternal>
+                    <literalString Id="1b2547cc-8c91-4f84-b285-f356445128d8" name="Upper" value="*">
+                      <elementDefinition Id="34ea2aeb-67f4-44f9-baef-bc8359b9936e" />
+                    </literalString>
+                  </upperValueInternal>
                   <elementDefinition Id="ad27f879-1068-406c-baf6-a6871d50a7b6" />
                 </memberEnd>
               </associationHasOwnedEnds>

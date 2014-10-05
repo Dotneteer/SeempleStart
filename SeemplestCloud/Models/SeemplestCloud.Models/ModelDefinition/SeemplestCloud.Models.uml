@@ -412,7 +412,20 @@
                   isDerivedUnion="false"
                   aggregation="Composite"
                   isComposite="false"
-                  isNavigableOwned="false" />
+                  isNavigableOwned="false">
+                  <lowerValueInternal>
+                    <literalString
+                      Id="8db5bbb1-ec6a-470b-94ad-8cb277eee9f7"
+                      name="Lower"
+                      value="*" />
+                  </lowerValueInternal>
+                  <upperValueInternal>
+                    <literalString
+                      Id="9996929f-f4ef-4103-9bec-f1b1fda301e9"
+                      name="Upper"
+                      value="*" />
+                  </upperValueInternal>
+                </memberEnd>
               </associationHasOwnedEnds>
               <associationHasOwnedEnds>
                 <memberEnd
@@ -424,7 +437,20 @@
                   isDerivedUnion="false"
                   aggregation="None"
                   isComposite="true"
-                  isNavigableOwned="false" />
+                  isNavigableOwned="false">
+                  <lowerValueInternal>
+                    <literalString
+                      Id="6209a75b-14c7-4ff6-97b3-6f3a70a5db29"
+                      name="Lower"
+                      value="*" />
+                  </lowerValueInternal>
+                  <upperValueInternal>
+                    <literalString
+                      Id="ac796087-a59e-4f2b-9e8f-e2233ffae18f"
+                      name="Upper"
+                      value="*" />
+                  </upperValueInternal>
+                </memberEnd>
               </associationHasOwnedEnds>
             </relationshipOwnedElementsInternal>
           </association>
@@ -519,7 +545,7 @@
           </property>
           <property
             Id="befff385-c489-4944-9ce5-b1a030169e94"
-            name="AuthFailureCount"
+            name="AccessFailedCount"
             isLeaf="false"
             isStatic="false"
             isReadOnly="false"
@@ -527,14 +553,7 @@
             isDerived="false"
             isDerivedUnion="false"
             aggregation="None"
-            isComposite="false">
-            <type_NamedElement>
-              <primitiveTypeMoniker
-                Id="220a3521-e091-4221-bae9-3ef9018e845c"
-                LastKnownName="Integer"
-                LastKnownLocation="SeemplestCloud.Models.uml" />
-            </type_NamedElement>
-          </property>
+            isComposite="false" />
           <property
             Id="dd4cbaf8-1fd0-458e-ad35-c82262e7dfd3"
             name="LockedOut"
@@ -757,6 +776,44 @@
               </associationHasOwnedEnds>
             </relationshipOwnedElementsInternal>
           </association>
+          <association
+            Id="be12c4ff-8648-46ac-977b-14cb017db599"
+            isDerived="false"
+            sourceEndRoleName=""
+            targetEndRoleName=""
+            isLeaf="false"
+            isAbstract="false">
+            <enumerationMoniker
+              Id="54b2c796-d37d-4365-a1f6-af27459a7581"
+              LastKnownName="InvitationType"
+              LastKnownLocation="SeemplestCloud.Models.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="bafbd757-21e7-4ad4-a64f-5d782d90fe16"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false" />
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="a88e9bc8-e422-468a-9100-d01442afc957"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
         </targetEnds>
         <ownedAttributesInternal>
           <property
@@ -792,6 +849,24 @@
               <undefinedTypeMoniker
                 Id="05356b0b-2181-4974-803d-a9e09f9cd140"
                 LastKnownName="DateTime"
+                LastKnownLocation="SeemplestCloud.Models.uml" />
+            </type_NamedElement>
+          </property>
+          <property
+            Id="0425019c-7a28-4919-83a1-2adc6ad150ea"
+            name="InvitationCode"
+            isLeaf="false"
+            isStatic="false"
+            isReadOnly="false"
+            isUnique="false"
+            isDerived="false"
+            isDerivedUnion="false"
+            aggregation="None"
+            isComposite="false">
+            <type_NamedElement>
+              <undefinedTypeMoniker
+                Id="94eb6dd6-b3b0-47b1-88e6-bab8e6bf36df"
+                LastKnownName="string"
                 LastKnownLocation="SeemplestCloud.Models.uml" />
             </type_NamedElement>
           </property>
@@ -1502,7 +1577,20 @@
                   isDerivedUnion="false"
                   aggregation="Composite"
                   isComposite="false"
-                  isNavigableOwned="false" />
+                  isNavigableOwned="false">
+                  <lowerValueInternal>
+                    <literalString
+                      Id="617b9ec9-ea4c-4041-ba2b-976788ea841e"
+                      name="Lower"
+                      value="*" />
+                  </lowerValueInternal>
+                  <upperValueInternal>
+                    <literalString
+                      Id="34ea2aeb-67f4-44f9-baef-bc8359b9936e"
+                      name="Upper"
+                      value="*" />
+                  </upperValueInternal>
+                </memberEnd>
               </associationHasOwnedEnds>
               <associationHasOwnedEnds>
                 <memberEnd
@@ -2047,6 +2135,30 @@
             isComposite="false" />
         </ownedAttributesInternal>
       </class>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <undefinedType
+        Id="94eb6dd6-b3b0-47b1-88e6-bab8e6bf36df"
+        name="string" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <enumeration
+        Id="54b2c796-d37d-4365-a1f6-af27459a7581"
+        name="InvitationType"
+        isAbstract="false"
+        isLeaf="false">
+        <ownedLiterals>
+          <enumerationLiteral
+            Id="63237865-63e3-43d2-b609-3abc2829d1c7"
+            name="ServiceUser" />
+          <enumerationLiteral
+            Id="f7298f0c-c1a1-4813-af55-250fdd6dddad"
+            name="User" />
+          <enumerationLiteral
+            Id="fb805eba-6310-4ad6-be04-71a2b7c4ca01"
+            name="PasswordReset" />
+        </ownedLiterals>
+      </enumeration>
     </packageHasNamedElement>
   </packagedElements>
   <primitiveType

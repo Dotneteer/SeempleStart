@@ -1,41 +1,36 @@
-﻿@model SeemplestCloud.WebClient.Models.RegisterViewModel
+﻿@using SeemplesTools.HtmlBuilders.Bs
+@using SeemplesTools.HtmlBuilders.Infrastructure
+@using SeemplesTools.HtmlBuilders.Ng
+@using SeemplesTools.HtmlBuilders.NgBsMvc
+@using SeemplestCloud.WebClient.Models
+@model  RegisterViewModel
 @{
     ViewBag.Title = "Register";
 }
 
-<h2>@ViewBag.Title.</h2>
+<div class="container">
+    <div class="row" data-active-menu="Register" data-active-title="Register as a new user">
+        <div class="col-md-8">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    Please specify your <strong>user name</strong>, <strong>email</strong>, and <strong>password</strong>
+                    to be used for your local account. Later, you'll be able to bind external logins,
+                    such as Google, Facebook, Twitter, or Microsoft to your local account.
+                </div>
+                <div class="panel-body">
+                    @using (var f = Html.Begin(new NgBsMvcForm("registerForm", "Register", "Account").LabelMd(4).InputMd(8)))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.BsDismissibleValidationSummary()
 
-@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-{
-    @Html.AntiForgeryToken()
-    <h4>Create a new account.</h4>
-    <hr />
-    @Html.ValidationSummary("", new { @class = "text-danger" })
-    <div class="form-group">
-        @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                        @f.InputFor(m => m.UserName, autoFocus: AutoFocus.OnFormValid, validate: ValidationOption.WhenDirty)
+                        @f.InputFor(m => m.Email, autoFocus: AutoFocus.OnFormValid, validate: ValidationOption.WhenDirty)
+                        @f.InputFor(m => m.Password, autoFocus: AutoFocus.OnFormInvalid, validate: ValidationOption.WhenDirty)
+                        @f.InputFor(m => m.ConfirmPassword, validate: ValidationOption.WhenDirty)
+                        @f.SubmitButton("Register", BsButtonTheme.Primary)
+                    }
+                </div>
+            </div>
         </div>
     </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-        </div>
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" class="btn btn-default" value="Register" />
-        </div>
-    </div>
-}
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+</div>

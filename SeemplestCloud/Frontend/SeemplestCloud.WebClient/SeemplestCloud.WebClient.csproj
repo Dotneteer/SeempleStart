@@ -194,6 +194,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LanguageController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -202,6 +203,7 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\RegisterViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -220,7 +222,18 @@
     <Content Include="Content\Images\LoginProviders\Facebook.png" />
     <Content Include="Content\Images\LoginProviders\Google.png" />
     <Content Include="favicon.ico" />
+    <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="fonts\OpenSans-Bold-webfont.svg" />
+    <Content Include="fonts\OpenSans-BoldItalic-webfont.svg" />
+    <Content Include="fonts\OpenSans-ExtraBold-webfont.svg" />
+    <Content Include="fonts\OpenSans-ExtraBoldItalic-webfont.svg" />
+    <Content Include="fonts\OpenSans-Italic-webfont.svg" />
+    <Content Include="fonts\OpenSans-Light-webfont.svg" />
+    <Content Include="fonts\OpenSans-LightItalic-webfont.svg" />
+    <Content Include="fonts\OpenSans-Regular-webfont.svg" />
+    <Content Include="fonts\OpenSans-Semibold-webfont.svg" />
+    <Content Include="fonts\OpenSans-SemiboldItalic-webfont.svg" />
     <Content Include="Global.asax" />
     <Content Include="Scripts\angular-mocks.js" />
     <Content Include="Scripts\angular-route.js" />
@@ -237,6 +250,40 @@
     <Content Include="Content\site.less" />
     <Content Include="Scripts\angular.min.js.map" />
     <Content Include="Scripts\angular-route.min.js.map" />
+    <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="fonts\fontawesome-webfont.ttf" />
+    <Content Include="fonts\fontawesome-webfont.woff" />
+    <Content Include="fonts\FontAwesome.otf" />
+    <Content Include="fonts\OpenSans-Bold-webfont.eot" />
+    <Content Include="fonts\OpenSans-Bold-webfont.ttf" />
+    <Content Include="fonts\OpenSans-Bold-webfont.woff" />
+    <Content Include="fonts\OpenSans-BoldItalic-webfont.eot" />
+    <Content Include="fonts\OpenSans-BoldItalic-webfont.ttf" />
+    <Content Include="fonts\OpenSans-BoldItalic-webfont.woff" />
+    <Content Include="fonts\OpenSans-ExtraBold-webfont.eot" />
+    <Content Include="fonts\OpenSans-ExtraBold-webfont.ttf" />
+    <Content Include="fonts\OpenSans-ExtraBold-webfont.woff" />
+    <Content Include="fonts\OpenSans-ExtraBoldItalic-webfont.eot" />
+    <Content Include="fonts\OpenSans-ExtraBoldItalic-webfont.ttf" />
+    <Content Include="fonts\OpenSans-ExtraBoldItalic-webfont.woff" />
+    <Content Include="fonts\OpenSans-Italic-webfont.eot" />
+    <Content Include="fonts\OpenSans-Italic-webfont.ttf" />
+    <Content Include="fonts\OpenSans-Italic-webfont.woff" />
+    <Content Include="fonts\OpenSans-Light-webfont.eot" />
+    <Content Include="fonts\OpenSans-Light-webfont.ttf" />
+    <Content Include="fonts\OpenSans-Light-webfont.woff" />
+    <Content Include="fonts\OpenSans-LightItalic-webfont.eot" />
+    <Content Include="fonts\OpenSans-LightItalic-webfont.ttf" />
+    <Content Include="fonts\OpenSans-LightItalic-webfont.woff" />
+    <Content Include="fonts\OpenSans-Regular-webfont.eot" />
+    <Content Include="fonts\OpenSans-Regular-webfont.ttf" />
+    <Content Include="fonts\OpenSans-Regular-webfont.woff" />
+    <Content Include="fonts\OpenSans-Semibold-webfont.eot" />
+    <Content Include="fonts\OpenSans-Semibold-webfont.ttf" />
+    <Content Include="fonts\OpenSans-Semibold-webfont.woff" />
+    <Content Include="fonts\OpenSans-SemiboldItalic-webfont.eot" />
+    <Content Include="fonts\OpenSans-SemiboldItalic-webfont.ttf" />
+    <Content Include="fonts\OpenSans-SemiboldItalic-webfont.woff" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.1.js" />
     <Content Include="Scripts\jquery-2.1.1.min.js" />
@@ -324,12 +371,13 @@
       <Project>{b683a4eb-9ca0-4f87-93ca-4badd8bd56ce}</Project>
       <Name>SeemplesTools.HtmlBuilders</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SeemplestCloud.Resources\SeemplestCloud.Resources.csproj">
+    <ProjectReference Include="..\SeemplestCloud.Resources\SeemplestCloud.Resources.csproj">
       <Project>{154a34a9-0548-4c1f-adbf-28ae871db03c}</Project>
       <Name>SeemplestCloud.Resources</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="app\rootInit.ng.ts" />
     <TypeScriptCompile Include="Scripts\typings\angular-ui-bootstrap\angular-ui-bootstrap.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-animate.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-cookies.d.ts" />

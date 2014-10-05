@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Default</Configuration>
+    <ProjectGuid>{7A9BE90A-FD2F-439E-BFC0-0A63D64D8F31}</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Default' ">
+    <OutputPath>bin\Default\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="0.1\Metadata.sql" />
+    <Content Include="0.1\Schema\References\FK_BasePackageOfContent.sql" />
+    <Content Include="0.1\Schema\References\FK_DefaultOwnerRole.sql" />
+    <Content Include="0.1\Schema\References\FK_DefaultUserRole.sql" />
+    <Content Include="0.1\Schema\References\FK_DefinitionOfServiceParameter.sql" />
+    <Content Include="0.1\Schema\References\FK_DefinitionOfServiceRole.sql" />
+    <Content Include="0.1\Schema\References\FK_PackageOfTemplateParameter.sql" />
+    <Content Include="0.1\Schema\References\FK_ServiceOfRole.sql" />
+    <Content Include="0.1\Schema\References\FK_ServiceParameterOfTemplate.sql" />
+    <Content Include="0.1\Schema\References\FK_ServiceUser.sql" />
+    <Content Include="0.1\Schema\References\FK_SubscriptionOfContent.sql" />
+    <Content Include="0.1\Schema\References\FK_SubscriptionOfOwner.sql" />
+    <Content Include="0.1\Schema\References\FK_SubscriptionOfParameterValue.sql" />
+    <Content Include="0.1\Schema\References\FK_SubscriptionOfUser.sql" />
+    <Content Include="0.1\Schema\References\FK_UpgradeOfPackage.sql" />
+    <Content Include="0.1\Schema\References\FK_UserOfAccount.sql" />
+    <Content Include="0.1\Schema\References\FK_UserOfInvitation.sql" />
+    <Content Include="0.1\Schema\References\FK_UserOfOwner.sql" />
+    <Content Include="0.1\Schema\References\FK_UserOfRole.sql" />
+    <Content Include="0.1\Schema\References\ServiceOfParameterValue.sql" />
+    <Content Include="0.1\Schema\Tables\ArchivedTable.sql" />
+    <Content Include="0.1\Schema\Tables\PackageTemplate.sql" />
+    <Content Include="0.1\Schema\Tables\PackageTemplateParameter.sql" />
+    <Content Include="0.1\Schema\Tables\ServiceDefinition.sql" />
+    <Content Include="0.1\Schema\Tables\ServiceParameter.sql" />
+    <Content Include="0.1\Schema\Tables\ServiceRole.sql" />
+    <Content Include="0.1\Schema\Tables\ServiceUser.sql" />
+    <Content Include="0.1\Schema\Tables\Subscription.sql" />
+    <Content Include="0.1\Schema\Tables\SubscriptionContent.sql" />
+    <Content Include="0.1\Schema\Tables\SubscriptionOwner.sql" />
+    <Content Include="0.1\Schema\Tables\SubscriptionParameterValue.sql" />
+    <Content Include="0.1\Schema\Tables\User.sql" />
+    <Content Include="0.1\Schema\Tables\UserAccount.sql" />
+    <Content Include="0.1\Schema\Tables\UserInvitation.sql" />
+    <Content Include="0.1\Schema\Tables\UserRole.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="0.1\Data\" />
+    <Folder Include="0.1\Schema\Objects\" />
+    <Folder Include="0.1\TestData\" />
+  </ItemGroup>
+  <UsingTask AssemblyFile="..\..\..\Deployment\MSBuildTasks\MSBuild.Unicopy.dll" TaskName="MSBuild.Unicopy" />
+  <Target Name="Build">
+    <Unicopy SeparatorText="--&#xD;&#xA;&#xD;&#xA;GO&#xD;&#xA;&#xD;&#xA;&#xD;\n" SourceFiles="0.1\Metadata.sql; 0.1\Schema\Tables\*.sql; 0.1\Schema\References\*.sql; 0.1\Schema\Objects\*.sql; 0.1\Data\*.sql" DestinationFile="$(OutputPath)SeemplestCloud_0.1.sql" />
+    <Unicopy SeparatorText="--&#xD;&#xA;&#xD;&#xA;GO&#xD;&#xA;&#xD;&#xA;&#xD;\n" SourceFiles="0.1\TestData\*.sql" DestinationFile="$(OutputPath)SeemplestCloud_0.1_testdata.sql" />
+  </Target>
+  <Target Name="Clean">
+    <ItemGroup>
+      <FilesToDelete Include="$(OutputPath)\MsSqlServer\SeemplestCloud_*.sql" />
+    </ItemGroup>
+    <Delete Files="@(FilesToDelete)" TreatErrorsAsWarnings="true" />
+  </Target>
+  <Target Name="Rebuild" DependsOnTargets="Clean; Build" />
+</Project>
