@@ -7,7 +7,15 @@
      * called before initializing any other app component
      */
     export function initAngularApp() {
-        Main.appModule = angular.module(appModuleName, ['ngRoute', 'ui.bootstrap']);
+        Main.appModule = angular.module(appModuleName, [
+            // --- 3rd party packages
+            'ngRoute',
+            'ui.bootstrap',
+            
+            // --- App-specific packages
+            'Core',
+            'Subscription'
+        ]);
     }
 }
 

@@ -105,5 +105,7 @@ namespace SeemplestCloud.WebClient
         {
             return new ApplicationSignInManager(context.GetUserManager<ApplicationUserManager>(), context.Authentication);
         }
+
+
     }
 }

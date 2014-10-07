@@ -7,7 +7,10 @@
     @Html.AntiForgeryToken()
 
     <ul class="nav navbar-nav navbar-right">
-        @Html.Partial("_LanguagesPartial")
+        @if (ViewBag.DisableLanguageChoice == null || ViewBag.DisableLanguageChoice == false)
+        {
+            Html.Partial("_LanguagesPartial");
+        }
         <li>
             @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
         </li>
@@ -19,7 +22,7 @@ else
 {
     <ul class="nav navbar-nav navbar-right">
         @Html.Partial("_LanguagesPartial")
-        <li>@Html.ActionLink(Resources.HomeMenu_Register, "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
-        <li>@Html.ActionLink(Resources.HomeMenu_Login, "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+        <li ng-class="{active: isActive('SignUp')}">@Html.ActionLink(Resources.HomeMenu_Register, "SignUpIndex", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+        <li ng-class="{active: isActive('Login')}">@Html.ActionLink(Resources.HomeMenu_Login, "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
     </ul>
 }

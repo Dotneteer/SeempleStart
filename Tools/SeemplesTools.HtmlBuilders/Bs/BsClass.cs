@@ -32,6 +32,7 @@ namespace SeemplesTools.HtmlBuilders.Bs
             public const string CheckBox = "checkbox";
             public const string InputGroup = "input-group";
             public const string InputGroupAddOn = "input-group-addon";
+            public const string Help = "help-block";
         }
 
         public const string Button = "btn";

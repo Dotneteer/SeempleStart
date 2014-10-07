@@ -1,13 +1,13 @@
 ﻿<!DOCTYPE html>
-<html>
+<html ng-app="SeemplestCloud">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <title>@ViewBag.Title</title>
     @Styles.Render("~/Content/css")
 
 </head>
-<body style="margin-top:50px;">
+<body ng-controller="CurrentSpotCtrl" style="margin-top:50px;">
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -23,7 +23,38 @@
             </div>
         </div>
     </div>
-    @RenderBody()
+    
+    @*
+        ViewBag.DisableOuterContainer flag signs that the body renders its
+        own outer Bootstrap container
+    *@
+    @if (ViewBag.DisableOuterContainer != null && ViewBag.DisableOuterContainer == true)
+    {
+        @RenderBody()
+    }
+    else
+    {
+        // --- ViewBag.DisableCurrentSpot flag signs that the body does not require
+        // --- its own current spot section
+        if (ViewBag.DisableCurrentSpot == null || ViewBag.DisableCurrentSpot == false)
+        {
+            // --- Because the navigation menu is fixed to the top, we need a
+            // --- 50px top margin
+            <div style="margin-top: 50px">
+                <current-spot></current-spot>
+            </div>
+            <div class="container">
+                @RenderBody()
+            </div>
+        }
+        else
+        {
+            // --- Her we need the extra top margin and bottom padding, too
+            <div class="container" style="margin-top: 50px;">
+                @RenderBody()
+            </div>
+        }
+    }
 
     @Scripts.Render("~/bundles/core")
     @RenderSection("ThirdPartyScripts", required: false)

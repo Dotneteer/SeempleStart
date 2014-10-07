@@ -115,7 +115,7 @@ namespace SeemplestCloud.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Regisztráció.
+        ///   Looks up a localized string similar to Feliratkozás.
         /// </summary>
         public static string HomeMenu_Register {
             get {
@@ -264,6 +264,87 @@ namespace SeemplestCloud.Resources {
         public static string Package_Small_Title {
             get {
                 return ResourceManager.GetString("Package_Small_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Feliratkozás a SeemplestCloud szolgáltatásra.
+        /// </summary>
+        public static string SignUp_CurrentSpot {
+            get {
+                return ResourceManager.GetString("SignUp_CurrentSpot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Regisztrálhatod magad az alábbi nyomógombokon jelölt külső hitelesítési szolgáltatókon keresztül. Ebben az esetben csak a felhasználói azonosítódat tároljuk, jelszavadat nem. A későbbiekben az itt használt hitelesítési szolgáltatón keresztül jelentkezhetsz be felhasználóként a rendszerbe..
+        /// </summary>
+        public static string SignUp_External_Description {
+            get {
+                return ResourceManager.GetString("SignUp_External_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A SeemplestCloud szolgáltatások használatához regisztrálnod kell magad..
+        /// </summary>
+        public static string SignUp_FrontHeader {
+            get {
+                return ResourceManager.GetString("SignUp_FrontHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Regisztráció e-mail címmel és jelszóval.
+        /// </summary>
+        public static string SignUp_Internal_CurrentSpot {
+            get {
+                return ResourceManager.GetString("SignUp_Internal_CurrentSpot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add meg az &lt;strong&gt;e-mail címedet&lt;/strong&gt;, &lt;strong&gt;felhasználói nevedet&lt;/strong&gt; és &lt;strong&gt;jelszavadat&lt;/strong&gt; a regisztrációhoz!.
+        /// </summary>
+        public static string SignUp_Internal_Description {
+            get {
+                return ResourceManager.GetString("SignUp_Internal_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email címem és jelszavam megadásával iratkozom fel &amp;raquo;.
+        /// </summary>
+        public static string SignUp_Local_Button {
+            get {
+                return ResourceManager.GetString("SignUp_Local_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email címed és egy jelszó megadásával regisztrálhatod magad felhasználóként. Jelszavadat egyirányú titkosítással tároljuk, annak eredeti formáját nem ismerjük, és nem is tudjuk elérni. A későbbiekben ezzel a felhasználói információval kell bejelentkezned..
+        /// </summary>
+        public static string SignUp_Local_Description {
+            get {
+                return ResourceManager.GetString("SignUp_Local_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sikeres feliratkozás.
+        /// </summary>
+        public static string SignUpConfirmation_CurrentSpot {
+            get {
+                return ResourceManager.GetString("SignUpConfirmation_CurrentSpot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sikeres feliratkozásoddal nemcsak felhasználóként regisztráltunk a rendszerben, hanem egyúttal gazdája is vagy egy előfizetésnek, és a későbbiekben további felhasználókat is meghívhatsz. Adj nevet az előfizetésnek (ez most a regisztráció során megadott e-mail cím), és válaszd ki azt a csomagtípust, amellyel a szolgáltatást szeretnéd igénybe venni. Ezt a későbbiekben az éles használat során megváltoztathatod..
+        /// </summary>
+        public static string SignUpConfirmation_Message {
+            get {
+                return ResourceManager.GetString("SignUpConfirmation_Message", resourceCulture);
             }
         }
     }

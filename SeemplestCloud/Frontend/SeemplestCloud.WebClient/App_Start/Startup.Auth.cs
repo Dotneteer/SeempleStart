@@ -54,15 +54,15 @@ namespace SeemplestCloud.WebClient
             //   consumerKey: "",
             //   consumerSecret: "");
 
-            //app.UseFacebookAuthentication(
-            //   appId: "",
-            //   appSecret: "");
+            app.UseFacebookAuthentication(
+                appId: "164359940298094",
+                appSecret: "9bcae9eaf57bfecccdda61ebf47d4e0b");
 
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions
+            {
+                ClientId = "249525440004-qcsnok7bq6p2ktk37t565vmbgjfpb1af.apps.googleusercontent.com",
+                ClientSecret = "Y9Plo7hyNfnwJCHHr_j9U2Hi"
+            });
         }
     }
 }

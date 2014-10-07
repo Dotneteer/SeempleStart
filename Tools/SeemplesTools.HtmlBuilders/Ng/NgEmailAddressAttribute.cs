@@ -18,7 +18,6 @@ namespace SeemplesTools.HtmlBuilders.Ng
         public NgEmailAddressAttribute()
             : base(DataType.EmailAddress)
         {
-            ErrorMessage = "Invalid email address";
         }
 
         /// <summary>

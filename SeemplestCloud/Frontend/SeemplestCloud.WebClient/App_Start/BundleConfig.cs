@@ -15,20 +15,24 @@ namespace SeemplestCloud.WebClient
                 "~/Scripts/jquery-{version}.js",
                 "~/Scripts/angular.js",
                 "~/Scripts/angular-route.js",
-                "~/Scripts/bootstrap.js",
                 "~/Scripts/angular-ui/ui-bootstrap.js",
                 "~/Scripts/angular-ui/ui-bootstrap-tpls.js",
-                "~/Scripts/moment.js",
-                "~/Scripts/bootstrap-opt-in.js"
+                "~/Scripts/moment.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/appInit").Include(
-                "~/app/rootInit.ng.js"
+                "~/app/core/core.types.js",
+                "~/app/core/core.init.ng.js",
+                "~/app/core/core.directives.ng.js",
+                "~/app/core/core.filters.ng.js",
+                "~/app/core/currentSpot.ng.js",
+                "~/app/subscription/subscription.init.ng.js",
+                "~/app/root.init.ng.js"
                 ));
 
             // Set EnableOptimizations to false for debugging. For more information,
             // visit http://go.microsoft.com/fwlink/?LinkId=301862
-            BundleTable.EnableOptimizations = true;
+            BundleTable.EnableOptimizations = false;
         }
     }
 }

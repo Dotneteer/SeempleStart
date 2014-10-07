@@ -136,7 +136,7 @@
     <value>Login</value>
   </data>
   <data name="HomeMenu_Register" xml:space="preserve">
-    <value>Register</value>
+    <value>Sign up</value>
   </data>
   <data name="Package_Free_MaxInvoinces" xml:space="preserve">
     <value>Up to 10 invoices/month</value>
@@ -185,5 +185,20 @@
   </data>
   <data name="Package_Small_Title" xml:space="preserve">
     <value>Small</value>
+  </data>
+  <data name="SignUp_CurrentSpot" xml:space="preserve">
+    <value>Sign up for SeemplestCloud services</value>
+  </data>
+  <data name="SignUp_External_Description" xml:space="preserve">
+    <value>Register yourself with one of the authentication providers below. In this case, only your user ID will be stored in our system, but not your password. Later, you will be able to use the very same authentication provider to log in to the app.</value>
+  </data>
+  <data name="SignUp_FrontHeader" xml:space="preserve">
+    <value>You need to register yourself in order to use SeemplestCloud.</value>
+  </data>
+  <data name="SignUp_Local_Button" xml:space="preserve">
+    <value>Sign up with providing email address and password &amp;raquo;</value>
+  </data>
+  <data name="SignUp_Local_Description" xml:space="preserve">
+    <value>Register youself with providing a user ID and a password. Your password will be stored with one-direction encryption, its original form cannot be retrieved. Later you can use the specified user ID and password to log in to the app.</value>
   </data>
 </root>

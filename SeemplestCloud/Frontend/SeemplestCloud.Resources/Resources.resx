@@ -136,7 +136,7 @@
     <value>Bejelentkezés</value>
   </data>
   <data name="HomeMenu_Register" xml:space="preserve">
-    <value>Regisztráció</value>
+    <value>Feliratkozás</value>
   </data>
   <data name="Package_Free_MaxInvoinces" xml:space="preserve">
     <value>Max. havi 10 számla</value>
@@ -185,5 +185,32 @@
   </data>
   <data name="Package_Small_Title" xml:space="preserve">
     <value>Kezdő</value>
+  </data>
+  <data name="SignUpConfirmation_CurrentSpot" xml:space="preserve">
+    <value>Sikeres feliratkozás</value>
+  </data>
+  <data name="SignUpConfirmation_Message" xml:space="preserve">
+    <value>Sikeres feliratkozásoddal nemcsak felhasználóként regisztráltunk a rendszerben, hanem egyúttal gazdája is vagy egy előfizetésnek, és a későbbiekben további felhasználókat is meghívhatsz. Adj nevet az előfizetésnek (ez most a regisztráció során megadott e-mail cím), és válaszd ki azt a csomagtípust, amellyel a szolgáltatást szeretnéd igénybe venni. Ezt a későbbiekben az éles használat során megváltoztathatod.</value>
+  </data>
+  <data name="SignUp_CurrentSpot" xml:space="preserve">
+    <value>Feliratkozás a SeemplestCloud szolgáltatásra</value>
+  </data>
+  <data name="SignUp_External_Description" xml:space="preserve">
+    <value>Regisztrálhatod magad az alábbi nyomógombokon jelölt külső hitelesítési szolgáltatókon keresztül. Ebben az esetben csak a felhasználói azonosítódat tároljuk, jelszavadat nem. A későbbiekben az itt használt hitelesítési szolgáltatón keresztül jelentkezhetsz be felhasználóként a rendszerbe.</value>
+  </data>
+  <data name="SignUp_FrontHeader" xml:space="preserve">
+    <value>A SeemplestCloud szolgáltatások használatához regisztrálnod kell magad.</value>
+  </data>
+  <data name="SignUp_Internal_CurrentSpot" xml:space="preserve">
+    <value>Regisztráció e-mail címmel és jelszóval</value>
+  </data>
+  <data name="SignUp_Internal_Description" xml:space="preserve">
+    <value>Add meg az &lt;strong&gt;e-mail címedet&lt;/strong&gt;, &lt;strong&gt;felhasználói nevedet&lt;/strong&gt; és &lt;strong&gt;jelszavadat&lt;/strong&gt; a regisztrációhoz!</value>
+  </data>
+  <data name="SignUp_Local_Button" xml:space="preserve">
+    <value>Email címem és jelszavam megadásával iratkozom fel &amp;raquo;</value>
+  </data>
+  <data name="SignUp_Local_Description" xml:space="preserve">
+    <value>Email címed és egy jelszó megadásával regisztrálhatod magad felhasználóként. Jelszavadat egyirányú titkosítással tároljuk, annak eredeti formáját nem ismerjük, és nem is tudjuk elérni. A későbbiekben ezzel a felhasználói információval kell bejelentkezned.</value>
   </data>
 </root>

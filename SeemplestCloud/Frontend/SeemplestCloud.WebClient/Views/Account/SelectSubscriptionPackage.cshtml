@@ -1,0 +1,74 @@
+﻿@using SeemplesTools.HtmlBuilders.Bs
+@using SeemplesTools.HtmlBuilders.Infrastructure
+@using SeemplesTools.HtmlBuilders.Ng
+@using SeemplesTools.HtmlBuilders.NgBsMvc
+@model SubscriptionPackageViewModel
+<div class="row" data-active-menu="SignUp" data-active-title="@Resources.SignUpConfirmation_CurrentSpot" data-no-language-choice>
+    <div class="col-md-12" ng-controller="PackageSelectionCtrl" ng-init="selectPackage('Trial')">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h4>Válaszd ki az előfizetői csomagot!</h4>
+            </div>
+            <div class="panel-body">
+                @Html.Raw(Resources.SignUpConfirmation_Message)
+                @using (var f = Html.Begin(new NgBsMvcForm("subscriptionForm", "SaveSubscriptionPackage", "Account").Horizontal().LabelMd(3).InputMd(7)))
+                {
+                    <div class="row" style="margin-bottom: 24px;">
+                        <div class="col-md-3">
+                            <div class="subscription-option" ng-class="{'subscription-option-selected': isSelected('Trial')}"
+                                 ng-click="selectPackage('Trial')">
+                                <h3>@Resources.Package_Free_Title</h3>
+                                <ul class="list-group">
+                                    <li class="list-group-item list-group-item-success">@Resources.Package_Free_Price</li>
+                                    <li class="list-group-item">@Resources.Package_Free_MaxUser</li>
+                                    <li class="list-group-item">@Resources.Package_Free_MaxInvoinces</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="subscription-option" ng-class="{'subscription-option-selected': isSelected('Micro')}"
+                                 ng-click="selectPackage('Micro')">
+                                <h3>@Resources.Package_Micro_Title</h3>
+                                <ul class="list-group">
+                                    <li class="list-group-item list-group-item-success">@Resources.Package_Micro_Price</li>
+                                    <li class="list-group-item">@Resources.Package_Micro_MaxUser</li>
+                                    <li class="list-group-item">@Resources.Package_Micro_MaxInvoices</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="subscription-option" ng-class="{'subscription-option-selected': isSelected('Small')}"
+                                 ng-click="selectPackage('Small')">
+                                <h3>@Resources.Package_Small_Title</h3>
+                                <ul class="list-group">
+                                    <li class="list-group-item list-group-item-success">@Resources.Package_Small_Price</li>
+                                    <li class="list-group-item">@Resources.Package_Small_MaxUser</li>
+                                    <li class="list-group-item">@Resources.Package_Small_MaxInvoices</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="subscription-option" ng-class="{'subscription-option-selected': isSelected('Premium')}"
+                                 ng-click="selectPackage('Premium')">
+                                <h3>@Resources.Package_Premium_Title</h3>
+                                <ul class="list-group">
+                                    <li class="list-group-item list-group-item-success">@Resources.Package_Premium_Price</li>
+                                    <li class="list-group-item">@Resources.Package_Premium_MaxUser</li>
+                                    <li class="list-group-item">@Resources.Package_Premium_MaxInvoices</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="text" name="PackageCode" id="PackageCode" ng-model="model.PackageCode" style="display:none"/>
+                    @Html.AntiForgeryToken()
+                    @Html.BsDismissibleValidationSummary()
+
+                    @f.InputFor(m => m.SubscriptionName, autoFocus: AutoFocus.OnFormValid, validate: ValidationOption.WhenDirty)
+                    @f.InputFor(m => m.PrimaryEmail, validate: ValidationOption.WhenDirty)
+                    @f.SubmitButton("Előfizetés", BsButtonTheme.Primary)
+                }
+            </div>
+        </div>
+    </div>
+</div>

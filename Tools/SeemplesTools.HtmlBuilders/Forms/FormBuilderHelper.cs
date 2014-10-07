@@ -78,6 +78,17 @@ namespace SeemplesTools.HtmlBuilders.Forms
                 // --- Assemble the elements
                 formGroup.AddChild(label).AddChild(inputDiv);
                 inputDiv.AddChild(input);
+
+                // --- Add optional help text
+                if (!string.IsNullOrEmpty(modelMetadata.Description))
+                {
+                    var helpText = new BsHtmlElement(HtmlTag.Span);
+                    helpText.CssClass(BsClass.Control.Help);
+                    helpText.AddChild(new HtmlText(modelMetadata.Description));
+                    inputDiv.AddChild(helpText);
+                }
+
+                // --- Create validation tags
                 AddValidationTags(inputDiv, modelMetadata, validationOption);
             }
             else if (inputTagType == InputTagType.CheckBox)
@@ -193,7 +204,8 @@ namespace SeemplesTools.HtmlBuilders.Forms
                             ? "{0}.{1}.$error.{2}"
                             : "{0}.{1}.$error.{2} && {0}.{1}.$dirty",
                         _formBuilder.BsForm.FormName, modelMetadata.PropertyName, key))
-                    .Attr(HtmlAttr.Title, string.Format(attr.ErrorMessage, modelMetadata.DisplayName));
+                    .Attr(BsTag.Tooltip, string.Format(attr.ErrorMessage, modelMetadata.DisplayName))
+                    .Attr(BsTag.TooltipPlacement, "left");
                 container.AddChild(valTag);
             }
         }

@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="Bs\BsButtonTheme.cs" />
     <Compile Include="Bs\BsIconAlignment.cs" />
+    <Compile Include="Bs\BsTag.cs" />
     <Compile Include="Forms\FormBuilderHelper.cs" />
     <Compile Include="Forms\IBsForm.cs" />
     <Compile Include="Forms\IFormBuilder.cs" />

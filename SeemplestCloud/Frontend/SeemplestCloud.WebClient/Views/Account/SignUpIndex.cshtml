@@ -1,0 +1,56 @@
+﻿@using Microsoft.Owin.Security
+@{
+    ViewBag.Title = "Sign Up";
+}
+
+<div class="row" data-active-menu="SignUp" data-active-title="@Resources.SignUp_CurrentSpot" data-no-language-choice>
+    <div class="col-md-10 col-md-offset-1">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h4>@Resources.SignUp_FrontHeader</h4>
+            </div>
+            <div class="panel-body">
+                <div style="margin-bottom: 24px;">
+                    <p>@Resources.SignUp_Local_Description</p>
+                    <div style="margin-top: 24px;">
+                        <a class="btn btn-primary" href=@Url.Action("SignUp")>
+                            @Html.Raw(Resources.SignUp_Local_Button)
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <p>@Resources.SignUp_External_Description</p>
+                    <div style="margin-top: 24px;">
+                        @{
+                            var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
+                            var authenticationDescriptions = loginProviders as AuthenticationDescription[] ?? loginProviders.ToArray();
+                            if (authenticationDescriptions.Any())
+                            {
+                                using (Html.BeginForm("ExternalLogin", "Account" /* ,new { Model.ReturnUrl } */))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <div id="socialLoginList">
+                                        <p>
+                                            @foreach (var p in authenticationDescriptions)
+                                            {
+                                                <button type="submit" class="btn loginprovider" id="@p.AuthenticationType" name="provider"
+                                                        value="@p.AuthenticationType"
+                                                        data-toggle="tooltip"
+                                                        title="Log in using your @p.Caption account" style="margin-right: 8px;">
+                                                    <img width="24" height="24" src="~/Content/Images/LoginProviders/@(p.AuthenticationType).png"
+                                                         style="margin-right: 8px;"
+                                                         alt="@p.AuthenticationType" />
+                                                    @p.AuthenticationType
+                                                </button>
+                                            }
+                                        </p>
+                                    </div>
+                                }
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

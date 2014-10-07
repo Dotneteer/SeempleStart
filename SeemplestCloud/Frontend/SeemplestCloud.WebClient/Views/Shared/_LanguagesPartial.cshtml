@@ -1,5 +1,5 @@
 ﻿@using SeemplestCloud.WebClient.Infrastructure
-<li class="dropdown">
+<li class="dropdown" ng-show="isLanguageChoiceEnabled()">
     @{
         var currentCulture = ImplementedCultures.GetCurrentCultureDescriptor();
         <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="padding-top: 10px; padding-bottom: 8px">
@@ -7,18 +7,18 @@
                  width="32" height="32" style="" />
             <span class="caret"></span>
         </a>
-    <ul class="dropdown-menu" role="menu">
-        @foreach (var culture in ImplementedCultures.GetCultureDescriptors())
-        {
-            var classActive = currentCulture.Code == culture.Code ? "active" : "";
-            <li class="@classActive">
-                <a href="@Url.Action("SetLanguage", "Language",
-                    new { code = culture.Code, returnLink = Url.Action("Index", "Home") })">
-                <img src="~/Content/Images/Flags/@culture.IconName" alt="@culture.Name"
-                width="32" height="32" />&nbsp;&nbsp;@culture.Name
-                </a>
-            </li>
-        }
-    </ul>
-}
+        <ul class="dropdown-menu" role="menu">
+            @foreach (var culture in ImplementedCultures.GetCultureDescriptors())
+            {
+                var classActive = currentCulture.Code == culture.Code ? "active" : "";
+                <li class="@classActive">
+                    <a href="@Url.Action("SetLanguage", "Language",
+                    new { code = culture.Code, returnLink = Request.Url })">
+                        <img src="~/Content/Images/Flags/@culture.IconName" alt="@culture.Name"
+                             width="32" height="32" />&nbsp;&nbsp;@culture.Name
+                        </a>
+                    </li>
+            }
+        </ul>
+    }
 </li>
