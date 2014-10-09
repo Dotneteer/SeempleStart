@@ -1,0 +1,423 @@
+﻿<%-- 
+    This template generates a data operation interfaces and objects
+--%>
+<%@ Template Language="C#" TargetLanguage="C#" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="1. Context"
+	Description="Table that the data record should be based on." %>
+<%@ Property Name="OperationName" Type="System.String" Category="1. Context"
+	Description="The name of the operation. Leave empty to use the table name." Optional="True" %>
+<%@ Property Name="GenerateCRUD" Type="System.String" Category="1. Context"
+	Description="Operations to create. Leave empty for all operations, otherwise enumerate the letters for operations to generate, such as 'RU' " Optional="True" %>
+<%@ Property Name="GenerateGetAll" Type="System.Boolean" Category="1. Context"
+	Description="Should generate a GetAll operation?" Default="True" %>
+<%@ Property Name="GenerateGetByAK" Type="System.Boolean" Category="1. Context"
+	Description="Should generate GetBy operations for alternate keys?" Default="True" %>
+<%@ Property Name="Namespace" Type="System.String" Category="2. Target"
+	Description="Target namespace" %>
+<%@ Property Name="IsPartial" Type="System.Boolean" Category="2. Target"
+	Description="Should be a partial definition?" %>
+    
+<%-- Assembly References --%>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Assembly Name="System.Data" %>
+<%-- Namespace Imports --%>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="CodeSmith.CustomProperties" %>
+<%@ Import Namespace="CodeSmith.BaseTemplates" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Text.RegularExpressions" %>
+<%@ Import Namespace="System.Collections.Generic" %>
+<%@ Import Namespace="System.Linq" %>
+<%@ Import Namespace="System.Text" %>
+    
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Seemplest.Core.DataAccess.DataServices;
+
+namespace <%= Namespace %>
+{
+<%
+    var baseName = (String.IsNullOrWhiteSpace(OperationName) ? SourceTable.Name : OperationName) + "DataOperations";
+%>
+    // --- This interface has been automatically generated from the database schema
+    // --- <%= DateTime.Now %>
+    public interface I<%= baseName %>: IDataAccessOperation
+    {
+<% 
+    if (GenerateGetAll)
+    {
+%>        
+        /// <summary>
+        /// Gets all <%= SourceTable.Name %> records from the database
+        /// </summary>
+        /// <returns>
+        /// List of <%= SourceTable.Name %> records
+        /// </returns>
+        Task<List<<%= SourceTable.Name %>Record>> GetAll<%= SourceTable.Name %>Async();
+<%
+    }
+    if (string.IsNullOrEmpty(GenerateCRUD) || GenerateCRUD.IndexOf("R", StringComparison.CurrentCultureIgnoreCase) >= 0)
+    {
+        
+%>
+       
+        /// <summary>
+        /// Gets a <%= SourceTable.Name %> record by its primary key values
+        /// </summary>
+<%
+        foreach (var column in SourceTable.PrimaryKey.MemberColumns)
+        {
+%>
+        /// <param name="<%=CamelCase(column.Name) %>"><%=column.Name %> key value</param>
+<%
+        }
+%>
+        /// <returns>The record if found; otherwise, null</returns>
+        Task<<%= SourceTable.Name %>Record> Get<%= SourceTable.Name %>ByIdAsync(<%= GetArgumentList(SourceTable.PrimaryKey.MemberColumns) %>);
+<%
+    }
+
+    if (GenerateGetByAK)
+    {
+        foreach (var ak in SourceTable.Indexes)
+        {
+            if (ak.IsUnique && !ak.IsPrimaryKey)
+            {
+                var keyName = CutPrefixFromName(ak.Name);
+%>
+        
+        /// <summary>
+        /// Gets a <%= SourceTable.Name %> record by its "<%= ak.Name %>" alternate key values
+        /// </summary>
+        Task<<%= SourceTable.Name %>Record> Get<%= SourceTable.Name %>By<%= keyName %>Async(<%= GetArgumentList(ak.MemberColumns) %>);
+<%
+            }
+        }
+    }
+
+    if (string.IsNullOrEmpty(GenerateCRUD) || GenerateCRUD.IndexOf("C", StringComparison.CurrentCultureIgnoreCase) >= 0)
+    {
+        
+%>
+       
+        /// <summary>
+        /// Inserts a <%= SourceTable.Name %> record into the database
+        /// </summary>
+        /// <param name="record">Record to insert</param>
+        Task Insert<%= SourceTable.Name %>Async(<%= SourceTable.Name %>Record record);
+<%
+    }
+
+    if (string.IsNullOrEmpty(GenerateCRUD) || GenerateCRUD.IndexOf("U", StringComparison.CurrentCultureIgnoreCase) >= 0)
+    {
+        
+%>
+       
+        /// <summary>
+        /// Updates a <%= SourceTable.Name %> record in the database
+        /// </summary>
+        /// <param name="record">Record to update</param>
+        Task Update<%= SourceTable.Name %>Async(<%= SourceTable.Name %>Record record);
+<%
+    }
+
+    if (string.IsNullOrEmpty(GenerateCRUD) || GenerateCRUD.IndexOf("D", StringComparison.CurrentCultureIgnoreCase) >= 0)
+    {
+%>
+       
+        /// <summary>
+        /// Deletes a <%= SourceTable.Name %> the specidfied record
+        /// </summary>
+<%
+        foreach (var column in SourceTable.PrimaryKey.MemberColumns)
+        {
+%>
+        /// <param name="<%=CamelCase(column.Name) %>"><%=column.Name %> key value</param>
+<%
+        }
+%>
+        Task Delete<%= SourceTable.Name %>Async(<%= GetArgumentList(SourceTable.PrimaryKey.MemberColumns) %>);
+<%
+    }
+%>        
+    }
+    
+    // --- This interface has been automatically generated from the database schema
+    // --- <%= DateTime.Now %>
+    public class <%= baseName %>: SqlDataAccessOperationBase, I<%= baseName %>
+    {
+        /// <summary>
+        /// Initializes the object with the specified connection information
+        /// </summary>
+        /// <param name="connectionOrName">Connection information</param>
+        public <%= baseName %>(string connectionOrName) : base(connectionOrName)
+        {
+        }
+<%
+    if (GenerateGetAll)
+    {
+%>        
+
+        /// <summary>
+        /// Gets all <%= SourceTable.Name %> records from the database
+        /// </summary>
+        /// <returns>
+        /// List of <%= SourceTable.Name %> records
+        /// </returns>
+        public async Task<List<<%= SourceTable.Name %>Record>> GetAll<%= SourceTable.Name %>Async()
+        {
+            return await OperationAsync(ctx => ctx.FetchAsync<<%= SourceTable.Name %>Record>());
+        }
+<%
+    }
+    if (string.IsNullOrEmpty(GenerateCRUD) || GenerateCRUD.IndexOf("R", StringComparison.CurrentCultureIgnoreCase) >= 0)
+    {
+        
+%>
+       
+        /// <summary>
+        /// Gets a <%= SourceTable.Name %> record by its primary key values
+        /// </summary>
+<%
+        foreach (var column in SourceTable.PrimaryKey.MemberColumns)
+        {
+%>
+        /// <param name="<%=CamelCase(column.Name) %>"><%=column.Name %> key value</param>
+<%
+        }
+%>
+        /// <returns>The record if found; otherwise, null</returns>
+        public async Task<<%= SourceTable.Name %>Record> Get<%= SourceTable.Name %>ByIdAsync(<%= GetArgumentList(SourceTable.PrimaryKey.MemberColumns) %>)
+        {
+            return await OperationAsync(ctx => ctx.FirstOrDefaultAsync<<%= SourceTable.Name %>Record>(
+                "where <%= GetConditionList(SourceTable.PrimaryKey.MemberColumns) %>", 
+                <%= GetParameterList(SourceTable.PrimaryKey.MemberColumns) %>));
+        }
+<%
+    }
+
+    if (GenerateGetByAK)
+    {
+        foreach (var ak in SourceTable.Indexes)
+        {
+            if (ak.IsUnique && !ak.IsPrimaryKey)
+            {
+                var keyName = CutPrefixFromName(ak.Name);
+%>
+        
+        /// <summary>
+        /// Gets a <%= SourceTable.Name %> record by its "<%= ak.Name %>" alternate key values
+        /// </summary>
+        public async Task<<%= SourceTable.Name %>Record> Get<%= SourceTable.Name %>By<%= keyName %>Async(<%= GetArgumentList(ak.MemberColumns) %>)
+        {
+            return await OperationAsync(ctx => ctx.FirstOrDefaultAsync<<%= SourceTable.Name %>Record>(
+                "where <%= GetConditionList(ak.MemberColumns) %>", 
+                <%= GetParameterList(ak.MemberColumns) %>));
+        }
+<%
+            }
+        }
+    }
+
+    if (string.IsNullOrEmpty(GenerateCRUD) || GenerateCRUD.IndexOf("C", StringComparison.CurrentCultureIgnoreCase) >= 0)
+    {
+        
+%>
+       
+        /// <summary>
+        /// Inserts a <%= SourceTable.Name %> record into the database
+        /// </summary>
+        /// <param name="record">Record to insert</param>
+        public async Task Insert<%= SourceTable.Name %>Async(<%= SourceTable.Name %>Record record)
+        {
+            await OperationAsync(ctx => ctx.InsertAsync(record));
+        }
+<%
+    }
+
+    if (string.IsNullOrEmpty(GenerateCRUD) || GenerateCRUD.IndexOf("U", StringComparison.CurrentCultureIgnoreCase) >= 0)
+    {
+        
+%>
+       
+        /// <summary>
+        /// Updates a <%= SourceTable.Name %> record in the database
+        /// </summary>
+        /// <param name="record">Record to update</param>
+        public async Task Update<%= SourceTable.Name %>Async(<%= SourceTable.Name %>Record record)
+        {
+            await OperationAsync(ctx => ctx.UpdateAsync(record));
+        }
+<%
+    }
+
+    if (string.IsNullOrEmpty(GenerateCRUD) || GenerateCRUD.IndexOf("D", StringComparison.CurrentCultureIgnoreCase) >= 0)
+    {
+%>
+       
+        /// <summary>
+        /// Deletes a <%= SourceTable.Name %> the specidfied record
+        /// </summary>
+<%
+        foreach (var column in SourceTable.PrimaryKey.MemberColumns)
+        {
+%>
+        /// <param name="<%=CamelCase(column.Name) %>"><%=column.Name %> key value</param>
+<%
+        }
+%>
+        public async Task Delete<%= SourceTable.Name %>Async(<%= GetArgumentList(SourceTable.PrimaryKey.MemberColumns) %>)
+        {
+            await OperationAsync(ctx => ctx.DeleteByIdAsync<<%= SourceTable.Name %>Record>(
+                <%= GetParameterList(SourceTable.PrimaryKey.MemberColumns)%>));
+        }
+<%
+    }
+%>        
+    }
+}
+
+<script runat="template">
+// My methods here.
+public string GetClrType(ColumnSchema column)
+{
+    string t;
+    bool r = false;
+    switch (column.DataType)
+    {
+        case DbType.AnsiString:
+        case DbType.AnsiStringFixedLength:
+        case DbType.String:
+        case DbType.StringFixedLength:
+        case DbType.Xml:
+            t = "string";
+            r = true;
+            break;
+        case DbType.Boolean:
+            t = "bool";
+            break;
+        case DbType.Byte:
+            t = "byte";
+            break;
+        case DbType.Binary:
+            t = "byte[]";
+            r = true;
+            break;
+        case DbType.Currency:
+        case DbType.Decimal:
+        case DbType.VarNumeric:
+            t = "decimal";
+            break;
+        case DbType.Date:
+        case DbType.DateTime:
+        case DbType.DateTime2:
+        case DbType.Time:
+            t = "DateTime";
+            break;
+        case DbType.DateTimeOffset:
+            t = "DateTimeOffset";
+            break;
+        case DbType.Double:
+            t = "double";
+            break;
+        case DbType.Guid:
+            t = "Guid";
+            break;
+        case DbType.Int16:
+            t = "short";
+            break;
+        case DbType.Int32:
+            t = "int";
+            break;
+        case DbType.Int64:
+            t = "long";
+            break;
+        case DbType.Object:
+            t = "object";
+            r = true;
+            break;
+        case DbType.SByte:
+            t = "sbyte";
+            break;
+        case DbType.Single:
+            t = "float";
+            break;
+        case DbType.UInt16:
+            t = "ushort";
+            break;
+        case DbType.UInt32:
+            t = "uint";
+            break;
+        case DbType.UInt64:
+            t = "ulong";
+            break;
+        default:
+            t ="#";
+            break;
+  }
+  if (!r && column.AllowDBNull)
+  {
+      t += "?";
+  }
+  return t;
+}
+
+public string CamelCase(string str)
+{
+    return str.Substring(0, 1).ToLower() + str.Substring(1);
+}
+
+public string GetArgumentList(IEnumerable<ColumnSchema> columns)
+{
+    var sb = new StringBuilder();
+    foreach (var column in columns)
+    {
+        if (sb.Length > 0)
+        {
+            sb.Append(", ");
+        }
+        sb.AppendFormat("{0} {1}", GetClrType(column), CamelCase(column.Name));
+    }
+    return sb.ToString();
+}
+
+public string GetParameterList(IEnumerable<ColumnSchema> columns)
+{
+    var sb = new StringBuilder();
+    foreach (var column in columns)
+    {
+        if (sb.Length > 0)
+        {
+            sb.Append(", ");
+        }
+        sb.Append(CamelCase(column.Name));
+    }
+    return sb.ToString();
+}
+
+public string GetConditionList(IEnumerable<ColumnSchema> columns)
+{
+    var sb = new StringBuilder();
+    var index = 0;
+    foreach (var column in columns)
+    {
+        if (sb.Length > 0)
+        {
+            sb.Append(" and ");
+        }
+        sb.AppendFormat("[{0}]=@{1}", column.Name, index);
+        index++;
+    }
+    return sb.ToString();
+}
+
+public string CutPrefixFromName(string name)
+{
+    var indexPos = name.IndexOf("_");
+    return indexPos < 0 ? name : name.Substring(indexPos + 1);
+}
+
+</script>

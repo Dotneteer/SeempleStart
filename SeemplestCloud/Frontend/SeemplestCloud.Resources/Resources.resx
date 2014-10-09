@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Error_InvalidLogin" xml:space="preserve">
+    <value>Sikertelen bejelentkezés</value>
+  </data>
   <data name="Gen_GetStarted" xml:space="preserve">
     <value>Előfizetek &amp;raquo;</value>
   </data>
@@ -137,6 +140,33 @@
   </data>
   <data name="HomeMenu_Register" xml:space="preserve">
     <value>Feliratkozás</value>
+  </data>
+  <data name="Login_CurrentSpot" xml:space="preserve">
+    <value>Jelentkezz be a SeemplestCloud szolgáltatásba!</value>
+  </data>
+  <data name="Login_NoAccount_CurrentSpot" xml:space="preserve">
+    <value>Bejelentkezés {0} azonosítással</value>
+  </data>
+  <data name="Login_NoAccount_Explanation" xml:space="preserve">
+    <value>Ahhoz, hogy bejelentkezve használatba tudja venni a rendszert, létre kell hoznia egy előfizetést is. Létre kívánja azt most hozni?</value>
+  </data>
+  <data name="Login_NoAccount_Header" xml:space="preserve">
+    <value>Nincs még {0} fiókjához előfizetése</value>
+  </data>
+  <data name="Login_NoAccount_No" xml:space="preserve">
+    <value>Nem, most nem kívánom létrehozni</value>
+  </data>
+  <data name="Login_NoAccount_Yes" xml:space="preserve">
+    <value>Igen, létrehozom az előfizetést</value>
+  </data>
+  <data name="Login_SignUp" xml:space="preserve">
+    <value>Feliratkozás új felhasználóként</value>
+  </data>
+  <data name="Login_Use_External" xml:space="preserve">
+    <value>Bejelentkezés külső hitelesítési szolgáltatóval</value>
+  </data>
+  <data name="Login_Use_Local" xml:space="preserve">
+    <value>Bejelentkezés e-mail címmel és jelszóval</value>
   </data>
   <data name="Package_Free_MaxInvoinces" xml:space="preserve">
     <value>Max. havi 10 számla</value>
@@ -190,19 +220,25 @@
     <value>Sikeres feliratkozás</value>
   </data>
   <data name="SignUpConfirmation_Message" xml:space="preserve">
-    <value>Sikeres feliratkozásoddal nemcsak felhasználóként regisztráltunk a rendszerben, hanem egyúttal gazdája is vagy egy előfizetésnek, és a későbbiekben további felhasználókat is meghívhatsz. Adj nevet az előfizetésnek (ez most a regisztráció során megadott e-mail cím), és válaszd ki azt a csomagtípust, amellyel a szolgáltatást szeretnéd igénybe venni. Ezt a későbbiekben az éles használat során megváltoztathatod.</value>
+    <value>Sikeres feliratkozásoddal nemcsak felhasználóként regisztráltunk a rendszerben, hanem egyúttal gazdája is vagy egy előfizetésnek, és a későbbiekben további felhasználókat is meghívhatsz. Adj nevet az előfizetésnek (ez most a regisztráció során megadott e-mail cím), és válaszd ki azt a csomagtípust, amellyel a szolgáltatást szeretnéd igénybe venni! Ezt a későbbiekben az éles használat során megváltoztathatod.</value>
   </data>
   <data name="SignUp_CurrentSpot" xml:space="preserve">
     <value>Feliratkozás a SeemplestCloud szolgáltatásra</value>
   </data>
+  <data name="SignUp_External_CurrentSpot" xml:space="preserve">
+    <value>Feliratkozás {0} azonosítással</value>
+  </data>
   <data name="SignUp_External_Description" xml:space="preserve">
+    <value>Add meg az &lt;strong&gt;e-mail címedet&lt;/strong&gt; és a &lt;strong&gt;felhasználói nevedet&lt;/strong&gt; a regisztrációhoz!</value>
+  </data>
+  <data name="SignUp_External_Explanation" xml:space="preserve">
     <value>Regisztrálhatod magad az alábbi nyomógombokon jelölt külső hitelesítési szolgáltatókon keresztül. Ebben az esetben csak a felhasználói azonosítódat tároljuk, jelszavadat nem. A későbbiekben az itt használt hitelesítési szolgáltatón keresztül jelentkezhetsz be felhasználóként a rendszerbe.</value>
   </data>
   <data name="SignUp_FrontHeader" xml:space="preserve">
     <value>A SeemplestCloud szolgáltatások használatához regisztrálnod kell magad.</value>
   </data>
   <data name="SignUp_Internal_CurrentSpot" xml:space="preserve">
-    <value>Regisztráció e-mail címmel és jelszóval</value>
+    <value>Feliratkozás e-mail címmel és jelszóval</value>
   </data>
   <data name="SignUp_Internal_Description" xml:space="preserve">
     <value>Add meg az &lt;strong&gt;e-mail címedet&lt;/strong&gt;, &lt;strong&gt;felhasználói nevedet&lt;/strong&gt; és &lt;strong&gt;jelszavadat&lt;/strong&gt; a regisztrációhoz!</value>

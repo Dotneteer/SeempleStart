@@ -1,0 +1,27 @@
+﻿@using SeemplesTools.HtmlBuilders.Bs
+@using SeemplesTools.HtmlBuilders.Infrastructure
+@using SeemplesTools.HtmlBuilders.Ng
+@using SeemplesTools.HtmlBuilders.NgBsMvc
+@model  SignUpWithExternalLoginViewModel
+@{
+    ViewBag.Title = "Sign Up";
+}
+
+<div class="row" data-active-menu="SignUp" 
+     data-active-title="@String.Format(Resources.SignUp_External_CurrentSpot, Model.Provider)" >
+    <div class="col-md-8 col-md-offset-2">
+        <div class="panel panel-info">
+            <div class="panel-heading">@Html.Raw(Resources.SignUp_External_Description)</div>
+            <div class="panel-body">
+                @using (var f = Html.Begin(new NgBsMvcForm("registerForm", "SignUpWithExternalLogin", "Account").Horizontal().LabelMd(4).InputMd(8)))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.BsDismissibleValidationSummary()
+                    @f.InputFor(m => m.Email, autoFocus: AutoFocus.OnFormValid, validate: ValidationOption.WhenDirty)
+                    @f.InputFor(m => m.UserName, validate: ValidationOption.WhenDirty)
+                    @f.SubmitButton(FormsData.SignUpViewModel_RegisterButton, BsButtonTheme.Primary)
+                }
+            </div>
+        </div>
+    </div>
+</div>

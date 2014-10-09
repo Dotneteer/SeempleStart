@@ -61,6 +61,15 @@ namespace SeemplestCloud.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sikertelen bejelentkezés.
+        /// </summary>
+        public static string Error_InvalidLogin {
+            get {
+                return ResourceManager.GetString("Error_InvalidLogin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Előfizetek &amp;raquo;.
         /// </summary>
         public static string Gen_GetStarted {
@@ -120,6 +129,87 @@ namespace SeemplestCloud.Resources {
         public static string HomeMenu_Register {
             get {
                 return ResourceManager.GetString("HomeMenu_Register", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jelentkezz be a SeemplestCloud szolgáltatásba!.
+        /// </summary>
+        public static string Login_CurrentSpot {
+            get {
+                return ResourceManager.GetString("Login_CurrentSpot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bejelentkezés {0} azonosítással.
+        /// </summary>
+        public static string Login_NoAccount_CurrentSpot {
+            get {
+                return ResourceManager.GetString("Login_NoAccount_CurrentSpot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ahhoz, hogy bejelentkezve használatba tudja venni a rendszert, létre kell hoznia egy előfizetést is. Létre kívánja azt most hozni?.
+        /// </summary>
+        public static string Login_NoAccount_Explanation {
+            get {
+                return ResourceManager.GetString("Login_NoAccount_Explanation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nincs még {0} fiókjához előfizetése.
+        /// </summary>
+        public static string Login_NoAccount_Header {
+            get {
+                return ResourceManager.GetString("Login_NoAccount_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nem, most nem kívánom létrehozni.
+        /// </summary>
+        public static string Login_NoAccount_No {
+            get {
+                return ResourceManager.GetString("Login_NoAccount_No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Igen, létrehozom az előfizetést.
+        /// </summary>
+        public static string Login_NoAccount_Yes {
+            get {
+                return ResourceManager.GetString("Login_NoAccount_Yes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Feliratkozás új felhasználóként.
+        /// </summary>
+        public static string Login_SignUp {
+            get {
+                return ResourceManager.GetString("Login_SignUp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bejelentkezés külső hitelesítési szolgáltatóval.
+        /// </summary>
+        public static string Login_Use_External {
+            get {
+                return ResourceManager.GetString("Login_Use_External", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bejelentkezés e-mail címmel és jelszóval.
+        /// </summary>
+        public static string Login_Use_Local {
+            get {
+                return ResourceManager.GetString("Login_Use_Local", resourceCulture);
             }
         }
         
@@ -277,11 +367,29 @@ namespace SeemplestCloud.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Regisztrálhatod magad az alábbi nyomógombokon jelölt külső hitelesítési szolgáltatókon keresztül. Ebben az esetben csak a felhasználói azonosítódat tároljuk, jelszavadat nem. A későbbiekben az itt használt hitelesítési szolgáltatón keresztül jelentkezhetsz be felhasználóként a rendszerbe..
+        ///   Looks up a localized string similar to Feliratkozás {0} azonosítással.
+        /// </summary>
+        public static string SignUp_External_CurrentSpot {
+            get {
+                return ResourceManager.GetString("SignUp_External_CurrentSpot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add meg az &lt;strong&gt;e-mail címedet&lt;/strong&gt; és a &lt;strong&gt;felhasználói nevedet&lt;/strong&gt; a regisztrációhoz!.
         /// </summary>
         public static string SignUp_External_Description {
             get {
                 return ResourceManager.GetString("SignUp_External_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Regisztrálhatod magad az alábbi nyomógombokon jelölt külső hitelesítési szolgáltatókon keresztül. Ebben az esetben csak a felhasználói azonosítódat tároljuk, jelszavadat nem. A későbbiekben az itt használt hitelesítési szolgáltatón keresztül jelentkezhetsz be felhasználóként a rendszerbe..
+        /// </summary>
+        public static string SignUp_External_Explanation {
+            get {
+                return ResourceManager.GetString("SignUp_External_Explanation", resourceCulture);
             }
         }
         
@@ -295,7 +403,7 @@ namespace SeemplestCloud.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Regisztráció e-mail címmel és jelszóval.
+        ///   Looks up a localized string similar to Feliratkozás e-mail címmel és jelszóval.
         /// </summary>
         public static string SignUp_Internal_CurrentSpot {
             get {
@@ -340,7 +448,7 @@ namespace SeemplestCloud.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sikeres feliratkozásoddal nemcsak felhasználóként regisztráltunk a rendszerben, hanem egyúttal gazdája is vagy egy előfizetésnek, és a későbbiekben további felhasználókat is meghívhatsz. Adj nevet az előfizetésnek (ez most a regisztráció során megadott e-mail cím), és válaszd ki azt a csomagtípust, amellyel a szolgáltatást szeretnéd igénybe venni. Ezt a későbbiekben az éles használat során megváltoztathatod..
+        ///   Looks up a localized string similar to Sikeres feliratkozásoddal nemcsak felhasználóként regisztráltunk a rendszerben, hanem egyúttal gazdája is vagy egy előfizetésnek, és a későbbiekben további felhasználókat is meghívhatsz. Adj nevet az előfizetésnek (ez most a regisztráció során megadott e-mail cím), és válaszd ki azt a csomagtípust, amellyel a szolgáltatást szeretnéd igénybe venni! Ezt a későbbiekben az éles használat során megváltoztathatod..
         /// </summary>
         public static string SignUpConfirmation_Message {
             get {

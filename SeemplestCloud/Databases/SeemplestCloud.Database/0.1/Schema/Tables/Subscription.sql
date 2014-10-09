@@ -1,9 +1,9 @@
 ﻿CREATE TABLE [Platform].[Subscription]
 (
-	[Id] int NOT NULL,
+	[Id] int identity NOT NULL,
 	[SubscriberName] nvarchar(255) NOT NULL,
 	[PrimaryEmail] nvarchar(255) NOT NULL,
-	[PrimaryPhone] nvarchar(255) NOT NULL,
+	[PrimaryPhone] nvarchar(255) NULL,
 	[AddrCountry] nvarchar(64) NULL,
 	[AddrZip] nvarchar(16) NULL,
 	[AddrTown] nvarchar(64) NULL,
@@ -15,5 +15,4 @@
     [CreatedUtc] datetimeoffset NOT NULL, 
     [LastModifiedUtc] datetimeoffset NULL,
     CONSTRAINT [PK_Subscription] PRIMARY KEY ([Id]), 
-    CONSTRAINT [AK_SubscriberName] UNIQUE ([SubscriberName])
 )

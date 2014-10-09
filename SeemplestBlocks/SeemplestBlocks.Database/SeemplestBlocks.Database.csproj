@@ -23,12 +23,16 @@
     <Content Include="0.2\Schema\Tables\ConfigurationValue.sql" />
     <Content Include="0.2\Schema\Tables\ConfigurationVersion.sql" />
     <Content Include="0.2\Schema\Tables\CurrentConfigurationVersion.sql" />
+    <Content Include="0.2\Schema\Tables\EmailFailed.sql" />
+    <Content Include="0.2\Schema\Tables\EmailSent.sql" />
+    <Content Include="0.2\Schema\Tables\EmailToSend.sql" />
     <Content Include="0.2\Schema\Tables\ListDefinition.sql" />
     <Content Include="0.2\Schema\Tables\ListItemDefinition.sql" />
     <Content Include="0.2\Schema\Tables\Locale.sql" />
     <Content Include="0.2\Schema\Tables\LocalizedResource.sql" />
     <Content Include="0.2\Schema\Tables\Queue.sql" />
     <Content Include="0.2\Schema\Tables\QueueMessage.sql" />
+    <Content Include="0.2\Schema\Tables\Template.sql" />
     <Content Include="0.2\Schema\Tables\Trace.sql" />
     <Content Include="0.2\Schema\Tables\User.sql" />
     <Content Include="0.2\Schema\Tables\UserAccount.sql" />

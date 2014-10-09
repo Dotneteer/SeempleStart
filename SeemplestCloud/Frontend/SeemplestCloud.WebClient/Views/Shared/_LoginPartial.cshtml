@@ -1,21 +1,41 @@
 ﻿@using Microsoft.AspNet.Identity
+@using SeemplestCloud.WebClient.Models.UserManagement
 
 @if (Request.IsAuthenticated)
 {
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {
-    @Html.AntiForgeryToken()
+        @Html.AntiForgeryToken()
 
-    <ul class="nav navbar-nav navbar-right">
-        @if (ViewBag.DisableLanguageChoice == null || ViewBag.DisableLanguageChoice == false)
-        {
-            Html.Partial("_LanguagesPartial");
-        }
-        <li>
-            @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
-        </li>
-        <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
-    </ul>
+        <ul class="nav navbar-nav navbar-right">
+            @{
+                if (ViewBag.DisableLanguageChoice == null || ViewBag.DisableLanguageChoice == false)
+                {
+                    Html.Partial("_LanguagesPartial");
+                }
+                var user = (AppPrincipal) HttpContext.Current.User;
+            }
+
+
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <span class="fa fa-user"></span>
+                    &nbsp;@user.Identity.GetUserName()
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="#"><span class="fa fa-user"></span>&nbsp;&nbsp;Profil szerkesztése</a></li>
+                    @if (user.IsSubscriptionOwner)
+                    {
+                        <li class="divider"></li>
+                        <li><a href="#"><span class="fa fa-users"></span>&nbsp;&nbsp;Felhasználók kezelése</a></li>
+                        <li><a href="#"><span class="fa fa-book"></span>&nbsp;&nbsp;Előfizetés kezelése</a></li>
+                        <li><a href="#"><span class="fa fa-certificate"></span>&nbsp;&nbsp;Szolgáltatáscsomag</a></li>
+                    }
+                </ul>
+            </li>
+            <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+        </ul>
     }
 }
 else

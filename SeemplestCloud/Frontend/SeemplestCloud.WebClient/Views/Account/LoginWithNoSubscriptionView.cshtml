@@ -1,0 +1,29 @@
+﻿@model SignUpWithExternalLoginViewModel
+@{
+    ViewBag.Title = "Sign Up";
+}
+
+<div class="row" data-active-menu="SignUp"
+     data-active-title="@String.Format(Resources.Login_NoAccount_CurrentSpot, Model.Provider)">
+    <div class="col-md-8 col-md-offset-2">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h4>@String.Format(Resources.Login_NoAccount_Header, Model.Provider)</h4>
+            </div>
+            <div class="panel-body">
+                <p>@Resources.Login_NoAccount_Explanation</p>
+                <div style="margin-bottom: 24px;">
+                    <div style="margin-top: 24px;">
+                        <a class="btn btn-success" href="@Url.Action("SignUpWithExternalLogin",
+                            new { Model.Provider, Model.Email, Model.UserName})">
+                        @Html.Raw(Resources.Login_NoAccount_Yes)
+                        </a>
+                        <a class="btn btn-danger" href="@Url.Action("Index", "Home")">
+                            @Html.Raw(Resources.Login_NoAccount_No)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -49,6 +49,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SubscriptionService\DataAccess\ArchivedUserRecord.cs" />
+    <Compile Include="SubscriptionService\DataAccess\ISubscriptionDataOperations.cs" />
+    <Compile Include="SubscriptionService\DataAccess\PackageTemplateRecord.cs" />
+    <Compile Include="SubscriptionService\DataAccess\PackageTemplateParameterRecord.cs" />
+    <Compile Include="SubscriptionService\DataAccess\ServiceDefinitionRecord.cs" />
+    <Compile Include="SubscriptionService\DataAccess\ServiceParameterRecord.cs" />
+    <Compile Include="SubscriptionService\DataAccess\ServiceRoleRecord.cs" />
+    <Compile Include="SubscriptionService\DataAccess\ServiceUserRecord.cs" />
+    <Compile Include="SubscriptionService\DataAccess\SubscriptionContentRecord.cs" />
+    <Compile Include="SubscriptionService\DataAccess\SubscriptionDataOperations.cs" />
+    <Compile Include="SubscriptionService\DataAccess\SubscriptionOwnerRecord.cs" />
+    <Compile Include="SubscriptionService\DataAccess\SubscriptionParameterValueRecord.cs" />
+    <Compile Include="SubscriptionService\DataAccess\SubscriptionRecord.cs" />
+    <Compile Include="SubscriptionService\DataAccess\UserAccountRecord.cs" />
+    <Compile Include="SubscriptionService\DataAccess\UserInvitationRecord.cs" />
+    <Compile Include="SubscriptionService\DataAccess\UserRecord.cs" />
+    <Compile Include="SubscriptionService\DataAccess\UserRoleRecord.cs" />
+    <Compile Include="SubscriptionService\ISubscriptionService.cs" />
+    <Compile Include="SubscriptionService\SubscriptionService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\SeemplestBlocks\SeemplestBlocks.Core\SeemplestBlocks.Core.csproj">
@@ -67,9 +86,16 @@
       <Project>{c81edbc6-5989-4232-8b23-57831056e6eb}</Project>
       <Name>Seemplest.MsSql</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SeemplestCloud.Dto\SeemplestCloud.Dto.csproj">
+      <Project>{08465cb9-7161-4065-a4e5-ba01c8cb4264}</Project>
+      <Name>SeemplestCloud.Dto</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="_Tools\CodeGenerationTemplates\DataAccessOperationsTemplate.cst" />
+    <None Include="_Tools\CodeGenerationTemplates\DataRecordTemplate.cst" />
+    <None Include="_Tools\CodeGenerationTemplates\DtoTemplate.cst" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

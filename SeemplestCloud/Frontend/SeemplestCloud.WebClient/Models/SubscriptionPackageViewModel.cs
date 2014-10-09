@@ -13,9 +13,9 @@ namespace SeemplestCloud.WebClient.Models
         [Display(Name = "SubscriptionPackageViewModel_SubscriptionName", ResourceType = typeof(FormsData))]
         public string SubscriptionName { get; set; }
 
-        [NgRequired(ErrorMessageResourceType = typeof(FormsData), ErrorMessageResourceName = "SubscriptionPackageViewModel_PrimaryEmail_Required")]
-        [NgEmailAddress(ErrorMessageResourceType = typeof(FormsData), ErrorMessageResourceName = "SignUpViewModel_Email_Error")]
-        [Display(Name = "SubscriptionPackageViewModel_PrimaryEmail", ResourceType = typeof(FormsData))]
+        [NgRequired(ErrorMessageResourceType = typeof(FormsData), ErrorMessageResourceName = "General_Email_Required")]
+        [NgEmailAddress(ErrorMessageResourceType = typeof(FormsData), ErrorMessageResourceName = "General_Email_Error")]
+        [Display(Name = "General_Email", ResourceType = typeof(FormsData))]
         public string PrimaryEmail { get; set; }
 
         public string PackageCode { get; set; }

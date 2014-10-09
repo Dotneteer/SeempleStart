@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using Seemplest.Core.DependencyInjection;
 using Seemplest.Core.ServiceObjects;
-using Younderwater.Services.Security;
+using SeemplestBlocks.Core.Security;
 
 namespace SeemplestBlocks.Core.ServiceInfrastructure
 {

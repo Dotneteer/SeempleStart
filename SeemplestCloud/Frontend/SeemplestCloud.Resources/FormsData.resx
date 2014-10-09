@@ -117,58 +117,58 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="SignUpViewModel_ConfirmPassword" xml:space="preserve">
+  <data name="General_ConfirmPassword" xml:space="preserve">
     <value>Jelszó megerősítése</value>
   </data>
-  <data name="SignUpViewModel_ConfirmPassword_Required" xml:space="preserve">
+  <data name="General_ConfirmPassword_Required" xml:space="preserve">
     <value>A jelszó megerősítésének megadása kötelező</value>
   </data>
-  <data name="SignUpViewModel_Email" xml:space="preserve">
+  <data name="General_Email" xml:space="preserve">
     <value>E-mail cím</value>
   </data>
-  <data name="SignUpViewModel_Email_Error" xml:space="preserve">
+  <data name="General_Email_Error" xml:space="preserve">
     <value>A megadott e-mail cím formája nem megfelelő</value>
   </data>
-  <data name="SignUpViewModel_Email_Required" xml:space="preserve">
+  <data name="General_Email_Required" xml:space="preserve">
     <value>Az e-mail cím megadása kötelező</value>
   </data>
-  <data name="SignUpViewModel_Password" xml:space="preserve">
+  <data name="General_Password" xml:space="preserve">
     <value>Jelszó</value>
   </data>
-  <data name="SignUpViewModel_Passwords_DoNotMatch" xml:space="preserve">
+  <data name="General_Passwords_DoNotMatch" xml:space="preserve">
     <value>A jelszónak és a megerősítésének egyeznie kell</value>
   </data>
-  <data name="SignUpViewModel_Password_Error" xml:space="preserve">
+  <data name="General_Password_Error" xml:space="preserve">
     <value>A jelszó hosszának 6 és 32 karakter között kell lennie</value>
   </data>
-  <data name="SignUpViewModel_Password_Required" xml:space="preserve">
+  <data name="General_Password_Required" xml:space="preserve">
     <value>A jelszó megadása kötelező</value>
   </data>
-  <data name="SignUpViewModel_UserName" xml:space="preserve">
-    <value>Felhasználói név</value>
-  </data>
-  <data name="SignUpViewModel_UserName_Error" xml:space="preserve">
+  <data name="General_UserName_Error" xml:space="preserve">
     <value>A felhasználói név hosszának 2 és 32 között kell lennie</value>
   </data>
-  <data name="SignUpViewModel_UserName_Required" xml:space="preserve">
+  <data name="General_UserName_Required" xml:space="preserve">
     <value>A felhasználói név megadása kötelező</value>
   </data>
   <data name="SignUpViewModel_RegisterButton" xml:space="preserve">
     <value>Regisztráció</value>
   </data>
-  <data name="SubscriptionPackageViewModel_PrimaryEmail" xml:space="preserve">
-    <value>E-mail cím</value>
-  </data>
   <data name="SubscriptionPackageViewModel_SubscriptionName" xml:space="preserve">
     <value>Az előfizetés neve</value>
   </data>
-  <data name="SignUpViewModel_UserName_Help" xml:space="preserve">
-    <value>Ezt a nevet jeleníti meg a rendszer</value>
-  </data>
-  <data name="SubscriptionPackageViewModel_PrimaryEmail_Required" xml:space="preserve">
-    <value>Az e-mail cím megadása kötelező</value>
+  <data name="General_UserName_Help" xml:space="preserve">
+    <value>A felhasználó megjelenő neve</value>
   </data>
   <data name="SubscriptionPackageViewModel_SubscriptionName_Required" xml:space="preserve">
     <value>Az előfizetés nevének magadása kötelező</value>
+  </data>
+  <data name="General_StrongPassword" xml:space="preserve">
+    <value>A jelszónak tartalmaznia kell kis- és nagybetűt, számjegyet és valamilyen egyéb írásjelet is</value>
+  </data>
+  <data name="General_UserName" xml:space="preserve">
+    <value>Felhasználói név</value>
+  </data>
+  <data name="LoginViewModel_RememberMe" xml:space="preserve">
+    <value>Maradjak bejelentkezve</value>
   </data>
 </root>

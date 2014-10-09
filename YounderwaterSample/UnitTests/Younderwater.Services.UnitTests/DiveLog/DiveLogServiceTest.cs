@@ -4,13 +4,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Seemplest.Core.DataAccess.DataServices;
 using Seemplest.Core.DependencyInjection;
 using Seemplest.Core.ServiceObjects.Validation;
+using SeemplestBlocks.Core.Security;
 using SeemplestBlocks.Core.ServiceInfrastructure;
 using SoftwareApproach.TestingExtensions;
 using Younderwater.Dto.DiveLog;
 using Younderwater.Services.DiveLog;
 using Younderwater.Services.DiveLog.DataAccess;
 using Younderwater.Services.DiveLog.Exceptions;
-using Younderwater.Services.Security;
 using Younderwater.Services.UnitTests.Helpers;
 
 namespace Younderwater.Services.UnitTests.DiveLog

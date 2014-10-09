@@ -1,6 +1,7 @@
 ﻿CREATE TABLE [Platform].[UserInvitation]
 (
 	[UserId] uniqueidentifier NOT NULL,
+	[SubscriptionId] int NULL,
 	[InvitedEmail] nvarchar(255) NOT NULL,
 	[InvitationCode] nvarchar(1024) NOT NULL,
 	[ExpirationDateUtc] datetimeoffset NULL,

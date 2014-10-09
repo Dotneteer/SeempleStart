@@ -3,7 +3,7 @@
     ViewBag.Title = "Sign Up";
 }
 
-<div class="row" data-active-menu="SignUp" data-active-title="@Resources.SignUp_CurrentSpot" data-no-language-choice>
+<div class="row" data-active-menu="SignUp" data-active-title="@Resources.SignUp_CurrentSpot">
     <div class="col-md-10 col-md-offset-1">
         <div class="panel panel-info">
             <div class="panel-heading">
@@ -19,7 +19,7 @@
                     </div>
                 </div>
                 <div>
-                    <p>@Resources.SignUp_External_Description</p>
+                    <p>@Resources.SignUp_External_Explanation</p>
                     <div style="margin-top: 24px;">
                         @{
                             var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
@@ -29,6 +29,7 @@
                                 using (Html.BeginForm("ExternalLogin", "Account" /* ,new { Model.ReturnUrl } */))
                                 {
                                     @Html.AntiForgeryToken()
+                                    @Html.Hidden("reason", "signup")
                                     <div id="socialLoginList">
                                         <p>
                                             @foreach (var p in authenticationDescriptions)

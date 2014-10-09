@@ -1,6 +1,6 @@
 ﻿using Seemplest.Core.ServiceObjects;
 
-namespace Younderwater.Services.Security
+namespace SeemplestBlocks.Core.Security
 {
     /// <summary>
     /// This interface defines the operations of a user ID context provider

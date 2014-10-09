@@ -57,6 +57,32 @@
             </relationshipOwnedElementsInternal>
             <elementDefinition Id="c36bbc41-190f-445c-a2d0-a8bbd79547cb" />
           </association>
+          <association Id="9a1d9cc3-7aa1-4cd5-b277-c4e32de91aab" isDerived="false" sourceEndRoleName="" targetEndRoleName="" isLeaf="false" name="Invited to" isAbstract="false">
+            <classMoniker Id="6d7dfbfd-8830-4178-b277-6a470c76b67c" LastKnownName="User Invitation" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="b130d6b2-7123-4147-b319-c5ac448f629f" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="a86893b0-a696-4691-bbfc-402b256cfa77" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="8c5dfd7a-f0fd-4181-820c-e57dbd844d41" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
+                  <lowerValueInternal>
+                    <literalString Id="9d9eabe3-df3f-40d6-bc66-49694d33805f" name="Lower" value="*">
+                      <elementDefinition Id="285f5c38-191e-4ee7-8caf-39cf5381f45a" />
+                    </literalString>
+                  </lowerValueInternal>
+                  <upperValueInternal>
+                    <literalString Id="d578cda4-fa95-4cca-9de8-7a7caca9c23d" name="Upper" value="*">
+                      <elementDefinition Id="b1254965-2e18-4e11-8150-1f1ece1d0fdd" />
+                    </literalString>
+                  </upperValueInternal>
+                  <elementDefinition Id="a1610406-d11a-437c-9a87-3e18b2971593" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="318dbda9-0405-4280-a141-bb350286be03" />
+          </association>
         </targetEnds>
         <ownedAttributesInternal>
           <property Id="0269951c-c78e-4f6f-9856-a15619e4d59b" name="Id" isLeaf="false" isStatic="false" isReadOnly="false" isUnique="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
@@ -139,32 +165,6 @@
               </associationHasOwnedEnds>
             </relationshipOwnedElementsInternal>
             <elementDefinition Id="0e12cf11-77cd-4453-961a-f16a4713b515" />
-          </association>
-          <association Id="c941e5e9-18bd-434e-a6d7-2640121a4cbc" isDerived="false" sourceEndRoleName="" targetEndRoleName="" isLeaf="false" name="Inviting User" isAbstract="false">
-            <classMoniker Id="6d7dfbfd-8830-4178-b277-6a470c76b67c" LastKnownName="User Invitation" />
-            <relationshipOwnedElementsInternal>
-              <associationHasOwnedEnds>
-                <memberEnd Id="91084bb4-9f68-4057-afea-0da2d7d8513d" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
-                  <elementDefinition Id="11031dd7-7796-4a22-a93a-2b033e8aaff0" />
-                </memberEnd>
-              </associationHasOwnedEnds>
-              <associationHasOwnedEnds>
-                <memberEnd Id="bbf3c27d-6667-43b5-8ef9-23403dc2f345" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
-                  <lowerValueInternal>
-                    <literalString Id="fd62b3cc-783e-4a70-b08b-fc5e5b230c45" name="Lower" value="1">
-                      <elementDefinition Id="81cdfad7-dc41-4573-a979-00fcfd98b4d8" />
-                    </literalString>
-                  </lowerValueInternal>
-                  <upperValueInternal>
-                    <literalString Id="59ba3820-e63d-4b95-ad76-b8ec74799245" name="Upper" value="*">
-                      <elementDefinition Id="20d87638-430a-49c5-b07d-ba922fd5c22a" />
-                    </literalString>
-                  </upperValueInternal>
-                  <elementDefinition Id="3c2ec764-d01f-47c4-8223-4855dc056ba2" />
-                </memberEnd>
-              </associationHasOwnedEnds>
-            </relationshipOwnedElementsInternal>
-            <elementDefinition Id="257b0e20-dfd8-477f-a03a-c00cbc589d9a" />
           </association>
         </targetEnds>
         <ownedAttributesInternal>

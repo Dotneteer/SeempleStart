@@ -9,7 +9,8 @@
             .directive('required', [() => new RequiredDirective()])
             .directive('matches', [() => new MatchesWidthDirective()])
             .directive('maxlen', [() => new LengthRangeDirective()])
-            .directive('minlen', [() => new LengthRangeDirective()]);
+            .directive('minlen', [() => new LengthRangeDirective()])
+            .directive('strongpsw', [() => new StrongPasswordDirective()]);
     }
 
     /*
@@ -378,6 +379,44 @@
                 currentController.$formatters.push(validator);
                 currentController.$parsers.unshift(validator);
                 attributes.$observe('matches', comparisonModel => validator(controller.$viewValue));
+            };
+        }
+    }
+
+    /*
+     * Directive to check the maximum length of a string
+     */
+    export class StrongPasswordDirective extends BaseDirective {
+        constructor() {
+            super();
+            this.restrict = 'A';
+            this.require = ['?ngModel'];
+            this.link = (scope: any, element: ng.IAugmentedJQuery, attributes: any, controller: any) => {
+                var currentController: ng.INgModelController = BaseDirective.getControllerFromParameterArray(controller);
+                if (!currentController) return;
+                var validator = value => {
+                    if (!value || !angular.isString(value)) {
+                        currentController.$setValidity('strongpsw', false);
+                        return value;
+                    }
+                    var hasDigit = false;
+                    var hasNonLetterOrDigit = false;
+                    var hasLowerCase = false;
+                    var hasUpperCase = false;
+                    for (var i = 0; i < value.length; i++) {
+                        var c = value.charAt(i);
+                        hasDigit = hasDigit || (c >= '0' && c <= '9');
+                        hasNonLetterOrDigit = hasNonLetterOrDigit ||
+                            !((c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'));
+                        hasLowerCase = hasLowerCase || c >= 'a' && c <= 'z';
+                        hasUpperCase = hasUpperCase || c >= 'A' && c <= 'Z';
+                    }
+                    currentController.$setValidity('strongpsw', hasDigit && hasNonLetterOrDigit && hasLowerCase && hasUpperCase);
+                    return value;
+                }
+
+                currentController.$formatters.push(validator);
+                currentController.$parsers.unshift(validator);
             };
         }
     }

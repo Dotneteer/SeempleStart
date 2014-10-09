@@ -130,6 +130,58 @@
               </associationHasOwnedEnds>
             </relationshipOwnedElementsInternal>
           </association>
+          <association
+            Id="318dbda9-0405-4280-a141-bb350286be03"
+            isDerived="false"
+            sourceEndRoleName=""
+            targetEndRoleName=""
+            isLeaf="false"
+            name="Invited to"
+            isAbstract="false">
+            <classMoniker
+              Id="91e91768-48f9-4524-b5fb-e031f3f3a1c5"
+              LastKnownName="User Invitation"
+              LastKnownLocation="SeemplestCloud.Models.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="a86893b0-a696-4691-bbfc-402b256cfa77"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false" />
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="a1610406-d11a-437c-9a87-3e18b2971593"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false">
+                  <lowerValueInternal>
+                    <literalString
+                      Id="285f5c38-191e-4ee7-8caf-39cf5381f45a"
+                      name="Lower"
+                      value="*" />
+                  </lowerValueInternal>
+                  <upperValueInternal>
+                    <literalString
+                      Id="b1254965-2e18-4e11-8150-1f1ece1d0fdd"
+                      name="Upper"
+                      value="*" />
+                  </upperValueInternal>
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
         </targetEnds>
         <ownedAttributesInternal>
           <property
@@ -331,57 +383,6 @@
                   <upperValueInternal>
                     <literalString
                       Id="6c6dce70-0bbf-4901-8a13-9f33f190f786"
-                      name="Upper"
-                      value="*" />
-                  </upperValueInternal>
-                </memberEnd>
-              </associationHasOwnedEnds>
-            </relationshipOwnedElementsInternal>
-          </association>
-          <association
-            Id="257b0e20-dfd8-477f-a03a-c00cbc589d9a"
-            isDerived="false"
-            sourceEndRoleName=""
-            targetEndRoleName=""
-            isLeaf="false"
-            name="Inviting User"
-            isAbstract="false">
-            <classMoniker
-              Id="91e91768-48f9-4524-b5fb-e031f3f3a1c5"
-              LastKnownName="User Invitation"
-              LastKnownLocation="SeemplestCloud.Models.uml" />
-            <relationshipOwnedElementsInternal>
-              <associationHasOwnedEnds>
-                <memberEnd
-                  Id="11031dd7-7796-4a22-a93a-2b033e8aaff0"
-                  isLeaf="false"
-                  isStatic="false"
-                  isReadOnly="false"
-                  isDerived="false"
-                  isDerivedUnion="false"
-                  aggregation="None"
-                  isComposite="false"
-                  isNavigableOwned="false" />
-              </associationHasOwnedEnds>
-              <associationHasOwnedEnds>
-                <memberEnd
-                  Id="3c2ec764-d01f-47c4-8223-4855dc056ba2"
-                  isLeaf="false"
-                  isStatic="false"
-                  isReadOnly="false"
-                  isDerived="false"
-                  isDerivedUnion="false"
-                  aggregation="None"
-                  isComposite="false">
-                  <lowerValueInternal>
-                    <literalString
-                      Id="81cdfad7-dc41-4573-a979-00fcfd98b4d8"
-                      name="Lower"
-                      value="1" />
-                  </lowerValueInternal>
-                  <upperValueInternal>
-                    <literalString
-                      Id="20d87638-430a-49c5-b07d-ba922fd5c22a"
                       name="Upper"
                       value="*" />
                   </upperValueInternal>

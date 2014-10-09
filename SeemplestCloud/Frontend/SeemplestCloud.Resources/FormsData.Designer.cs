@@ -63,81 +63,135 @@ namespace SeemplestCloud.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Jelszó megerősítése.
         /// </summary>
-        public static string SignUpViewModel_ConfirmPassword {
+        public static string General_ConfirmPassword {
             get {
-                return ResourceManager.GetString("SignUpViewModel_ConfirmPassword", resourceCulture);
+                return ResourceManager.GetString("General_ConfirmPassword", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to A jelszó megerősítésének megadása kötelező.
         /// </summary>
-        public static string SignUpViewModel_ConfirmPassword_Required {
+        public static string General_ConfirmPassword_Required {
             get {
-                return ResourceManager.GetString("SignUpViewModel_ConfirmPassword_Required", resourceCulture);
+                return ResourceManager.GetString("General_ConfirmPassword_Required", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to E-mail cím.
         /// </summary>
-        public static string SignUpViewModel_Email {
+        public static string General_Email {
             get {
-                return ResourceManager.GetString("SignUpViewModel_Email", resourceCulture);
+                return ResourceManager.GetString("General_Email", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to A megadott e-mail cím formája nem megfelelő.
         /// </summary>
-        public static string SignUpViewModel_Email_Error {
+        public static string General_Email_Error {
             get {
-                return ResourceManager.GetString("SignUpViewModel_Email_Error", resourceCulture);
+                return ResourceManager.GetString("General_Email_Error", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Az e-mail cím megadása kötelező.
         /// </summary>
-        public static string SignUpViewModel_Email_Required {
+        public static string General_Email_Required {
             get {
-                return ResourceManager.GetString("SignUpViewModel_Email_Required", resourceCulture);
+                return ResourceManager.GetString("General_Email_Required", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Jelszó.
         /// </summary>
-        public static string SignUpViewModel_Password {
+        public static string General_Password {
             get {
-                return ResourceManager.GetString("SignUpViewModel_Password", resourceCulture);
+                return ResourceManager.GetString("General_Password", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to A jelszó hosszának 6 és 32 karakter között kell lennie.
         /// </summary>
-        public static string SignUpViewModel_Password_Error {
+        public static string General_Password_Error {
             get {
-                return ResourceManager.GetString("SignUpViewModel_Password_Error", resourceCulture);
+                return ResourceManager.GetString("General_Password_Error", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to A jelszó megadása kötelező.
         /// </summary>
-        public static string SignUpViewModel_Password_Required {
+        public static string General_Password_Required {
             get {
-                return ResourceManager.GetString("SignUpViewModel_Password_Required", resourceCulture);
+                return ResourceManager.GetString("General_Password_Required", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to A jelszónak és a megerősítésének egyeznie kell.
         /// </summary>
-        public static string SignUpViewModel_Passwords_DoNotMatch {
+        public static string General_Passwords_DoNotMatch {
             get {
-                return ResourceManager.GetString("SignUpViewModel_Passwords_DoNotMatch", resourceCulture);
+                return ResourceManager.GetString("General_Passwords_DoNotMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A jelszónak tartalmaznia kell kis- és nagybetűt, számjegyet és valamilyen egyéb írásjelet is.
+        /// </summary>
+        public static string General_StrongPassword {
+            get {
+                return ResourceManager.GetString("General_StrongPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Felhasználói név.
+        /// </summary>
+        public static string General_UserName {
+            get {
+                return ResourceManager.GetString("General_UserName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A felhasználói név hosszának 2 és 32 között kell lennie.
+        /// </summary>
+        public static string General_UserName_Error {
+            get {
+                return ResourceManager.GetString("General_UserName_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A felhasználó megjelenő neve.
+        /// </summary>
+        public static string General_UserName_Help {
+            get {
+                return ResourceManager.GetString("General_UserName_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A felhasználói név megadása kötelező.
+        /// </summary>
+        public static string General_UserName_Required {
+            get {
+                return ResourceManager.GetString("General_UserName_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maradjak bejelentkezve.
+        /// </summary>
+        public static string LoginViewModel_RememberMe {
+            get {
+                return ResourceManager.GetString("LoginViewModel_RememberMe", resourceCulture);
             }
         }
         
@@ -147,60 +201,6 @@ namespace SeemplestCloud.Resources {
         public static string SignUpViewModel_RegisterButton {
             get {
                 return ResourceManager.GetString("SignUpViewModel_RegisterButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Felhasználói név.
-        /// </summary>
-        public static string SignUpViewModel_UserName {
-            get {
-                return ResourceManager.GetString("SignUpViewModel_UserName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A felhasználói név hosszának 2 és 32 között kell lennie.
-        /// </summary>
-        public static string SignUpViewModel_UserName_Error {
-            get {
-                return ResourceManager.GetString("SignUpViewModel_UserName_Error", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Ezt a nevet jeleníti meg a rendszer.
-        /// </summary>
-        public static string SignUpViewModel_UserName_Help {
-            get {
-                return ResourceManager.GetString("SignUpViewModel_UserName_Help", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A felhasználói név megadása kötelező.
-        /// </summary>
-        public static string SignUpViewModel_UserName_Required {
-            get {
-                return ResourceManager.GetString("SignUpViewModel_UserName_Required", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to E-mail cím.
-        /// </summary>
-        public static string SubscriptionPackageViewModel_PrimaryEmail {
-            get {
-                return ResourceManager.GetString("SubscriptionPackageViewModel_PrimaryEmail", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Az e-mail cím megadása kötelező.
-        /// </summary>
-        public static string SubscriptionPackageViewModel_PrimaryEmail_Required {
-            get {
-                return ResourceManager.GetString("SubscriptionPackageViewModel_PrimaryEmail_Required", resourceCulture);
             }
         }
         

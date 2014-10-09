@@ -58,6 +58,8 @@
     <Compile Include="AppConfig\ConfigurationServiceTest.cs" />
     <Compile Include="AppConfig\LocalizedResourceManagerTest.cs" />
     <Compile Include="AppConfig\MsSqlConfigurationHandlerTest.cs" />
+    <Compile Include="Email\EmailSenderTaskTest.cs" />
+    <Compile Include="Email\SmtpEmailSenderTest.cs" />
     <Compile Include="Helpers\SqlScriptHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -94,6 +96,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="SqlScripts\InitListItems.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SqlScripts\InitEmailTemplates.sql" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

@@ -5,7 +5,7 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
-using SeemplestCloud.WebClient.Models;
+using SeemplestCloud.WebClient.Models.UserManagement;
 
 namespace SeemplestCloud.WebClient
 {
@@ -15,9 +15,8 @@ namespace SeemplestCloud.WebClient
         public void ConfigureAuth(IAppBuilder app)
         {
             // Configure the db context, user manager and signin manager to use a single instance per request
-            app.CreatePerOwinContext(ApplicationDbContext.Create);
-            app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
-            app.CreatePerOwinContext<ApplicationSignInManager>(ApplicationSignInManager.Create);
+            app.CreatePerOwinContext<AppUserManager>(AppUserManager.Create);
+            app.CreatePerOwinContext<AppSignInManager>(AppSignInManager.Create);
 
             // Enable the application to use a cookie to store information for the signed in user
             // and to use a cookie to temporarily store information about a user logging in with a third party login provider
@@ -30,9 +29,8 @@ namespace SeemplestCloud.WebClient
                 {
                     // Enables the application to validate the security stamp when the user logs in.
                     // This is a security feature which is used when you change a password or add an external login to your account.  
-                    OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, ApplicationUser>(
-                        validateInterval: TimeSpan.FromMinutes(30),
-                        regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager))
+                    OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<AppUserManager, AppUser>(TimeSpan.FromMinutes(30),
+                        (manager, user) => user.GenerateUserIdentityAsync(manager))
                 }
             });            
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
@@ -55,8 +53,8 @@ namespace SeemplestCloud.WebClient
             //   consumerSecret: "");
 
             app.UseFacebookAuthentication(
-                appId: "164359940298094",
-                appSecret: "9bcae9eaf57bfecccdda61ebf47d4e0b");
+                appId: "720387631387251",
+                appSecret: "6aeb93cb4a6d940edafcb32d3f4021ba");
 
             app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions
             {

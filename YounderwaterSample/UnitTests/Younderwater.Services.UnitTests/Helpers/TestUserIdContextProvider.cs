@@ -1,5 +1,5 @@
 ﻿using Seemplest.Core.ServiceObjects;
-using Younderwater.Services.Security;
+using SeemplestBlocks.Core.Security;
 
 namespace Younderwater.Services.UnitTests.Helpers
 {

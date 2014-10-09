@@ -19,6 +19,7 @@
     <Content Include="0.1\Schema\References\FK_ServiceParameterOfTemplate.sql" />
     <Content Include="0.1\Schema\References\FK_ServiceUser.sql" />
     <Content Include="0.1\Schema\References\FK_SubscriptionOfContent.sql" />
+    <Content Include="0.1\Schema\References\FK_SubscriptionOfInvitation.sql" />
     <Content Include="0.1\Schema\References\FK_SubscriptionOfOwner.sql" />
     <Content Include="0.1\Schema\References\FK_SubscriptionOfParameterValue.sql" />
     <Content Include="0.1\Schema\References\FK_SubscriptionOfUser.sql" />

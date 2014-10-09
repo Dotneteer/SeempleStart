@@ -1,14 +1,14 @@
 ﻿using System.Web;
 using Microsoft.AspNet.Identity;
 using Seemplest.Core.ServiceObjects;
-using Younderwater.Services.Security;
+using SeemplestBlocks.Core.Security;
 
 namespace Younderwater.Webclient.Providers
 {
     /// <summary>
     /// This provides obtains the current user's ID and pushes it to the service context.
     /// </summary>
-    public class UserIdContextProvider: IUserIdContextProvider
+    public class UserIdContextProvider : IUserIdContextProvider
     {
         /// <summary>
         /// Sets up the user context

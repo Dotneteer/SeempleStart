@@ -4,7 +4,6 @@ using SeemplestBlocks.Core.Security;
 using SeemplestBlocks.Core.Security.DataAccess;
 using Younderwater.Services.DiveLog;
 using Younderwater.Services.DiveLog.DataAccess;
-using Younderwater.Services.Security;
 using Younderwater.Webclient.Providers;
 
 namespace Younderwater.Webclient

@@ -15,5 +15,5 @@
     [LastModifiedUtc] datetimeoffset NULL,
     CONSTRAINT [PK_User] PRIMARY KEY ([Id]), 
     CONSTRAINT [AK_UserName] UNIQUE ([UserName]),
-    CONSTRAINT [AK_UserEmail] UNIQUE ([Email])
+    CONSTRAINT [AK_Email] UNIQUE ([Email])
 )

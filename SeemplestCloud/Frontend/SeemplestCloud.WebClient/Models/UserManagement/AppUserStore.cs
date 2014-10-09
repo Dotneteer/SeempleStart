@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Seemplest.Core.DependencyInjection;
-using SeemplestBlocks.Core.Security;
-using SeemplestBlocks.Dto.Security;
+using SeemplestCloud.Dto.Subscription;
+using SeemplestCloud.Services.SubscriptionService;
 
 namespace SeemplestCloud.WebClient.Models.UserManagement
 {
@@ -35,11 +35,9 @@ namespace SeemplestCloud.WebClient.Models.UserManagement
         /// <returns/>
         public async Task CreateAsync(AppUser user)
         {
-            var secSrv = ServiceManager.GetService<ISecurityService>();
-            //user.SecurityStamp = Guid.NewGuid().ToString("N");
-            //user.Created = DateTime.UtcNow;
-            //user.LockoutEnabled = true;
-            //user.Active = true;
+            var secSrv = ServiceManager.GetService<ISubscriptionService>();
+            user.SecurityStamp = Guid.NewGuid().ToString("N");
+            user.CreatedUtc = DateTime.UtcNow;
             await secSrv.InsertUserAsync(MapUser(user));
         }
 
@@ -50,7 +48,7 @@ namespace SeemplestCloud.WebClient.Models.UserManagement
         /// <returns/>
         public async Task UpdateAsync(AppUser user)
         {
-            var secSrv = ServiceManager.GetService<ISecurityService>();
+            var secSrv = ServiceManager.GetService<ISubscriptionService>();
             await secSrv.UpdateUserAsync(MapUser(user));
         }
 
@@ -71,25 +69,25 @@ namespace SeemplestCloud.WebClient.Models.UserManagement
         /// <returns/>
         public async Task<AppUser> FindByIdAsync(string userId)
         {
-            var secSrv = ServiceManager.GetService<ISecurityService>();
-            var user = await secSrv.GetUserByIdAsync(userId);
+            var secSrv = ServiceManager.GetService<ISubscriptionService>();
+            var user = await secSrv.GetUserByIdAsync(new Guid(userId));
             return user == null
                 ? await Task.FromResult<AppUser>(null)
                 : MapUser(user);
         }
 
         /// <summary>
-        /// Find a user by name
+        /// Find a user by its user name
         /// </summary>
-        /// <param name="userName"/>
-        /// <returns/>
+        /// <param name="userName">User name</param>
+        /// <remarks>
+        /// For authentication purposes we use the email address as the
+        /// user name!
+        /// </remarks>
+        /// <returns>AppUser information</returns>
         public async Task<AppUser> FindByNameAsync(string userName)
         {
-            var secSrv = ServiceManager.GetService<ISecurityService>();
-            var user = await secSrv.GetUserByNameAsync(userName);
-            return user == null
-                ? await Task.FromResult<AppUser>(null)
-                : MapUser(user);
+            return await FindByEmailAsync(userName);
         }
 
         /// <summary>
@@ -171,7 +169,7 @@ namespace SeemplestCloud.WebClient.Models.UserManagement
         /// <returns/>
         public async Task<AppUser> FindByEmailAsync(string email)
         {
-            var secSrv = ServiceManager.GetService<ISecurityService>();
+            var secSrv = ServiceManager.GetService<ISubscriptionService>();
             var user = await secSrv.GetUserByEmailAsync(email);
             return user == null
                 ? await Task.FromResult<AppUser>(null)
@@ -186,10 +184,7 @@ namespace SeemplestCloud.WebClient.Models.UserManagement
         /// <returns/>
         public Task<DateTimeOffset> GetLockoutEndDateAsync(AppUser user)
         {
-            throw new NotImplementedException();
-            //return Task.FromResult(user.LockoutEndDateUtc.HasValue
-            //    ? user.LockoutEndDateUtc.Value
-            //    : new DateTimeOffset(DateTime.Now).AddDays(-1));
+            return Task.FromResult(user.LockedOut ? DateTimeOffset.MaxValue : DateTimeOffset.MinValue);
         }
 
         /// <summary>
@@ -199,7 +194,6 @@ namespace SeemplestCloud.WebClient.Models.UserManagement
         /// <returns/>
         public Task SetLockoutEndDateAsync(AppUser user, DateTimeOffset lockoutEnd)
         {
-            //user.LockoutEndDateUtc = lockoutEnd;
             return Task.FromResult(0);
         }
 
@@ -291,10 +285,10 @@ namespace SeemplestCloud.WebClient.Models.UserManagement
         /// <returns/>
         public async Task AddLoginAsync(AppUser user, UserLoginInfo login)
         {
-            var secSrv = ServiceManager.GetService<ISecurityService>();
-            await secSrv.InsertUserAccount(new UserAccountDto
+            var secSrv = ServiceManager.GetService<ISubscriptionService>();
+            await secSrv.InsertUserAccountAsync(new UserAccountDto
             {
-                UserId = user.Id,
+                UserId = new Guid(user.Id),
                 Provider = login.LoginProvider,
                 ProviderData = login.ProviderKey
             });
@@ -307,8 +301,8 @@ namespace SeemplestCloud.WebClient.Models.UserManagement
         /// <returns/>
         public async Task RemoveLoginAsync(AppUser user, UserLoginInfo login)
         {
-            var secSrv = ServiceManager.GetService<ISecurityService>();
-            await secSrv.RemoveLogin(user.Id, login.LoginProvider);
+            var secSrv = ServiceManager.GetService<ISubscriptionService>();
+            await secSrv.RemoveUserAccountAsync(new Guid(user.Id), login.LoginProvider);
         }
 
         /// <summary>
@@ -318,8 +312,8 @@ namespace SeemplestCloud.WebClient.Models.UserManagement
         /// <returns/>
         public async Task<IList<UserLoginInfo>> GetLoginsAsync(AppUser user)
         {
-            var secSrv = ServiceManager.GetService<ISecurityService>();
-            var logins = await secSrv.GetUserLogins(user.Id);
+            var secSrv = ServiceManager.GetService<ISubscriptionService>();
+            var logins = await secSrv.GetUserAccountsByUserId(new Guid(user.Id));
             return logins.Select(u => new UserLoginInfo(u.Provider, u.ProviderData)).ToList();
         }
 
@@ -329,8 +323,8 @@ namespace SeemplestCloud.WebClient.Models.UserManagement
         /// <returns/>
         public async Task<AppUser> FindAsync(UserLoginInfo login)
         {
-            var secSrv = ServiceManager.GetService<ISecurityService>();
-            var user = await secSrv.GetUserByProviderData(login.LoginProvider, login.ProviderKey);
+            var secSrv = ServiceManager.GetService<ISubscriptionService>();
+            var user = await secSrv.GetUserByProviderDataAsync(login.LoginProvider, login.ProviderKey);
             return user == null ? null : MapUser(user);
         }
 
@@ -381,22 +375,22 @@ namespace SeemplestCloud.WebClient.Models.UserManagement
         /// </summary>
         /// <param name="user">UserInfoDto to map</param>
         /// <returns>AppUser instance</returns>
-        private static AppUser MapUser(UserInfoDto user)
+        private static AppUser MapUser(UserDto user)
         {
-            return new AppUser(user.Id)
+            return new AppUser(user.Id.ToString())
             {
+                SubscriptionId = user.SubscriptionId,
                 UserName = user.UserName,
                 Email = user.Email,
                 SecurityStamp = user.SecurityStamp,
-                //EmailConfirmed = user.EmailConfirmed,
                 PasswordHash = user.PasswordHash,
-                //PhoneNumber = user.PhoneNumber,
-                //PhoneNumberConfirmed = user.PhoneNumberConfirmed,
-                //LockoutEndDateUtc = user.LockoutEndDateUtc,
                 AccessFailedCount = user.AccessFailedCount,
-                //Active = user.Active,
-                //Created = user.Created,
-                //LastModified = user.LastModified,
+                CreatedUtc = user.CreatedUtc,
+                LastFailedAuthUtc = user.LastFailedAuthUtc,
+                LastModifiedUtc = user.LastModifiedUtc,
+                LockedOut = user.LockedOut,
+                OwnerSuspend = user.OwnerSuspend,
+                PasswordResetSuspend = user.PasswordResetSuspend
             };
         }
 
@@ -405,23 +399,23 @@ namespace SeemplestCloud.WebClient.Models.UserManagement
         /// </summary>
         /// <param name="user">UserInfoDto to map</param>
         /// <returns>AppUser instance</returns>
-        private static UserInfoDto MapUser(AppUser user)
+        private static UserDto MapUser(AppUser user)
         {
-            return new UserInfoDto
+            return new UserDto
             {
-                Id = user.Id,
+                Id = new Guid(user.Id),
+                SubscriptionId = user.SubscriptionId,
                 UserName = user.UserName,
                 Email = user.Email,
                 SecurityStamp = user.SecurityStamp,
-                //EmailConfirmed = user.EmailConfirmed,
                 PasswordHash = user.PasswordHash,
-                //PhoneNumber = user.PhoneNumber,
-                //PhoneNumberConfirmed = user.PhoneNumberConfirmed,
-                //LockoutEndDateUtc = user.LockoutEndDateUtc,
                 AccessFailedCount = user.AccessFailedCount,
-                //Active = user.Active,
-                //Created = user.Created,
-                //LastModified = user.LastModified,
+                CreatedUtc = user.CreatedUtc,
+                LastFailedAuthUtc = user.LastFailedAuthUtc,
+                LastModifiedUtc = user.LastModifiedUtc,
+                LockedOut = user.LockedOut,
+                OwnerSuspend = user.OwnerSuspend,
+                PasswordResetSuspend = user.PasswordResetSuspend
             };
         }
     }
