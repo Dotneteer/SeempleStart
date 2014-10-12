@@ -1,0 +1,72 @@
+﻿@using SeemplesTools.HtmlBuilders.Bs
+@using SeemplesTools.HtmlBuilders.Infrastructure
+@using SeemplesTools.HtmlBuilders.Ng
+@using SeemplesTools.HtmlBuilders.NgBs
+@model InviteUserViewModel
+@{
+    ViewBag.Title = "Invite Users";
+}
+
+<style>
+    .popupPosition {
+        margin-top: 200px;
+    }
+    .bootbox-confirm {
+        margin-top: 200px;
+    }
+</style>
+
+<div ng-controller="UserInvitationCtrl"
+     data-active-menu="InviteUsers"
+     data-active-title="@Resources.InviteUsers_CurrentSpot"
+     data-no-language-choice>
+
+    <div class="row">
+        <div class="col-sm-6">
+            @Html.NgButton(new NgButton(FormsData.InviteUsers_NewInvitation, BsButtonTheme.Info)
+                .Icon(BsClass.GlyphFa.PlusCircle, BsIconAlignment.Right).NgClick("openInvitationEditor(null)"))
+        </div>
+        <div class="col-sm-3 col-sm-offset-3">
+            @Html.NgSearchButton("searchKey", placeHolder: FormsData.General_Search)
+        </div>
+    </div>
+    <div class="row" style="margin-top: 24px;">
+        <div class="col-sm-6" ng-repeat="invitation in invitations | filter: searchKey">
+            <div class="invitation-card" 
+                 ng-class="{'invitation-card-sent': invitation.state=='Sent', 'invitation-card-read': invitation.state=='Read', 'invitation-card-activated': invitation.state=='Activated'}">
+                <div class="pull-right banned-card" ng-show="invitation.state!='Activated'">
+                    <a ng-click="revokeInvitation()" data-tooltip="@FormsData.InviteUsers_RevokeTooltip" data-tooltip-placement="top">
+                        <span class="fa fa-2x fa-ban"></span>
+                    </a>
+                </div>
+                <p class="invitation-email">{{invitation.invitedEmail | longText}}</p>
+                <p class="invitation-username">{{invitation.invitedUserName | longText}}</p>
+                <p>{{invitation.createdUtc | date}}</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/ng-template" id="newInvitation">
+    @using (var f = Html.BeginModal(new NgBsForm("inviteUsers").Horizontal().LabelMd(3).InputMd(9)))
+    {
+        using (f.Header())
+        {
+            <h4 class="modal-title" id="modalTitle" ng-hide="isEdit">@FormsData.InviteUsers_NewInvitation</h4>
+        }
+        using (f.Body())
+        {
+            @f.InputFor(m => m.InvitedUserName, autoFocus: AutoFocus.OnFormValid, validationOption: ValidationOption.WhenDirty)
+            @f.InputFor(m => m.InvitedEmail, autoFocus: AutoFocus.OnFormValid, validationOption: ValidationOption.WhenDirty)
+        }
+        using (f.Footer())
+        {
+            <div class="pull-right">
+                @f.CancelButton(theme: BsButtonTheme.Warning)
+                @f.OkButton(buttonText: FormsData.InviteUsers_SendButton)
+            </div>
+        }
+    }
+</script>
+

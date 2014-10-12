@@ -9,11 +9,11 @@
 
         <ul class="nav navbar-nav navbar-right">
             @{
-                if (ViewBag.DisableLanguageChoice == null || ViewBag.DisableLanguageChoice == false)
-                {
-                    Html.Partial("_LanguagesPartial");
-                }
-                var user = (AppPrincipal) HttpContext.Current.User;
+        if (ViewBag.DisableLanguageChoice == null || ViewBag.DisableLanguageChoice == false)
+        {
+            Html.Partial("_LanguagesPartial");
+        }
+        var user = (AppPrincipal)HttpContext.Current.User;
             }
 
 
@@ -28,13 +28,28 @@
                     @if (user.IsSubscriptionOwner)
                     {
                         <li class="divider"></li>
-                        <li><a href="#"><span class="fa fa-users"></span>&nbsp;&nbsp;Felhasználók kezelése</a></li>
+                        <li ng-class="{active: isActive('InviteUsers')}">
+                            <a href="@Url.Action("InviteUsers", "Subscription")">
+                                <span class="fa fa-envelope"></span>&nbsp;&nbsp;@Resources.LoginMenu_InviteUsers
+                            </a>
+                        </li>
+                        <li ng-class="{active: isActive('ManageRights')}">
+                            <a href="@Url.Action("ManageUserRights", "Subscription")">
+                                <span class="fa fa-users"></span>&nbsp;&nbsp;@Resources.LoginMenu_ManageRights
+                            </a>
+                        </li>
+                        <li class="divider"></li>
                         <li><a href="#"><span class="fa fa-book"></span>&nbsp;&nbsp;Előfizetés kezelése</a></li>
                         <li><a href="#"><span class="fa fa-certificate"></span>&nbsp;&nbsp;Szolgáltatáscsomag</a></li>
                     }
+                    <li class="divider"></li>
+                    <li>
+                        <a href="javascript:document.getElementById('logoutForm').submit()">
+                            <span class="fa fa-sign-out"></span>&nbsp;&nbsp;Log off
+                        </a>
+                    </li>
                 </ul>
             </li>
-            <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
         </ul>
     }
 }

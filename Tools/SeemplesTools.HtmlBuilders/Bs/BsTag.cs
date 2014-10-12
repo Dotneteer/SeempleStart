@@ -8,6 +8,7 @@
     {
         public const string Tooltip = "tooltip";
         public const string TooltipPlacement = "tooltip-placement";
+        public const string TooltipAppendToBody = "tooltip-append-to-body";
     }
     // ReSharper enable InconsistentNaming
 }

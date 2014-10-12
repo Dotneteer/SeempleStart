@@ -70,6 +70,15 @@ namespace SeemplestCloud.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Mégse.
+        /// </summary>
+        public static string Gen_Cancel {
+            get {
+                return ResourceManager.GetString("Gen_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Előfizetek &amp;raquo;.
         /// </summary>
         public static string Gen_GetStarted {
@@ -129,6 +138,15 @@ namespace SeemplestCloud.Resources {
         public static string HomeMenu_Register {
             get {
                 return ResourceManager.GetString("HomeMenu_Register", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Felhasználók meghívása.
+        /// </summary>
+        public static string InviteUsers_CurrentSpot {
+            get {
+                return ResourceManager.GetString("InviteUsers_CurrentSpot", resourceCulture);
             }
         }
         
@@ -210,6 +228,33 @@ namespace SeemplestCloud.Resources {
         public static string Login_Use_Local {
             get {
                 return ResourceManager.GetString("Login_Use_Local", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Felhasználók meghívása.
+        /// </summary>
+        public static string LoginMenu_InviteUsers {
+            get {
+                return ResourceManager.GetString("LoginMenu_InviteUsers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Felhasználók és jogosultságok.
+        /// </summary>
+        public static string LoginMenu_ManageRights {
+            get {
+                return ResourceManager.GetString("LoginMenu_ManageRights", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Felhasználók és jogosultságaik.
+        /// </summary>
+        public static string ManageRights_CurrentSpot {
+            get {
+                return ResourceManager.GetString("ManageRights_CurrentSpot", resourceCulture);
             }
         }
         

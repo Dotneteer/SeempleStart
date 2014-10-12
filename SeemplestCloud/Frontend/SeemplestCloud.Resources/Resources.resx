@@ -120,6 +120,9 @@
   <data name="Error_InvalidLogin" xml:space="preserve">
     <value>Sikertelen bejelentkezés</value>
   </data>
+  <data name="Gen_Cancel" xml:space="preserve">
+    <value>Mégse</value>
+  </data>
   <data name="Gen_GetStarted" xml:space="preserve">
     <value>Előfizetek &amp;raquo;</value>
   </data>
@@ -140,6 +143,15 @@
   </data>
   <data name="HomeMenu_Register" xml:space="preserve">
     <value>Feliratkozás</value>
+  </data>
+  <data name="InviteUsers_CurrentSpot" xml:space="preserve">
+    <value>Felhasználók meghívása</value>
+  </data>
+  <data name="LoginMenu_InviteUsers" xml:space="preserve">
+    <value>Felhasználók meghívása</value>
+  </data>
+  <data name="LoginMenu_ManageRights" xml:space="preserve">
+    <value>Felhasználók és jogosultságok</value>
   </data>
   <data name="Login_CurrentSpot" xml:space="preserve">
     <value>Jelentkezz be a SeemplestCloud szolgáltatásba!</value>
@@ -167,6 +179,9 @@
   </data>
   <data name="Login_Use_Local" xml:space="preserve">
     <value>Bejelentkezés e-mail címmel és jelszóval</value>
+  </data>
+  <data name="ManageRights_CurrentSpot" xml:space="preserve">
+    <value>Felhasználók és jogosultságaik</value>
   </data>
   <data name="Package_Free_MaxInvoinces" xml:space="preserve">
     <value>Max. havi 10 számla</value>

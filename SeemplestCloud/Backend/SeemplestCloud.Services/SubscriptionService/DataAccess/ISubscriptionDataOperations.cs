@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Seemplest.Core.DataAccess.DataServices;
-using SeemplestCloud.Dto.Subscription;
 
 namespace SeemplestCloud.Services.SubscriptionService.DataAccess
 {
@@ -116,5 +115,40 @@ namespace SeemplestCloud.Services.SubscriptionService.DataAccess
         /// Gets a UserAccount records by user ID
         /// </summary>
         Task<List<UserAccountRecord>> GetUserAccountsByUserIdAsync(Guid userId);
+
+        /// <summary>
+        /// Gets a UserInvitation record by its primary key values
+        /// </summary>
+        /// <param name="id">Id key value</param>
+        /// <returns>The record if found; otherwise, null</returns>
+        Task<UserInvitationRecord> GetUserInvitationByIdAsync(int id);
+
+        /// <summary>
+        /// Gets a UserInvitation record by its "FK_SubscriptionOfInvitation" foreign key values
+        /// </summary>
+        Task<UserInvitationRecord> GetUserInvitationBySubscriptionAsync(int? subscriptionId);
+
+        /// <summary>
+        /// Gets a UserInvitation record by its "FK_UserOfInvitation" foreign key values
+        /// </summary>
+        Task<UserInvitationRecord> GetUserInvitationByUserAsync(Guid userId);
+
+        /// <summary>
+        /// Inserts a UserInvitation record into the database
+        /// </summary>
+        /// <param name="record">Record to insert</param>
+        Task InsertUserInvitationAsync(UserInvitationRecord record);
+
+        /// <summary>
+        /// Updates a UserInvitation record in the database
+        /// </summary>
+        /// <param name="record">Record to update</param>
+        Task UpdateUserInvitationAsync(UserInvitationRecord record);
+
+        /// <summary>
+        /// Deletes a UserInvitation the specidfied record
+        /// </summary>
+        /// <param name="id">Id key value</param>
+        Task DeleteUserInvitationAsync(int id);
     }
 }

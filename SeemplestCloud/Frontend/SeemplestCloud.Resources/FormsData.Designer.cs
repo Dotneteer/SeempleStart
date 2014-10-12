@@ -142,6 +142,15 @@ namespace SeemplestCloud.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Keresés.
+        /// </summary>
+        public static string General_Search {
+            get {
+                return ResourceManager.GetString("General_Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A jelszónak tartalmaznia kell kis- és nagybetűt, számjegyet és valamilyen egyéb írásjelet is.
         /// </summary>
         public static string General_StrongPassword {
@@ -187,6 +196,60 @@ namespace SeemplestCloud.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Erre az e-mail címre megy a meghívó.
+        /// </summary>
+        public static string InviteUsers_InvitedEmailHelp {
+            get {
+                return ResourceManager.GetString("InviteUsers_InvitedEmailHelp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ez lesz a meghívott felhasználó neve.
+        /// </summary>
+        public static string InviteUsers_InvitedUserHelp {
+            get {
+                return ResourceManager.GetString("InviteUsers_InvitedUserHelp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Felhasználónév.
+        /// </summary>
+        public static string InviteUsers_InvitedUserName {
+            get {
+                return ResourceManager.GetString("InviteUsers_InvitedUserName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Új felhasználó meghívása.
+        /// </summary>
+        public static string InviteUsers_NewInvitation {
+            get {
+                return ResourceManager.GetString("InviteUsers_NewInvitation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Meghívás visszavonása.
+        /// </summary>
+        public static string InviteUsers_RevokeTooltip {
+            get {
+                return ResourceManager.GetString("InviteUsers_RevokeTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Elküldöm.
+        /// </summary>
+        public static string InviteUsers_SendButton {
+            get {
+                return ResourceManager.GetString("InviteUsers_SendButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Maradjak bejelentkezve.
         /// </summary>
         public static string LoginViewModel_RememberMe {
@@ -214,7 +277,7 @@ namespace SeemplestCloud.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Az előfizetés nevének magadása kötelező.
+        ///   Looks up a localized string similar to Az előfizetés nevének megadása kötelező.
         /// </summary>
         public static string SubscriptionPackageViewModel_SubscriptionName_Required {
             get {

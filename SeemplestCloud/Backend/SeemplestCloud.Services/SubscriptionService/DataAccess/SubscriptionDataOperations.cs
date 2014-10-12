@@ -208,5 +208,65 @@ namespace SeemplestCloud.Services.SubscriptionService.DataAccess
                 "where [UserId]=@0",
                 userId));
         }
+
+        /// <summary>
+        /// Gets a UserInvitation record by its primary key values
+        /// </summary>
+        /// <param name="id">Id key value</param>
+        /// <returns>The record if found; otherwise, null</returns>
+        public async Task<UserInvitationRecord> GetUserInvitationByIdAsync(int id)
+        {
+            return await OperationAsync(ctx => ctx.FirstOrDefaultAsync<UserInvitationRecord>(
+                "where [Id]=@0",
+                id));
+        }
+
+        /// <summary>
+        /// Gets a UserInvitation record by its "FK_SubscriptionOfInvitation" foreign key values
+        /// </summary>
+        public async Task<UserInvitationRecord> GetUserInvitationBySubscriptionAsync(int? subscriptionId)
+        {
+            return await OperationAsync(ctx => ctx.FirstOrDefaultAsync<UserInvitationRecord>(
+                "where [SubscriptionId]=@0",
+                subscriptionId));
+        }
+
+        /// <summary>
+        /// Gets a UserInvitation record by its "FK_UserOfInvitation" foreign key values
+        /// </summary>
+        public async Task<UserInvitationRecord> GetUserInvitationByUserAsync(Guid userId)
+        {
+            return await OperationAsync(ctx => ctx.FirstOrDefaultAsync<UserInvitationRecord>(
+                "where [UserId]=@0",
+                userId));
+        }
+
+        /// <summary>
+        /// Inserts a UserInvitation record into the database
+        /// </summary>
+        /// <param name="record">Record to insert</param>
+        public async Task InsertUserInvitationAsync(UserInvitationRecord record)
+        {
+            await OperationAsync(ctx => ctx.InsertAsync(record));
+        }
+
+        /// <summary>
+        /// Updates a UserInvitation record in the database
+        /// </summary>
+        /// <param name="record">Record to update</param>
+        public async Task UpdateUserInvitationAsync(UserInvitationRecord record)
+        {
+            await OperationAsync(ctx => ctx.UpdateAsync(record));
+        }
+
+        /// <summary>
+        /// Deletes a UserInvitation the specidfied record
+        /// </summary>
+        /// <param name="id">Id key value</param>
+        public async Task DeleteUserInvitationAsync(int id)
+        {
+            await OperationAsync(ctx => ctx.DeleteByIdAsync<UserInvitationRecord>(
+                id));
+        }
     }
 }

@@ -95,5 +95,56 @@ namespace SeemplesTools.HtmlBuilders.NgBs
 
             return formGroup.Markup;
         }
-   }
+
+        /// <summary>
+        /// Renders a cancel button for a modal dialog
+        /// </summary>
+        /// <param name="ngClick">ng-click attribute value (cancel() by default)</param>
+        /// <param name="theme">Button theme</param>
+        /// <param name="buttonText">Button text (Resources.Gen_Cancel by default)</param>
+        public MvcHtmlString CancelButton(string ngClick = null, BsButtonTheme theme = BsButtonTheme.Default, string buttonText = null)
+        {
+            if (ngClick == null)
+            {
+                ngClick = "cancel()";
+            }
+            if (buttonText == null)
+            {
+                buttonText = Resources.Gen_Cancel;
+            }
+            var button = new BsHtmlElement(HtmlTag.Button);
+            button
+                .CssClass(BsClass.Button)
+                .CssClass(BsClass.ButtonTheme.From(theme))
+                .Attr(NgTag.NgClick, ngClick);
+            button.AddChild(new HtmlText(buttonText));
+            return button.Markup;
+        }
+
+        /// <summary>
+        /// Renders a cancel button for a modal dialog
+        /// </summary>
+        /// <param name="ngClick">ng-click attribute value (cancel() by default)</param>
+        /// <param name="theme">Button theme</param>
+        /// <param name="buttonText">Button text (Resources.Gen_Cancel by default)</param>
+        public MvcHtmlString OkButton(string ngClick = null, BsButtonTheme theme = BsButtonTheme.Success, string buttonText = null)
+        {
+            if (ngClick == null)
+            {
+                ngClick = "ok()";
+            }
+            if (buttonText == null)
+            {
+                buttonText = Resources.Gen_Ok;
+            }
+            var button = new BsHtmlElement(HtmlTag.Button);
+            button
+                .CssClass(BsClass.Button)
+                .CssClass(BsClass.ButtonTheme.From(theme))
+                .Attr(NgTag.NgClick, ngClick)
+                .Attr(NgTag.NgDisabled, _form.FormName + ".$invalid");
+            button.AddChild(new HtmlText(buttonText));
+            return button.Markup;
+        }
+    }
 }

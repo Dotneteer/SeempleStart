@@ -205,6 +205,7 @@ namespace SeemplesTools.HtmlBuilders.Forms
                             : "{0}.{1}.$error.{2} && {0}.{1}.$dirty",
                         _formBuilder.BsForm.FormName, modelMetadata.PropertyName, key))
                     .Attr(BsTag.Tooltip, string.Format(attr.ErrorMessage, modelMetadata.DisplayName))
+                    .Attr(BsTag.TooltipAppendToBody, "true")
                     .Attr(BsTag.TooltipPlacement, "left");
                 container.AddChild(valTag);
             }
