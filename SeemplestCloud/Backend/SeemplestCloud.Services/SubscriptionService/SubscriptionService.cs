@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Seemplest.Core.DataAccess.DataServices;
-using Seemplest.Core.ServiceObjects;
 using SeemplestCloud.Dto.Subscription;
+using SeemplestCloud.Services.Infrastructure;
 using SeemplestCloud.Services.SubscriptionService.DataAccess;
 using UserRecord = SeemplestCloud.Services.SubscriptionService.DataAccess.UserRecord;
 
@@ -13,7 +13,8 @@ namespace SeemplestCloud.Services.SubscriptionService
     /// <summary>
     /// This class implements the operations related to subscriptions
     /// </summary>
-    public class SubscriptionService : ServiceObjectBase, ISubscriptionService
+    public class SubscriptionService : ServiceWithAppPrincipalBase, 
+        ISubscriptionService
     {
         /// <summary>
         /// Gets the user with the specified ID
@@ -250,6 +251,15 @@ namespace SeemplestCloud.Services.SubscriptionService
                 return (await ctx.GetUserAccountsByUserIdAsync(userId))
                     .Select(MapUserAccount).ToList();
             }
+        }
+
+        /// <summary>
+        /// Sends an invitation to the specified user
+        /// </summary>
+        /// <param name="userInfo">Information about the invited user</param>
+        public Task InviteUserAsync(InviteUserDto userInfo)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

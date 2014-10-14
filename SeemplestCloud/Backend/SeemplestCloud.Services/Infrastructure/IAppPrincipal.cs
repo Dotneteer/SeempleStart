@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Principal;
 
-namespace SeemplestCloud.WebClient.Models.UserManagement
+namespace SeemplestCloud.Services.Infrastructure
 {
     /// <summary>
     /// This interface defines a principal that can be used within this app

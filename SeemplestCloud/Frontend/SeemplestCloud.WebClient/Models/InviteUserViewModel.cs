@@ -18,9 +18,5 @@ namespace SeemplestCloud.WebClient.Models
         [NgEmailAddress(ErrorMessageResourceType = typeof(FormsData), ErrorMessageResourceName = "General_Email_Error")]
         [Display(Name = "General_Email", Description = "InviteUsers_InvitedEmailHelp", ResourceType = typeof(FormsData))]
         public string InvitedEmail { get; set; }
-
-        public int SubscriptionId { get; set; }
-
-        public int UserId { get; set; }
     }
 }
