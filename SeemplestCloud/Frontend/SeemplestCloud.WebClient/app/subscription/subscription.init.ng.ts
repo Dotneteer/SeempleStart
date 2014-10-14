@@ -173,15 +173,18 @@
         getPackage: () => string;
         isSelected: (string) => boolean;
         model: any;
+        message: string;
+        result: string;
+        result2: string;
     }
 
     /**
     * The controller managing the current spot
     */
     export class PackageSelectionCtrl {
-        public static $inject = ['$scope'];
+        public static $inject = ['$scope' , 'subscriptionApi'];
 
-        constructor($scope: IPackageSelectionScope) {
+        constructor($scope: IPackageSelectionScope, api: ISubscriptionApi) {
             var packageCode: string;
 
             $scope.model = {};
@@ -198,6 +201,24 @@
             $scope.isSelected = (code: string) => {
                 return packageCode == code;
             }
+
+            api.getMessage().success(data => {
+                $scope.message = data;
+            });
+
+            api.getResult(3)
+                .success(data => {
+                    $scope.result = data.toString();
+                }).error(
+                data => { $scope.result = JSON.stringify(data); },
+                data => { $scope.result = JSON.stringify(data); });
+
+            api.getResult2(3)
+                .success(data => {
+                    $scope.result2 = data.toString();
+                }).error(
+                data => { $scope.result2 = JSON.stringify(data); },
+                data => { $scope.result2 = JSON.stringify(data); });
         }
     }
 }

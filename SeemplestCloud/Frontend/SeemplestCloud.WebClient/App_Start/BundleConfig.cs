@@ -24,8 +24,10 @@ namespace SeemplestCloud.WebClient
                 "~/app/core/core.init.ng.js",
                 "~/app/core/core.directives.ng.js",
                 "~/app/core/core.filters.ng.js",
+                "~/app/core/core.api.ng.js",
                 "~/app/core/currentSpot.ng.js",
                 "~/app/subscription/subscription.init.ng.js",
+                "~/app/subscription/subscription.api.ng.js",
                 "~/app/root.init.ng.js"
                 ));
 

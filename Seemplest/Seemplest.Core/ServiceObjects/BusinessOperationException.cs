@@ -16,9 +16,16 @@ namespace Seemplest.Core.ServiceObjects
     public abstract class BusinessOperationException : ApplicationException
     {
         /// <summary>
+        /// The default reason code of all business exceptions
+        /// </summary>
+        public const string DEFAULT_REASON = "NoExplanation";
+
+        /// <summary>
         /// Gets the notifications belonging to this exception.
         /// </summary>
         public NotificationList Notifications { get; private set; }
+
+        public string ReasonCode { get; protected set; }
 
         /// <summary>
         /// Initializes a new instance of the exception class.
@@ -26,6 +33,7 @@ namespace Seemplest.Core.ServiceObjects
         protected BusinessOperationException()
         {
             Notifications = new NotificationList();
+            ReasonCode = DEFAULT_REASON;
         }
 
         /// <summary>
@@ -36,6 +44,7 @@ namespace Seemplest.Core.ServiceObjects
             : base(message)
         {
             Notifications = new NotificationList();
+            ReasonCode = DEFAULT_REASON;
         }
 
         /// <summary>
@@ -54,6 +63,7 @@ namespace Seemplest.Core.ServiceObjects
             : base(message, innerException)
         {
             Notifications = new NotificationList();
+            ReasonCode = DEFAULT_REASON;
         }
 
         /// <summary>

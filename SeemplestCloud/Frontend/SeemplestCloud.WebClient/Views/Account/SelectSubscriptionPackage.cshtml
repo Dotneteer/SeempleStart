@@ -13,6 +13,9 @@
                 @Html.Raw(Resources.SignUpConfirmation_Message)
                 @using (var f = Html.Begin(new NgBsMvcForm("subscriptionForm", "SaveSubscriptionPackage", "Account").Horizontal().LabelMd(3).InputMd(7)))
                 {
+                    <div>message: {{message}}</div>
+                    <div>result: {{result}}</div>
+                    <div>result2: {{result2}}</div>
                     <div class="row" style="margin-bottom: 24px;">
                         <div class="col-md-3">
                             <div class="subscription-option" ng-class="{'subscription-option-selected': isSelected('Trial')}"

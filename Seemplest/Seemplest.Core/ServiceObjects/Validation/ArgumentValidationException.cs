@@ -7,12 +7,14 @@ namespace Seemplest.Core.ServiceObjects.Validation
     /// </summary>
     public class ArgumentValidationException : BusinessOperationException
     {
+        public const string ARGUMENT_REASON = "ArgumentValidation";
         /// <summary>
         /// Initializes a new instance of the exception class.
         /// </summary>
         public ArgumentValidationException()
             : base("Argument validation failed.")
         {
+            ReasonCode = ARGUMENT_REASON;
         }
 
         /// <summary>
@@ -22,6 +24,7 @@ namespace Seemplest.Core.ServiceObjects.Validation
         public ArgumentValidationException(string message)
             : base(message)
         {
+            ReasonCode = ARGUMENT_REASON;
         }
 
         /// <summary>
@@ -38,6 +41,7 @@ namespace Seemplest.Core.ServiceObjects.Validation
         public ArgumentValidationException(string message, Exception innerException)
             : base(message, innerException)
         {
+            ReasonCode = ARGUMENT_REASON;
         }
 
         /// <summary>

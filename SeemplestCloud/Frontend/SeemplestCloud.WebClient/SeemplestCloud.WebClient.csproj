@@ -196,6 +196,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LanguageController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\SubscriptionApiController.cs" />
     <Compile Include="Controllers\SubscriptionController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -405,12 +406,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="app\core\core.api.ng.ts" />
     <TypeScriptCompile Include="app\core\core.directives.ng.ts" />
     <TypeScriptCompile Include="app\core\core.filters.ng.ts" />
     <TypeScriptCompile Include="app\core\core.types.ts" />
     <TypeScriptCompile Include="app\core\core.init.ng.ts" />
     <TypeScriptCompile Include="app\core\currentSpot.ng.ts" />
     <TypeScriptCompile Include="app\root.init.ng.ts" />
+    <TypeScriptCompile Include="app\subscription\subscription.api.ng.ts" />
     <TypeScriptCompile Include="app\subscription\subscription.init.ng.ts" />
     <TypeScriptCompile Include="Scripts\typings\angular-ui-bootstrap\angular-ui-bootstrap.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-animate.d.ts" />

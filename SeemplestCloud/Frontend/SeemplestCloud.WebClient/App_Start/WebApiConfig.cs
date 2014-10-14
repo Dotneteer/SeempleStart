@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http;
+﻿using System.Web.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using SeemplestBlocks.Core.ServiceInfrastructure;
 
 namespace SeemplestCloud.WebClient
 {
@@ -19,6 +19,20 @@ namespace SeemplestCloud.WebClient
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
+
+            // --- Setup JSON formatting
+            var jsonFormatter = GlobalConfiguration.Configuration.Formatters.JsonFormatter;
+            var jSettings = new JsonSerializerSettings()
+            {
+                Formatting = Formatting.None,
+                DateTimeZoneHandling = DateTimeZoneHandling.Local
+            };
+            jSettings.Converters.Add(new UtcToLocConverter());
+            jsonFormatter.SerializerSettings = jSettings;
+            jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
+            // --- Register exception handling
+            GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionHandlingAttribute());
         }
     }
 }
