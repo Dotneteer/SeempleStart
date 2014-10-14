@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -40,12 +38,7 @@ namespace SeemplestBlocks.Core.ServiceInfrastructure
                     reasonCode = businessEx.ReasonCode,
                     isBusiness = true,
                     message = businessEx.Message,
-                    notifications = (from notification in businessEx.Notifications.Items
-                                     select new NotificationInfo
-                                     {
-                                         target = notification.Target,
-                                         errorCode = notification.Code
-                                     }).ToList()
+                    errorObject = businessEx.Notifications.Items
                 };
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.InternalServerError)
                 {
@@ -76,13 +69,7 @@ namespace SeemplestBlocks.Core.ServiceInfrastructure
 
         public class BusinessExceptionInfo : InfrastructureExceptionInfo
         {
-            public List<NotificationInfo> notifications { get; set; }
-        }
-
-        public class NotificationInfo
-        {
-            public string target { get; set; }
-            public string errorCode { get; set; }
+            public object errorObject { get; set; }
         }
         // ReSharper restore InconsistentNaming
     }

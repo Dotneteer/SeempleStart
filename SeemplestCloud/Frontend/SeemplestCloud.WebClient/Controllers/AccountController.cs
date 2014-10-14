@@ -9,6 +9,7 @@ using Microsoft.Owin.Security;
 using Seemplest.Core.DependencyInjection;
 using SeemplestBlocks.Core.Internationalization;
 using SeemplestCloud.Dto.Subscription;
+using SeemplestCloud.Services.Infrastructure;
 using SeemplestCloud.Services.SubscriptionService;
 using SeemplestCloud.WebClient.Models;
 using SeemplestCloud.WebClient.Models.UserManagement;

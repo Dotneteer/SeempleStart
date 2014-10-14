@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Seemplest.Core.ServiceObjects.Validation;
-using SeemplestCloud.WebClient.Infrastructure;
+using SeemplestBlocks.Core.ServiceInfrastructure;
+using SeemplestCloud.Dto.Subscription;
+using SeemplestCloud.Services.SubscriptionService;
 
 namespace SeemplestCloud.WebClient.Controllers
 {
@@ -27,6 +30,15 @@ namespace SeemplestCloud.WebClient.Controllers
         public string GetMessage()
         {
             return "Hello!";
+        }
+
+        [HttpPost]
+        [Route("inviteUser")]
+        [Authorize]
+        public async Task InviteUserAsync(InviteUserDto userInfo)
+        {
+            var srvObj = HttpServiceFactory.CreateService<ISubscriptionService>();
+            await srvObj.InviteUserAsync(userInfo);
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace SeemplestCloud.WebClient.Models.UserManagement
+namespace SeemplestCloud.Services.Infrastructure
 {
     /// <summary>
     /// This class manages a collection of service roles

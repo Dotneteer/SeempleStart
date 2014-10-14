@@ -6,14 +6,9 @@
         message: string;
     }
 
-    export class NotificationInfo {
-        target: string;
-        errorCode: string;
-    }
-
     // --- This class describes a business error
     export interface IBusinessError extends IInfrastructureError {
-        notifications: NotificationInfo[];
+        errorObject: any;
     }
 
     /*

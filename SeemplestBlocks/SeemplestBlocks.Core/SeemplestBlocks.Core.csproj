@@ -127,7 +127,9 @@
     <Compile Include="Email\SmtpConfig.cs" />
     <Compile Include="Email\SmtpEmailSender.cs" />
     <Compile Include="Internationalization\CultureHelper.cs" />
+    <Compile Include="Internationalization\LanguageAwareApiControllerBase.cs" />
     <Compile Include="Internationalization\LanguageAwareControllerBase.cs" />
+    <Compile Include="Internationalization\ResourceControllerBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\DataAccess\ISecurityDataOperations.cs" />
     <Compile Include="Security\DataAccess\SecurityDataOperations.cs" />

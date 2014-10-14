@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Seemplest.Core.DataAccess.DataServices;
-using Seemplest.Core.ServiceObjects;
 using SeemplestCloud.Dto.Subscription;
+using SeemplestCloud.Services.Infrastructure;
 using SeemplestCloud.Services.SubscriptionService.DataAccess;
+using SeemplestCloud.Services.SubscriptionService.Exceptions;
 using UserRecord = SeemplestCloud.Services.SubscriptionService.DataAccess.UserRecord;
 
 namespace SeemplestCloud.Services.SubscriptionService
@@ -13,7 +15,8 @@ namespace SeemplestCloud.Services.SubscriptionService
     /// <summary>
     /// This class implements the operations related to subscriptions
     /// </summary>
-    public class SubscriptionService : ServiceObjectBase, ISubscriptionService
+    public class SubscriptionService : ServiceWithAppPrincipalBase, 
+        ISubscriptionService
     {
         /// <summary>
         /// Gets the user with the specified ID
@@ -249,6 +252,44 @@ namespace SeemplestCloud.Services.SubscriptionService
             {
                 return (await ctx.GetUserAccountsByUserIdAsync(userId))
                     .Select(MapUserAccount).ToList();
+            }
+        }
+
+        /// <summary>
+        /// Sends an invitation to the specified user
+        /// </summary>
+        /// <param name="userInfo">Information about the invited user</param>
+        public async Task InviteUserAsync(InviteUserDto userInfo)
+        {
+            Verify
+                .NotNull(userInfo, "userInfo")
+                .NotNullOrEmpty(userInfo.InvitedEmail, "InvitedEmail")
+                .IsEmail(userInfo.InvitedEmail, "InvitedEmail")
+                .NotNullOrEmpty(userInfo.InvitedUserName, "InvitedUserName")
+                .RaiseWhenFailed();
+
+            using (var ctx = DataAccessFactory.CreateContext<ISubscriptionDataOperations>())
+            {
+                var email = await ctx.GetUserByEmailAsync(userInfo.InvitedEmail);
+                if (email != null)
+                {
+                    throw new EmailReservedException(userInfo.InvitedEmail);
+                }
+
+                var invitationCode = String.Format("{0:N}{1:N}{2:N}", Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+                await ctx.InsertUserInvitationAsync(new UserInvitationRecord
+                {
+                    InvitedUserName = userInfo.InvitedUserName,
+                    InvitedEmail = userInfo.InvitedUserName,
+                    InvitationCode = invitationCode,
+                    CreatedUtc = DateTimeOffset.UtcNow,
+                    ExpirationDateUtc = DateTimeOffset.UtcNow.AddHours(72),
+                    SubscriptionId = Principal.SubscriptionId,
+                    UserId = Principal.UserId,
+                    LastModifiedUtc = null,
+                    State = UserInvitationState.SENT,
+                    Type = UserInvitationType.USER
+                });
             }
         }
 

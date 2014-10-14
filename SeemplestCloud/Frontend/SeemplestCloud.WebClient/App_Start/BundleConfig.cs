@@ -24,16 +24,17 @@ namespace SeemplestCloud.WebClient
                 "~/app/core/core.init.ng.js",
                 "~/app/core/core.directives.ng.js",
                 "~/app/core/core.filters.ng.js",
-                "~/app/core/core.api.ng.js",
                 "~/app/core/currentSpot.ng.js",
+                "~/app/core/core.api.ng.js",
                 "~/app/subscription/subscription.init.ng.js",
                 "~/app/subscription/subscription.api.ng.js",
+                "~/app/subscription/subscription.controllers.ng.js",
                 "~/app/root.init.ng.js"
                 ));
 
             // Set EnableOptimizations to false for debugging. For more information,
             // visit http://go.microsoft.com/fwlink/?LinkId=301862
-            BundleTable.EnableOptimizations = true;
+            BundleTable.EnableOptimizations = false;
         }
     }
 }

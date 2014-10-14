@@ -28,6 +28,14 @@ namespace Seemplest.Core.ServiceObjects
         public string ReasonCode { get; protected set; }
 
         /// <summary>
+        /// The object that contains the error information to send to the client side
+        /// </summary>
+        public virtual object ErrorObject
+        {
+            get { return Notifications.Items; }
+        }
+
+        /// <summary>
         /// Initializes a new instance of the exception class.
         /// </summary>
         protected BusinessOperationException()

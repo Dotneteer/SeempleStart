@@ -215,6 +215,7 @@
     <Compile Include="Queue\MemoryNamedQueueProvider.cs" />
     <Compile Include="Queue\MemoryPoppedMessage.cs" />
     <Compile Include="Queue\MemoryQueuedMessage.cs" />
+    <Compile Include="ServiceObjects\InvalidBusinessRuleException.cs" />
     <Compile Include="ServiceObjects\ServiceCallContextItemBase.cs" />
     <Compile Include="ServiceObjects\UiCultureContextItem.cs" />
     <Compile Include="ServiceObjects\Validation\ArgumentValidationException.cs" />

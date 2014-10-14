@@ -14,5 +14,6 @@
         public const string EMPTY_GUID = "EmptyGuid";
         public const string NO_MATCH = "NoMatch";
         public const string TOO_LONG = "TooLong";
+        public const string INVALID_EMAIL = "InvalidEmail";
     }
 }

@@ -35,7 +35,7 @@ namespace SeemplesTools.HtmlBuilders.Forms
             label
                 .Text(modelMetadata.DisplayName ?? modelMetadata.PropertyName)
                 .CssClass(BsClass.Control.Label)
-                .Attr(HtmlAttr.For, modelMetadata.PropertyName)
+                .Attr(HtmlAttr.For, CamelCase(modelMetadata.PropertyName))
                 .CssClass(modelMetadata.IsRequired, HtmlAttr.Required);
             label.ApplyColumnWidths(null, 
                 _formBuilder.BsForm.LabelWidthXs, 
@@ -56,7 +56,7 @@ namespace SeemplesTools.HtmlBuilders.Forms
             AutoFocus autoFocus, ValidationOption validationOption)
         {
             // --- The form group that encapsulates the label and the control
-            var propName = modelMetadata.PropertyName;
+            var propName = CamelCase(modelMetadata.PropertyName);
             var formGroup = new BsFormGroup {Depth = _formBuilder.Depth + 1};
             var condition = string.Format("{0}{1}",
                 "{0}.{1}.$invalid",
@@ -143,6 +143,7 @@ namespace SeemplesTools.HtmlBuilders.Forms
         public HtmlElementBase<BsHtmlElement> CreateInput(InputTagType inputTagType, AutoFocus autoFocus,
             ModelMetadata modelMetadata, string name)
         {
+            name = CamelCase(name);
             var input = new BsHtmlElement(HtmlTag.Input)
                 .CssClass(inputTagType != InputTagType.CheckBox, BsClass.Control.FormControl)
                 .Attr(HtmlAttr.Type, GetInputTypeString(modelMetadata, inputTagType))
@@ -203,7 +204,7 @@ namespace SeemplesTools.HtmlBuilders.Forms
                         validationOption == ValidationOption.Always
                             ? "{0}.{1}.$error.{2}"
                             : "{0}.{1}.$error.{2} && {0}.{1}.$dirty",
-                        _formBuilder.BsForm.FormName, modelMetadata.PropertyName, key))
+                        _formBuilder.BsForm.FormName, CamelCase(modelMetadata.PropertyName), key))
                     .Attr(BsTag.Tooltip, string.Format(attr.ErrorMessage, modelMetadata.DisplayName))
                     .Attr(BsTag.TooltipAppendToBody, "true")
                     .Attr(BsTag.TooltipPlacement, "left");
@@ -237,5 +238,12 @@ namespace SeemplesTools.HtmlBuilders.Forms
                     return "text";
             }
         }
+
+        public static string CamelCase(string str)
+        {
+            return str;
+            //return str.Substring(0, 1).ToLower() + str.Substring(1);
+        }
+
     }
 }
