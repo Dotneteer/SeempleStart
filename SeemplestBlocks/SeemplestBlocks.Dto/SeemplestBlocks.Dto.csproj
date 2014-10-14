@@ -43,7 +43,6 @@
     <Compile Include="AppConfig\LocalizedResourceDto.cs" />
     <Compile Include="Email\AppointmentDefinitionDto.cs" />
     <Compile Include="Email\EmailDefinitionDto.cs" />
-    <Compile Include="Internationalization\ResourceStringDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\UserAccountDto.cs" />
     <Compile Include="Security\UserInfoDto.cs" />

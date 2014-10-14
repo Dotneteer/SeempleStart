@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Security.Principal;
 using Newtonsoft.Json;
 
-namespace SeemplestCloud.Services.Infrastructure
+namespace SeemplestCloud.WebClient.Models.UserManagement
 {
     /// <summary>
     /// This class implements a principal that can be used within this app

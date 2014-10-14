@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNet.Identity
-@using SeemplestCloud.Services.Infrastructure
+@using SeemplestCloud.WebClient.Models.UserManagement
 
-@if (Request.IsAuthenticated && HttpContext.Current.User is AppPrincipal)
+@if (Request.IsAuthenticated)
 {
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {

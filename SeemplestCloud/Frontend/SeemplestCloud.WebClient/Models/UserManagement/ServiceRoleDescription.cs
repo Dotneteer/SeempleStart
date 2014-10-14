@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SeemplestCloud.Services.Infrastructure
+namespace SeemplestCloud.WebClient.Models.UserManagement
 {
     /// <summary>
     /// This class describes a service with its available roles

@@ -95,11 +95,5 @@ namespace SeemplestCloud.Services.SubscriptionService
         /// <param name="userId">User ID</param>
         /// <returns>Login accounts</returns>
         Task<List<UserAccountDto>> GetUserAccountsByUserId(Guid userId);
-
-        /// <summary>
-        /// Sends an invitation to the specified user
-        /// </summary>
-        /// <param name="userInfo">Information about the invited user</param>
-        Task InviteUserAsync(InviteUserDto userInfo);
     }
 }
