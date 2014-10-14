@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SeemplestBlocks.Core.Internationalization;
+using SeemplestBlocks.Core.Internationalization; 
 using SeemplestBlocks.Dto.Internationalization;
 using SoftwareApproach.TestingExtensions;
 

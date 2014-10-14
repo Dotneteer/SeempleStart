@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using SeemplestBlocks.Dto.Internationalization;
 
-namespace SeemplestBlocks.Core.Internationalization
+namespace SeemplestBlocks.Core.Internationalization 
 {
     /// <summary>
     /// This controller allows retrieving server side resource files as 
