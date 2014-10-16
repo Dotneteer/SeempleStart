@@ -3,6 +3,7 @@ using System.Threading;
 using System.Web.Http;
 using SeemplestBlocks.Core.Internationalization;
 using SeemplestBlocks.Dto.Internationalization;
+using SeemplestCloud.Services;
 
 namespace SeemplestCloud.WebClient.Controllers
 {
@@ -16,10 +17,20 @@ namespace SeemplestCloud.WebClient.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
+        [Route("errormessages")]
+        public List<ResourceStringDto> GetErrorMessages()
+        {
+            return GetResources(typeof(ServiceMessages));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         [Route("resources")]
         public List<ResourceStringDto> GetResources()
         {
-            return GetResources(typeof (SeemplesTools.HtmlBuilders.Resources));
+            return GetResources(typeof(SeemplesTools.HtmlBuilders.Resources));
         }
 
         [Route("current")]
@@ -29,3 +40,4 @@ namespace SeemplestCloud.WebClient.Controllers
         }
     }
 }
+

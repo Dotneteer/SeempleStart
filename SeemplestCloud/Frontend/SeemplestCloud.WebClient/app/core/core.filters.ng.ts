@@ -1,7 +1,8 @@
 ﻿module Core {
-   /*
-    * Initializes the components of the main view
-    */
+
+    // ------------------------------------------------------------------------
+    // Initializes the angular objects defined in this module fragment
+    // ------------------------------------------------------------------------
     export function initCommonFilters() {
         Core.appModule
             .filter('zeroAsEmpty', [zeroAsEmpty])
@@ -9,9 +10,9 @@
             .filter('longText', [longTextFilter]);
     }
     
-    /*
-     * This filter shows the zero value as an empty string
-     */
+    // ------------------------------------------------------------------------
+    // This filter shows the zero value as an empty string
+    // ------------------------------------------------------------------------
     export function zeroAsEmpty() {
         return (value: number) => {
             if (angular.isNumber(value)) {
@@ -22,9 +23,9 @@
         }
     }
 
-    /*
-     * This filter shows a text with a specified maximum length
-     */
+    // ------------------------------------------------------------------------
+    // This filter shows a text with a specified maximum length
+    // ------------------------------------------------------------------------
     export function longTextFilter() {
         var postfix = "...";
 
@@ -40,9 +41,9 @@
         };
     }
 
-    /*
-     * This filter converts a date to a string
-     */
+    // ------------------------------------------------------------------------
+    // This filter converts a date to a string
+    // ------------------------------------------------------------------------
     export function dateAsStringFilter() {
         return (date: Date) => {
             return moment(date).toDate();

@@ -39,6 +39,7 @@
   <ItemGroup>
     <Compile Include="ScErrorCodes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Subscription\InviteUserDto.cs" />
     <Compile Include="Subscription\SubscriptionDto.cs" />
     <Compile Include="Subscription\UserAccountDto.cs" />
     <Compile Include="Subscription\UserDto.cs" />

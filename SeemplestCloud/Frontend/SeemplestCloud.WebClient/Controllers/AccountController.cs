@@ -9,6 +9,7 @@ using Microsoft.Owin.Security;
 using Seemplest.Core.DependencyInjection;
 using SeemplestBlocks.Core.Internationalization;
 using SeemplestCloud.Dto.Subscription;
+using SeemplestCloud.Services.Infrastructure;
 using SeemplestCloud.Services.SubscriptionService;
 using SeemplestCloud.WebClient.Models;
 using SeemplestCloud.WebClient.Models.UserManagement;
@@ -22,6 +23,10 @@ namespace SeemplestCloud.WebClient.Controllers
     [Authorize]
     public class AccountController : LanguageAwareControllerBase
     {
+        /// <summary>
+        /// The name of the cookie used to store user ID
+        /// </summary>
+
         /// <summary>
         /// UserManager object used to handle users
         /// </summary>
@@ -75,7 +80,7 @@ namespace SeemplestCloud.WebClient.Controllers
                 case SignInStatus.Success:
                     var subscSrv = ServiceManager.GetService<ISubscriptionService>();
                     var token = await subscSrv.GetUserTokenAsync(model.Email);
-                    CreateAuthenticationTicket(token.UserId, token.UserName, token.IsServiceUser, token.SubscriptionId, token.IsSubscriptionOwner);
+                    CreateAuthenticationTicket(model.RememberMe, token.UserId, token.UserName, token.IsServiceUser, token.SubscriptionId, token.IsSubscriptionOwner);
                     return RedirectToLocal(returnUrl);
                 
                 case SignInStatus.LockedOut:
@@ -136,7 +141,7 @@ namespace SeemplestCloud.WebClient.Controllers
                         CreatedUtc = DateTimeOffset.UtcNow,
                     };
                     var subscriptionId = await subscrSrv.CreateSubscriptionAsync(newSubscr, user.Id);
-                    CreateAuthenticationTicket(new Guid(user.Id), user.UserName, false, subscriptionId, true);
+                    CreateAuthenticationTicket(false, new Guid(user.Id), user.UserName, false, subscriptionId, true);
                     return RedirectToAction("SelectSubscriptionPackage");
                 }
                 AddErrors(result);
@@ -221,7 +226,7 @@ namespace SeemplestCloud.WebClient.Controllers
                     var subscSrv = ServiceManager.GetService<ISubscriptionService>();
                     var token = await subscSrv.GetUserTokenByProviderDataAsync(loginInfo.Login.LoginProvider,
                         loginInfo.Login.ProviderKey);
-                    CreateAuthenticationTicket(token.UserId, token.UserName, 
+                    CreateAuthenticationTicket(false, token.UserId, token.UserName, 
                         token.IsServiceUser, token.SubscriptionId, token.IsSubscriptionOwner);
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
@@ -290,7 +295,7 @@ namespace SeemplestCloud.WebClient.Controllers
                             CreatedUtc = DateTimeOffset.UtcNow,
                         };
                         var subscriptionId = await subscrSrv.CreateSubscriptionAsync(newSubscr, user.Id);
-                        CreateAuthenticationTicket(new Guid(user.Id), user.UserName, false, subscriptionId, true);
+                        CreateAuthenticationTicket(false, new Guid(user.Id), user.UserName, false, subscriptionId, true);
                         return RedirectToAction("SelectSubscriptionPackage");
                     }
                 }
@@ -397,33 +402,38 @@ namespace SeemplestCloud.WebClient.Controllers
         /// <summary>
         /// Creates an authentication ticket with the specified properties
         /// </summary>
+        /// <param name="keepLoggedIn">Keep the user logged in</param>
         /// <param name="userId">User ID</param>
         /// <param name="userName">User name</param>
         /// <param name="isServiceUser">Is this user a service user?</param>
         /// <param name="subscriptionId">Optional subscription ID</param>
         /// <param name="isSubscriptionOwner">Is this user a subscription owner?</param>
-        public void CreateAuthenticationTicket(Guid userId, string userName, bool isServiceUser, 
+        public void CreateAuthenticationTicket(bool keepLoggedIn, Guid userId, string userName, bool isServiceUser, 
             int? subscriptionId, bool isSubscriptionOwner)
         {
             var appPrincipal = new AppPrincipal(userId, userName, isServiceUser, subscriptionId, isSubscriptionOwner,
                 null);
             var jsonTicket = appPrincipal.Serialize();
-            var authTicket = new FormsAuthenticationTicket(1, userName, DateTime.UtcNow, DateTime.UtcNow.AddHours(24), false, jsonTicket);
+            var authTicket = new FormsAuthenticationTicket(1, userName, DateTime.Now, DateTime.Now.AddHours(24), true, jsonTicket);
             var encTicket = FormsAuthentication.Encrypt(authTicket);
             var faCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encTicket);
+            if (keepLoggedIn)
+            {
+                faCookie.Expires = DateTime.Now.AddDays(14);
+            }
             Response.Cookies.Add(faCookie);
         }
 
         /// <summary>
         /// Creates an authentication ticket with the specified properties
         /// </summary>
-        public void TerminateAuthenticationTicket(string userName)
+        public static void TerminateAuthenticationTicket(string userName)
         {
-            var authTicket = new FormsAuthenticationTicket(1, userName, DateTime.UtcNow, DateTime.UtcNow.AddHours(24), false, 
+            var authTicket = new FormsAuthenticationTicket(1, userName, DateTime.Now, DateTime.Now.AddHours(24), true,
                 AuthenticationTicketState.Terminated);
             var encTicket = FormsAuthentication.Encrypt(authTicket);
             var faCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encTicket);
-            Response.Cookies.Add(faCookie);
+            System.Web.HttpContext.Current.Response.Cookies.Add(faCookie);
         }
 
         #endregion

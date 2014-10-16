@@ -60,6 +60,13 @@ namespace SeemplestCloud.Services.SubscriptionService
         Task<UserTokenDto> GetUserTokenAsync(string userEmail);
 
         /// <summary>
+        /// Gets user information by the user ID provided
+        /// </summary>
+        /// <param name="userId">User ID within the system</param>
+        /// <returns>User token</returns>
+        Task<UserTokenDto> GetUserTokenByIdAsync(Guid userId);
+
+        /// <summary>
         /// Gets user information by its provider data
         /// </summary>
         /// <param name="provider">Provider ID</param>
@@ -95,5 +102,11 @@ namespace SeemplestCloud.Services.SubscriptionService
         /// <param name="userId">User ID</param>
         /// <returns>Login accounts</returns>
         Task<List<UserAccountDto>> GetUserAccountsByUserId(Guid userId);
+
+        /// <summary>
+        /// Sends an invitation to the specified user
+        /// </summary>
+        /// <param name="userInfo">Information about the invited user</param>
+        Task InviteUserAsync(InviteUserDto userInfo);
     }
 }

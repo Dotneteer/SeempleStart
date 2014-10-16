@@ -241,8 +241,7 @@ namespace SeemplesTools.HtmlBuilders.Forms
 
         public static string CamelCase(string str)
         {
-            return str;
-            //return str.Substring(0, 1).ToLower() + str.Substring(1);
+            return str.Substring(0, 1).ToLower() + str.Substring(1);
         }
 
     }

@@ -1,42 +1,40 @@
 ﻿module Subscription {
 
+    // ------------------------------------------------------------------------
+    // Initializes the angular objects defined in this module fragment
+    // ------------------------------------------------------------------------
     export function initSubscriptionApi() {
         Subscription.appModule
             .service('subscriptionApi', ['$http', SubScriptionApi]);
     }
 
+    // ------------------------------------------------------------------------
+    // This DTO represents an invited user
+    // ------------------------------------------------------------------------
     export class InviteUserDto {
-        invitedUser: string;
+        invitedUserName: string;
         invitedEmail: string;
 
         constructor(invitedUser: string, invitedEmail: string) {
-            this.invitedUser = invitedUser;
+            this.invitedUserName = invitedUser;
             this.invitedEmail = invitedEmail;
         }
     }
 
+    // ------------------------------------------------------------------------
+    // This interface represents the WebAPI managing subscriptions
+    // ------------------------------------------------------------------------
     export interface ISubscriptionApi {
-        getResult(id: number): Core.IBusinessPromise<number>;
-        getResult2(id: number): Core.IBusinessPromise<number>;
-        getMessage(): Core.IBusinessPromise<string>;
         inviteUser(userInfo: InviteUserDto): Core.IBusinessPromise<any>;
     }
-
+    
+    // ------------------------------------------------------------------------
+    // This object implements the subscription API
+    // ------------------------------------------------------------------------
     export class SubScriptionApi extends Core.ApiServiceBase implements ISubscriptionApi {
 
         constructor($http: ng.IHttpService) {
             super($http, '../api/subscription');
-        }
-
-        getResult(id: number) {
-            return this.req('GET', this.url('getresult', id));
-        }
-
-        getResult2(id: number) {
-            return this.req('GET', this.url('getresult2', id));
-        }
-        getMessage() {
-            return this.req('GET', this.url('getmessage'));
         }
 
         inviteUser(userInfo: InviteUserDto) {

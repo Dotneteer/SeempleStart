@@ -20,7 +20,6 @@ namespace SeemplestCloud.WebClient
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/appInit").Include(
-                "~/app/core/core.types.js",
                 "~/app/core/core.init.ng.js",
                 "~/app/core/core.directives.ng.js",
                 "~/app/core/core.filters.ng.js",

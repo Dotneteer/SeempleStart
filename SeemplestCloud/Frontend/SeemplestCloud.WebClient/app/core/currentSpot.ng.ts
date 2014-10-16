@@ -1,7 +1,8 @@
 ﻿module Core {
-    /*
-     * Initializes the components of the main view
-     */
+
+    // ------------------------------------------------------------------------
+    // Initializes the angular objects defined in this module fragment
+    // ------------------------------------------------------------------------
     export function initCurrentSpot() {
         Core.appModule
             .controller('CurrentSpotCtrl', CurrentSpotCtrl)
@@ -10,43 +11,29 @@
             .directive('activeMenu', ['currentSpot', currentSpotMarkerDirective]);
     }
 
-    /**
-    *  Defines the operations of the current spot service
-    */
+    // ------------------------------------------------------------------------
+    // Defines the operations of the current spot service
+    // ------------------------------------------------------------------------
     export interface ICurrentSpotService {
-        // --- Az aktuális funkció címének és a hozzá tartozó aktív menü 
-        // --- azonosítójának beállítása
-        /**
-         * Sets the current spot information
-         * @param title The title to display as the name of the current spot
-         * @param item The menu identifier of the active element
-         */
+        // --- Sets the current spot information
         setCurrentSpot: (title: string, item: string) => {};
 
-        /*
-         * Disables the lanugae choice menu
-         */
+        // --- Disables the language choice menu
         disableLanguageChoice: () => {};
 
-        /**
-         * Gets the current title information
-         */
+        // --- Gets the current title information
         getCurrentTitle: () => string;
 
-        /**
-         * Gets the active menu item's identifier
-         */
+        // --- Gets the active menu item's identifier
         getActiveMenu: () => string;
 
-        /*
-         * Gets the flag indicating whether language choice is enable or not
-         */
+        // --- Gets the flag indicating whether language choice is enable or not
         isLanguageChoiceEnabled: () => boolean;
     }
 
-    /**
-     * This service stores the current spot information
-     */
+    // ------------------------------------------------------------------------
+    // This service stores the current spot information
+    // ------------------------------------------------------------------------
     export function currentSpotService(): ICurrentSpotService {
         var currentTitle: string;
         var activeMenu: string;
@@ -76,16 +63,16 @@
         }
     }
 
-    /**
-     * The scope of the controller that gets the current view's title
-    */
+    // ------------------------------------------------------------------------
+    // The scope of the controller that gets the current view's title
+    // ------------------------------------------------------------------------
     export interface ICurrentSpotScope extends ng.IScope {
         getCurrentSpot: () => string;
     }
 
-    /**
-     * The controller managing the current spot
-     */
+    // ------------------------------------------------------------------------
+    // The controller managing the current spot
+    // ------------------------------------------------------------------------
     export class CurrentSpotController {
         public static $inject = ['$scope', 'currentSpot'];
 
@@ -96,9 +83,9 @@
         }
     }
 
-    /*
-     * The directive that defines how the current spot should be displayed
-     */
+    // ------------------------------------------------------------------------
+    // The directive that defines how the current spot should be displayed
+    // ------------------------------------------------------------------------
     export function currentSpotDirective(): ng.IDirective {
         return {
             restrict: 'E',
@@ -107,10 +94,11 @@
         }
     }
 
-    /*
-     * This directive displays the current menu item ('data-cs-menu' attribute) and
-     * the current title ('data-cs-title' attribute) in the 'current-spot' element
-     */
+    // ------------------------------------------------------------------------
+    // This directive displays the current menu item ('data-cs-menu' attribute) 
+    // and the current title ('data-cs-title' attribute) in the 'current-spot' 
+    // element
+    // ------------------------------------------------------------------------
     export function currentSpotMarkerDirective(currentSpot: ICurrentSpotService): ng.IDirective {
 
         return {
@@ -127,9 +115,9 @@
         };
     }
 
-    /**
-     * The scope of the controller managing the main screen
-    */
+    // ------------------------------------------------------------------------
+    // The scope of the controller managing the main screen
+    // ------------------------------------------------------------------------
     export interface IMainViewCtrlScope extends ng.IScope {
         /**
          * Checkes whether the passed menu identifier represents the active one
@@ -139,9 +127,9 @@
         isLanguageChoiceEnabled: () => boolean;
     }
 
-    /**
-     * Implements the controller managing the main screen
-     */
+    // ------------------------------------------------------------------------
+    // Implements the controller managing the main screen
+    // ------------------------------------------------------------------------
     export class CurrentSpotCtrl {
         public static $inject = ['$scope', 'currentSpot'];
 

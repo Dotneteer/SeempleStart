@@ -1,14 +1,18 @@
 ﻿module Subscription {
+
+    // ------------------------------------------------------------------------
+    // Initializes the angular objects defined in this module fragment
+    // ------------------------------------------------------------------------
     export function initControllers() {
         appModule
             .controller("UserInvitationCtrl", UserInvitationCtrl)
             .controller("PackageSelectionCtrl", PackageSelectionCtrl);
     }
 
-    /*
-     * This class represents an invitation entry
-     */
-    export class UserInvitationDto {
+    // ------------------------------------------------------------------------
+    // This class represents an invitation entry view model
+    // ------------------------------------------------------------------------
+    export class UserInvitationVm {
         id: number;
         userId: string;
         invitedEmail: string;
@@ -17,8 +21,8 @@
         expirationDateUtc: Date;
         state: string;
 
-        constructor(d?: UserInvitationDto) {
-            d = d || <UserInvitationDto>{};
+        constructor(d?: UserInvitationVm) {
+            d = d || <UserInvitationVm>{};
             this.id = d.id;
             this.userId = d.userId;
             this.invitedEmail = d.invitedEmail;
@@ -29,19 +33,19 @@
         }
     }
 
-    /*
-     * Defines the scope of the UserInvitation controller
-     */
+    // ------------------------------------------------------------------------
+    // Defines the scope of the UserInvitation controller
+    // ------------------------------------------------------------------------
     export interface IUserInvitationCtrlScope extends Core.ISimpleSearch, ng.IScope {
-        invitations: UserInvitationDto[];
-        openInvitationEditor: (invitation: UserInvitationDto) => void;
+        invitations: UserInvitationVm[];
+        openInvitationEditor: () => void;
         refreshData: () => void;
         revokeInvitation: () => void;
     }
 
-    /*
-     * This controller manages the user invitation view
-     */
+    // ------------------------------------------------------------------------
+    // This controller manages the user invitation view
+    // ------------------------------------------------------------------------
     export class UserInvitationCtrl {
         public static $inject = ['$scope', '$modal']
 
@@ -51,7 +55,7 @@
 
             $scope.refreshData = () => {
                 $scope.invitations = [
-                    new UserInvitationDto({
+                    new UserInvitationVm({
                         id: 1,
                         userId: '1',
                         invitedEmail: 'dotneteer@hotmail.com',
@@ -60,7 +64,7 @@
                         expirationDateUtc: moment.utc(new Date(2015, 1, 1)).toDate(),
                         state: 'Sent'
                     }),
-                    new UserInvitationDto({
+                    new UserInvitationVm({
                         id: 2,
                         userId: '1',
                         invitedEmail: 'vsxguy@gmail.com',
@@ -69,7 +73,7 @@
                         expirationDateUtc: moment.utc(new Date(2015, 1, 1)).toDate(),
                         state: 'Read'
                     }),
-                    new UserInvitationDto({
+                    new UserInvitationVm({
                         id: 3,
                         userId: '2',
                         invitedEmail: 'inovak@grepton.hu',
@@ -85,8 +89,7 @@
                 $scope.searchKey = '';
             }
 
-            $scope.openInvitationEditor = (invitation: UserInvitationDto) => {
-                var invitationBackup = angular.copy(invitation);
+            $scope.openInvitationEditor = () => {
 
                 var modalInstance = $modal.open({
                     templateUrl: 'newInvitation',
@@ -97,7 +100,7 @@
                 });
 
                 modalInstance.result.then(
-                    (data) => {
+                    () => {
                         $scope.refreshData();
                     },
                     (dismissReason) => {
@@ -113,26 +116,27 @@
         }
     }
 
-    /*
-     * Defines the scope of the user invitation entry popup controller
-     */
-    interface IEditInvitationCtrlScope extends ng.IScope {
-        model: UserInvitationDto;
-        ok: () => void;
+    // ------------------------------------------------------------------------
+    // Defines the scope of the user invitation entry popup controller
+    // ------------------------------------------------------------------------
+    interface IEditInvitationCtrlScope
+    extends Core.IPopupCtrlScopeBase<UserInvitationVm> {
         removeInvitation: () => void;
-        cancel: () => void;
     }
 
-    /*
-     * This controller manages the dive log entry popup
-     */
-    class EditInvitationCtrl {
+    // ------------------------------------------------------------------------
+    // This controller manages the user invitation entry popup
+    // ------------------------------------------------------------------------
+    class EditInvitationCtrl
+    extends Core.PopupCtrlBase<UserInvitationVm> {
         public static $inject = ['$scope', '$modalInstance', 'subscriptionApi'];
 
         constructor(
             $scope: IEditInvitationCtrlScope,
             $modalInstance: ng.ui.bootstrap.IModalServiceInstance,
             api: ISubscriptionApi) {
+
+            super($scope, $modalInstance);
 
             $scope.ok = () => {
                 api.inviteUser(new InviteUserDto($scope.model.invitedUserName, $scope.model.invitedEmail))
@@ -142,20 +146,14 @@
             };
 
             $scope.removeInvitation = () => {
-                // use the api
-                //api.DiveLog.removeDiveLogEntry($scope.dive.id).success(() => {
-                //    $modalInstance.dismiss('deleted');
-                //});
+                // --- Use the API
             }
-            $scope.cancel = () => {
-                $modalInstance.dismiss('cancel');
-            };
         }
     }
 
-    /**
-    * The scope of the controller that manages packages
-    */
+    // ------------------------------------------------------------------------
+    // The scope of the controller that manages packages
+    // ------------------------------------------------------------------------
     export interface IPackageSelectionScope extends ng.IScope {
         selectPackage: (string) => void;
         getPackage: () => string;
@@ -166,9 +164,9 @@
         result2: string;
     }
 
-    /**
-    * The controller managing the current spot
-    */
+    // ------------------------------------------------------------------------
+    // The controller managing the current spot
+    // ------------------------------------------------------------------------
     export class PackageSelectionCtrl {
         public static $inject = ['$scope', 'subscriptionApi'];
 
@@ -189,24 +187,6 @@
             $scope.isSelected = (code: string) => {
                 return packageCode == code;
             }
-
-            api.getMessage().success(data => {
-                $scope.message = data;
-            });
-
-            api.getResult(3)
-                .success(data => {
-                    $scope.result = data.toString();
-                }).error(
-                data => { $scope.result = JSON.stringify(data); },
-                data => { $scope.result = JSON.stringify(data); });
-
-            api.getResult2(3)
-                .success(data => {
-                    $scope.result2 = data.toString();
-                }).error(
-                data => { $scope.result2 = JSON.stringify(data); },
-                data => { $scope.result2 = JSON.stringify(data); });
         }
     }
 }

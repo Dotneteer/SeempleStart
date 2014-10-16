@@ -194,8 +194,10 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\InternationalizationController.cs" />
     <Compile Include="Controllers\LanguageController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\SubscriptionApiController.cs" />
     <Compile Include="Controllers\SubscriptionController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -208,15 +210,11 @@
     <Compile Include="Models\SignUpViewModel.cs" />
     <Compile Include="Models\SignUpWithExternalLoginViewModel.cs" />
     <Compile Include="Models\SubscriptionPackageViewModel.cs" />
-    <Compile Include="Models\UserManagement\AppPrincipal.cs" />
     <Compile Include="Models\UserManagement\AppSignInManager.cs" />
     <Compile Include="Models\UserManagement\AppUser.cs" />
     <Compile Include="Models\UserManagement\AppUserManager.cs" />
     <Compile Include="Models\UserManagement\AppUserStore.cs" />
     <Compile Include="Models\UserManagement\AuthenticationTicketState.cs" />
-    <Compile Include="Models\UserManagement\IAppPrincipal.cs" />
-    <Compile Include="Models\UserManagement\ServiceRoleDescription.cs" />
-    <Compile Include="Models\UserManagement\ServiceRoles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -405,12 +403,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="app\core\core.api.ng.ts" />
     <TypeScriptCompile Include="app\core\core.directives.ng.ts" />
     <TypeScriptCompile Include="app\core\core.filters.ng.ts" />
-    <TypeScriptCompile Include="app\core\core.types.ts" />
     <TypeScriptCompile Include="app\core\core.init.ng.ts" />
     <TypeScriptCompile Include="app\core\currentSpot.ng.ts" />
     <TypeScriptCompile Include="app\root.init.ng.ts" />
+    <TypeScriptCompile Include="app\subscription\subscription.api.ng.ts" />
+    <TypeScriptCompile Include="app\subscription\subscription.controllers.ng.ts" />
     <TypeScriptCompile Include="app\subscription\subscription.init.ng.ts" />
     <TypeScriptCompile Include="Scripts\typings\angular-ui-bootstrap\angular-ui-bootstrap.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-animate.d.ts" />
