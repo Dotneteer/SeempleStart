@@ -5,7 +5,7 @@
     // ------------------------------------------------------------------------
     export function initCurrentSpot() {
         Core.appModule
-            .controller('CurrentSpotCtrl', CurrentSpotCtrl)
+            .controller('MainCtrl', MainCtrl)
             .factory('currentSpot', [currentSpotService])
             .directive('currentSpot', currentSpotDirective)
             .directive('activeMenu', ['currentSpot', currentSpotMarkerDirective]);
@@ -118,24 +118,27 @@
     // ------------------------------------------------------------------------
     // The scope of the controller managing the main screen
     // ------------------------------------------------------------------------
-    export interface IMainViewCtrlScope extends ng.IScope {
+    export interface IMainCtrlScope extends ng.IScope {
         /**
          * Checkes whether the passed menu identifier represents the active one
          * @param menu
          */
         isActive: (menu: string) => boolean;
         isLanguageChoiceEnabled: () => boolean;
+        getCurrentCulture: () => string;
+        getServiceMessage: (code: string, pars?: {}) => string;
     }
 
     // ------------------------------------------------------------------------
     // Implements the controller managing the main screen
     // ------------------------------------------------------------------------
-    export class CurrentSpotCtrl {
-        public static $inject = ['$scope', 'currentSpot'];
+    export class MainCtrl {
+        public static $inject = ['$scope', 'currentSpot', 'intlnSrv'];
 
         constructor(
-            $scope: IMainViewCtrlScope,
-            currentSpot: ICurrentSpotService) {
+            $scope: IMainCtrlScope,
+            currentSpot: ICurrentSpotService,
+            intlnSrv: IInternationalizationService) {
 
             $scope.isActive = (menu: string) => {
                 return currentSpot.getActiveMenu() == menu;
@@ -144,6 +147,14 @@
             $scope.isLanguageChoiceEnabled = () => {
                 return currentSpot.isLanguageChoiceEnabled();
             }
+
+            $scope.getCurrentCulture = () => {
+                return intlnSrv.getCurrentCulture();
+            }
+
+            $scope.getServiceMessage = (code: string, pars?: {}) => {
+                return intlnSrv.getServiceMessage (code, pars);
+            };
         }
     }
 }

@@ -4,8 +4,9 @@
     // Initializes the angular objects defined in this module fragment
     // ------------------------------------------------------------------------
     export function initApis() {
-        Subscription.appModule
-            .service('intlnApi', ['$http', InternationalizationApi]);
+        Core.appModule
+            .service('intlnApi', ['$http', InternationalizationApi])
+            .service('intlnSrv', ['intlnApi', InternationalizationService]);
     }
 
     // ------------------------------------------------------------------------
@@ -234,6 +235,61 @@
 
         getServiceMessages() {
             return this.request('GET', this.url('servicemessages'));
+        }
+    }
+
+    // ========================================================================
+    // Service for internationalization
+    // ========================================================================
+    // ------------------------------------------------------------------------
+    // Service interface
+    // ------------------------------------------------------------------------
+    export interface IInternationalizationService {
+        getCurrentCulture: () => string;
+        getServiceMessage: (code: string, pars?: any) => string;
+    }
+
+    // ------------------------------------------------------------------------
+    // Service implementation
+    // ------------------------------------------------------------------------
+    export class InternationalizationService implements IInternationalizationService {
+        api: IInternationalizationApi;
+        currentCulture: string = "";
+        serviceMessages: ResourceStringDto[] = [];
+
+        constructor(intlnApi: IInternationalizationApi) {
+            this.api = intlnApi;
+            this.api.getCurrentCulture()
+                .onSuccess((dataReceived) => {
+                    this.currentCulture = dataReceived;
+            }).go();
+            this.api.getServiceMessages()
+                .onSuccess((dataReceived) => {
+                    this.serviceMessages = dataReceived;
+                }).go();
+        }
+
+        getCurrentCulture = () => {
+            return this.currentCulture;
+        }
+
+        getServiceMessage = (code: string, pars?: any) => {
+            var message = "<none>";
+            for (var i = 0; i < this.serviceMessages.length; i++) {
+                var resource = this.serviceMessages[i];
+                if (resource.code == code) {
+                    message = resource.value;
+                    if (angular.isDefined(pars)) {
+                        for (var prop in pars) {
+                            if (message.hasOwnProperty(prop)) {
+                                message = message.replace('{{' + prop + '}}', pars[prop]);
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+            return message;
         }
     }
 }

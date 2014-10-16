@@ -64,6 +64,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ServiceMessages.resx</DependentUpon>
     </Compile>
+    <Compile Include="ServiceMessages.en.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ServiceMessages.en.resx</DependentUpon>
+    </Compile>
     <Compile Include="SubscriptionService\DataAccess\ArchivedUserRecord.cs" />
     <Compile Include="SubscriptionService\DataAccess\ISubscriptionDataOperations.cs" />
     <Compile Include="SubscriptionService\DataAccess\PackageTemplateRecord.cs" />
@@ -115,6 +120,10 @@
     <None Include="_Tools\CodeGenerationTemplates\JsViewModelTemplate.cst" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ServiceMessages.en.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ServiceMessages.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="ServiceMessages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ServiceMessages.Designer.cs</LastGenOutput>

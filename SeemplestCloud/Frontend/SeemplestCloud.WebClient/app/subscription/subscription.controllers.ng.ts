@@ -147,8 +147,7 @@
     // ------------------------------------------------------------------------
     // This controller manages the user invitation entry popup
     // ------------------------------------------------------------------------
-    class EditInvitationCtrl
-    extends Core.PopupCtrlBase<UserInvitationVm> {
+    class EditInvitationCtrl extends Core.PopupCtrlBase<UserInvitationVm> {
         public static $inject = ['$scope', '$modalInstance', 'subscriptionApi'];
 
         constructor(

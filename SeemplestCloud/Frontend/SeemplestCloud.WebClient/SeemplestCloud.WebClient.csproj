@@ -404,9 +404,9 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app\core\core.api.ng.ts" />
-    <TypeScriptCompile Include="app\core\core.directives.ng.ts" />
+    <TypeScriptCompile Include="app\core\core.ng.ts" />
     <TypeScriptCompile Include="app\core\core.init.ng.ts" />
-    <TypeScriptCompile Include="app\core\currentSpot.ng.ts" />
+    <TypeScriptCompile Include="app\core\core.mainctrl.ng.ts" />
     <TypeScriptCompile Include="app\root.init.ng.ts" />
     <TypeScriptCompile Include="app\subscription\subscription.api.ng.ts" />
     <TypeScriptCompile Include="app\subscription\subscription.controllers.ng.ts" />
