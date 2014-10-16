@@ -1,0 +1,106 @@
+﻿<%-- 
+    This template generates a DTO object from a database table
+--%>
+<%@ Template Language="C#" TargetLanguage="TypeScript" %>
+<%@ Property Name="SourceTable" Type="SchemaExplorer.TableSchema" Category="1. Context"
+	Description="Table that the data record should be based on." %>
+
+<%-- Assembly References --%>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Assembly Name="System.Data" %>
+<%-- Namespace Imports --%>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="CodeSmith.CustomProperties" %>
+<%@ Import Namespace="CodeSmith.BaseTemplates" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Text.RegularExpressions" %>
+<%@ Import Namespace="System.Collections.Generic" %>
+<%@ Import Namespace="System.Linq" %>
+    
+    // --- This class has been automatically generated from the database schema
+    // --- <%= DateTime.Now %>
+    export class <%= SourceTable.Name %>Vm {
+<%
+foreach (var field in SourceTable.Columns)
+{
+%>    
+        <%= CamelCase(field.Name) %>: <%= GetTSType(field) %>;
+<%
+}
+%>  
+
+        constructor (d?: <%= SourceTable.Name %>Vm) {
+            d = d || <<%= SourceTable.Name %>Vm>{};
+<%        
+foreach (var field in SourceTable.Columns)
+{
+%>    
+            this.<%= CamelCase(field.Name) %> = d.<%= CamelCase(field.Name) %>;
+<%
+}
+%>  
+        }
+    }
+
+<script runat="template">
+// My methods here.
+public string GetTSType(ColumnSchema column)
+{
+    string t;
+    switch (column.DataType)
+    {
+        case DbType.AnsiString:
+        case DbType.AnsiStringFixedLength:
+        case DbType.String:
+        case DbType.StringFixedLength:
+        case DbType.Guid:
+        case DbType.Xml:
+            t = "string";
+            break;
+
+        case DbType.Boolean:
+            t = "boolean";
+            break;
+
+        case DbType.Byte:
+        case DbType.Currency:
+        case DbType.Decimal:
+        case DbType.VarNumeric:
+        case DbType.Double:
+        case DbType.Int16:
+        case DbType.Int32:
+        case DbType.Int64:
+        case DbType.SByte:
+        case DbType.Single:
+        case DbType.UInt16:
+        case DbType.UInt32:
+        case DbType.UInt64:
+            t = "number";
+            break;
+        
+
+        case DbType.Date:
+        case DbType.DateTime:
+        case DbType.DateTime2:
+        case DbType.Time:
+        case DbType.DateTimeOffset:
+            t = "Date";
+            break;
+            
+        case DbType.Object:
+        case DbType.Binary:
+        default:
+            t = "object";
+            break;
+  }
+  return t;
+}
+
+public string CamelCase(string str)
+{
+    return str.Substring(0, 1).ToLower() + str.Substring(1);
+}
+
+</script>

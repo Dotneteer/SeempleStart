@@ -194,7 +194,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\InternationalizationController.cs" />
+    <Compile Include="Controllers\InternationalizationApiController.cs" />
     <Compile Include="Controllers\LanguageController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\SubscriptionApiController.cs" />
@@ -405,7 +405,6 @@
   <ItemGroup>
     <TypeScriptCompile Include="app\core\core.api.ng.ts" />
     <TypeScriptCompile Include="app\core\core.directives.ng.ts" />
-    <TypeScriptCompile Include="app\core\core.filters.ng.ts" />
     <TypeScriptCompile Include="app\core\core.init.ng.ts" />
     <TypeScriptCompile Include="app\core\currentSpot.ng.ts" />
     <TypeScriptCompile Include="app\root.init.ng.ts" />

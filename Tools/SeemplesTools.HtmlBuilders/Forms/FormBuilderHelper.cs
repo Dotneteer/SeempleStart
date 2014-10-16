@@ -62,7 +62,7 @@ namespace SeemplesTools.HtmlBuilders.Forms
                 "{0}.{1}.$invalid",
                 validationOption == ValidationOption.WhenDirty ? " && {0}.{1}.$dirty" : "");
             formGroup.Attr(NgTag.NgClass, string.Format("{{'has-error': " + condition + ", 'has-feedback': " + condition + "}}",
-                _formBuilder.BsForm.FormName, modelMetadata.PropertyName));
+                _formBuilder.BsForm.FormName, propName));
 
             if (inputTagType == InputTagType.Text)
             {

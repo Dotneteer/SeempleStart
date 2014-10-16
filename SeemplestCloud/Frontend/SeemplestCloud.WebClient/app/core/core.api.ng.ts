@@ -5,50 +5,7 @@
     // ------------------------------------------------------------------------
     export function initApis() {
         Subscription.appModule
-            .service('intlnApi', ['$http', ""]);
-    }
-
-    // ========================================================================
-    // Abstract API for calling WebAPI services
-    // ========================================================================
-    // ------------------------------------------------------------------------
-    // This interface describes an infrastructure error
-    // ------------------------------------------------------------------------
-    export interface IInfrastructureError {
-        reasonCode: string;
-        isBusiness: boolean;
-        message: string;
-    }
-
-    // ------------------------------------------------------------------------
-    // This class describes a business error
-    // ------------------------------------------------------------------------
-    export interface IBusinessError extends IInfrastructureError {
-        errorObject: any;
-    }
-
-    // ------------------------------------------------------------------------
-    // This interface defines a business promise callback of type T
-    // ------------------------------------------------------------------------
-    export interface IBusinessPromiseCallback<T> {
-        (data: T, status: number, headers: (headerName: string) => string): void;
-    }
-
-
-    // ------------------------------------------------------------------------
-    // --- This class defines a business promise that returns a type of TReturn
-    // ------------------------------------------------------------------------
-    export interface IBusinessPromise<TReturn> {
-        success(callback: IBusinessPromiseCallback<TReturn>): IBusinessPromise<TReturn>;
-        error(business: IBusinessPromiseCallback<IBusinessError>,
-            unexpected: IBusinessPromiseCallback<IInfrastructureError>): IBusinessPromise<TReturn>;
-    }
-
-    // ------------------------------------------------------------------------
-    // --- This interface describes a request method
-    // ------------------------------------------------------------------------
-    export interface IRequestMethod {
-        (method: string, url: string, data?: any): IBusinessPromise<any>;
+            .service('intlnApi', ['$http', InternationalizationApi]);
     }
 
     // ------------------------------------------------------------------------
@@ -77,43 +34,163 @@
         }
     }
 
+    // ========================================================================
+    // Abstract API for calling WebAPI services
+    // ========================================================================
+    // ------------------------------------------------------------------------
+    // This interface describes an infrastructure error
+    // ------------------------------------------------------------------------
+    export interface IInfrastructureError {
+        reasonCode: string;
+        isBusiness: boolean;
+        message: string;
+    }
+
+    // ------------------------------------------------------------------------
+    // This class describes a business error
+    // ------------------------------------------------------------------------
+    export interface IBusinessError extends IInfrastructureError {
+        errorObject: any;
+    }
+
+    // ------------------------------------------------------------------------
+    // This interface defines a business promise callback of type T
+    // ------------------------------------------------------------------------
+    export interface IBusinessPromiseCallback<T> {
+        (data: T, status: number, headers: (headerName: string) => string): void;
+    }
+
+    // ------------------------------------------------------------------------
+    // his class defines a business promise that returns a type of TReturn
+    // ------------------------------------------------------------------------
+    export interface IBusinessPromise<TReturn> {
+        onSuccess: (callback: IBusinessPromiseCallback<TReturn>) => IBusinessPromise<TReturn>;
+        onError: (reasonCode: string, business: IBusinessPromiseCallback<IBusinessError>) => IBusinessPromise<TReturn>;
+        unexpected: (callback: IBusinessPromiseCallback<IInfrastructureError>) => IBusinessPromise<TReturn>;
+        accept: (callback: () => void) => IBusinessPromise<TReturn>;
+        reject: (callback: () => void) => IBusinessPromise<TReturn>;
+        conclude: (callback: () => void) => IBusinessPromise<TReturn>;
+        go: () => void;
+    }
+
+    // ------------------------------------------------------------------------
+    // This interface describes a request method
+    // ------------------------------------------------------------------------
+    export interface IRequestMethod {
+        (method: string, url: string, data?: any): IBusinessPromise<any>;
+    }
+
+    // ------------------------------------------------------------------------
+    // This structure represents an error callback
+    // ------------------------------------------------------------------------
+    interface IErrorCallback {
+        reasonCode: string;
+        callback: IBusinessPromiseCallback<IBusinessError>;
+    }
+
     // ------------------------------------------------------------------------
     // This class is intended to be the base class of all API service objects.
     // It wraps the angular $http service
     // ------------------------------------------------------------------------
     export class ApiServiceBase {
-        req: IRequestMethod;
+        request: IRequestMethod;
 
         constructor($http: ng.IHttpService, private prefix: string) {
 
-            this.req = (method: string, url: string, data?: any) => {
+            this.request = (method: string, url: string, data?: any) => {
                 var httpPromise = $http({
                     method: method,
                     url: url,
                     data: data
                 });
 
-                var ret: IBusinessPromise<any> = <IBusinessPromise<any>>{};
+                var businessPromise: IBusinessPromise<any> = <IBusinessPromise<any>>{};
+                var successCallback: IBusinessPromiseCallback<any>;
+                var errorCallbacks: IErrorCallback[] = [];
+                var unexpectedCallback: IBusinessPromiseCallback<any>;
+                var acceptedCallback: () => void;
+                var rejectedCallback: () => void;
+                var concludedCallback: () => void;
 
-                ret.success = (callback) => {
-                    httpPromise.success((dataReceived) => {
-                        convertDateStringsToDates(dataReceived);
-                        httpPromise.success(callback);
-                    });
-                    return ret;
+                // --- Set the "onSuccess" callback
+                businessPromise.onSuccess = (callback) => {
+                    successCallback = callback;
+                    return businessPromise;
                 };
 
-                ret.error = (business, unexpected) => {
-                    httpPromise.error((datareceived, status, headers) => {
-                        if (status == 500 && angular.isDefined(datareceived.isBusiness) && datareceived.isBusiness) {
-                            business(datareceived, status, headers);
-                        } else {
-                            unexpected(datareceived, status, headers);
+                // --- Set the "onError" callback
+                businessPromise.onError = (reasonCode, callback) => {
+                    errorCallbacks.push({ reasonCode: reasonCode, callback: callback });
+                    return businessPromise;
+                };
+
+                // --- Set the "unexpected" callback
+                businessPromise.unexpected = (callback) => {
+                    unexpectedCallback = callback;
+                    return businessPromise;
+                };
+
+                // --- Set the "accept" callback
+                businessPromise.accept = (callback) => {
+                    acceptedCallback = callback;
+                    return businessPromise;
+                };
+
+                // --- Set the "reject" callback
+                businessPromise.reject = (callback) => {
+                    rejectedCallback = callback;
+                    return businessPromise;
+                };
+
+                // --- Set the "conclude" callback
+                businessPromise.conclude = (callback) => {
+                    concludedCallback = callback;
+                    return businessPromise;
+                };
+
+                // --- Call the WebApi and handle issues
+                businessPromise.go = () => {
+                    httpPromise.success((dataReceived, status, headers) => {
+                        if (angular.isDefined(successCallback)) {
+                            successCallback(dataReceived, status, headers);
+                        }
+                    }).error((dataReceived, status, headers) => {
+                        if (status == 500 && angular.isDefined(dataReceived.isBusiness) && dataReceived.isBusiness) {
+                            for (var i = 0; i < errorCallbacks.length; i++) {
+                                if (errorCallbacks[i].reasonCode == dataReceived.reasonCode
+                                    && angular.isDefined(errorCallbacks[i].callback)) {
+                                    errorCallbacks[i].callback(dataReceived, status, headers);
+                                    return;
+                                }
+                            }
+                        }
+                        if (angular.isDefined(unexpectedCallback)) {
+                            unexpectedCallback(dataReceived, status, headers);
+                        }
+                    }).then(() => {
+                        try {
+                            if (angular.isDefined(acceptedCallback)) {
+                                acceptedCallback();
+                            }
+                        } catch (ex) {
+                        }
+                        if (angular.isDefined(concludedCallback)) {
+                            concludedCallback();
+                        }
+                    }, () => {
+                        try {
+                            if (angular.isDefined(rejectedCallback)) {
+                                rejectedCallback();
+                            }
+                        } catch (ex) {
+                        }
+                        if (angular.isDefined(concludedCallback)) {
+                            concludedCallback();
                         }
                     });
-                    return ret;
-                };
-                return ret;
+                }
+
+                return businessPromise;
             };
         }
 
@@ -126,7 +203,39 @@
     // ========================================================================
     // API for internationalization
     // ========================================================================
+    // ------------------------------------------------------------------------
+    // DTO for string resources
+    // ------------------------------------------------------------------------
+    export class ResourceStringDto {
+        code: string;
+        value: string;
+    }
 
+    // ------------------------------------------------------------------------
+    // Operations of the internationalization API
+    // ------------------------------------------------------------------------
+    export interface IInternationalizationApi {
+        getCurrentCulture: () => Core.IBusinessPromise<string>;
+        getServiceMessages: () => Core.IBusinessPromise<ResourceStringDto[]>;
+    }
+
+    // ------------------------------------------------------------------------
+    // Operations of the internationalization API
+    // ------------------------------------------------------------------------
+    export class InternationalizationApi extends Core.ApiServiceBase implements IInternationalizationApi {
+
+        constructor($http: ng.IHttpService) {
+            super($http, '../api/intln');
+        }
+
+        getCurrentCulture() {
+            return this.request('GET', this.url('current'));
+        }
+
+        getServiceMessages() {
+            return this.request('GET', this.url('servicemessages'));
+        }
+    }
 }
 
 Core.initApis();

@@ -1,35 +1,34 @@
-﻿module Core {
-
+﻿var Core;
+(function (Core) {
     // ------------------------------------------------------------------------
     // Initializes the angular objects defined in this module fragment
     // ------------------------------------------------------------------------
-    export function initCommonFilters() {
-        Core.appModule
-            .filter('zeroAsEmpty', [zeroAsEmpty])
-            .filter('dateAsString', [dateAsStringFilter])
-            .filter('longText', [longTextFilter]);
+    function initCommonFilters() {
+        Core.appModule.filter('zeroAsEmpty', [zeroAsEmpty]).filter('dateAsString', [dateAsStringFilter]).filter('longText', [longTextFilter]);
     }
-    
+    Core.initCommonFilters = initCommonFilters;
+
     // ------------------------------------------------------------------------
     // This filter shows the zero value as an empty string
     // ------------------------------------------------------------------------
-    export function zeroAsEmpty() {
-        return (value: number) => {
+    function zeroAsEmpty() {
+        return function (value) {
             if (angular.isNumber(value)) {
                 return value == 0 ? '' : value.toString();
             } else {
                 return value.toString();
             }
-        }
+        };
     }
+    Core.zeroAsEmpty = zeroAsEmpty;
 
     // ------------------------------------------------------------------------
     // This filter shows a text with a specified maximum length
     // ------------------------------------------------------------------------
-    export function longTextFilter() {
+    function longTextFilter() {
         var postfix = "...";
 
-        return (input: string, maxLength: number) => {
+        return function (input, maxLength) {
             var ret;
 
             if (input.length > (maxLength + postfix.length)) {
@@ -40,15 +39,18 @@
             return ret;
         };
     }
+    Core.longTextFilter = longTextFilter;
 
     // ------------------------------------------------------------------------
     // This filter converts a date to a string
     // ------------------------------------------------------------------------
-    export function dateAsStringFilter() {
-        return (date: Date) => {
+    function dateAsStringFilter() {
+        return function (date) {
             return moment(date).toDate();
-        }
+        };
     }
-}
+    Core.dateAsStringFilter = dateAsStringFilter;
+})(Core || (Core = {}));
 
 Core.initCommonFilters();
+//# sourceMappingURL=core.filters.ng.js.map

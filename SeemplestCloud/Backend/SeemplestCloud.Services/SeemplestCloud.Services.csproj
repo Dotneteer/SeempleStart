@@ -112,6 +112,7 @@
     <None Include="_Tools\CodeGenerationTemplates\DataAccessOperationsTemplate.cst" />
     <None Include="_Tools\CodeGenerationTemplates\DataRecordTemplate.cst" />
     <None Include="_Tools\CodeGenerationTemplates\DtoTemplate.cst" />
+    <None Include="_Tools\CodeGenerationTemplates\JsViewModelTemplate.cst" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ServiceMessages.resx">

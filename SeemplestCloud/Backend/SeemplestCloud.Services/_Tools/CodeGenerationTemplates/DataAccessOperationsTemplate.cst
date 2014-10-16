@@ -12,6 +12,8 @@
 	Description="Should generate a GetAll operation?" Default="True" %>
 <%@ Property Name="GenerateGetByAK" Type="System.Boolean" Category="1. Context"
 	Description="Should generate GetBy operations for alternate keys?" Default="True" %>
+<%@ Property Name="GenerateGetByFK" Type="System.Boolean" Category="1. Context"
+	Description="Should generate GetBy operations for foreign keys?" Default="True" %>
 <%@ Property Name="Namespace" Type="System.String" Category="2. Target"
 	Description="Target namespace" %>
 <%@ Property Name="IsPartial" Type="System.Boolean" Category="2. Target"
@@ -95,6 +97,21 @@ namespace <%= Namespace %>
         Task<<%= SourceTable.Name %>Record> Get<%= SourceTable.Name %>By<%= keyName %>Async(<%= GetArgumentList(ak.MemberColumns) %>);
 <%
             }
+        }
+    }
+
+    if (GenerateGetByFK)
+    {
+        foreach (var fk in SourceTable.ForeignKeys)
+        {
+            var keyName = CutPrefixFromName(fk.Name);
+%>
+        
+        /// <summary>
+        /// Gets a <%= SourceTable.Name %> record by its "<%= fk.Name %>" foreign key values
+        /// </summary>
+        Task<<%= SourceTable.Name %>Record> Get<%= SourceTable.Name %>By<%= keyName %>Async(<%= GetArgumentList(fk.ForeignKeyMemberColumns) %>);
+<%
         }
     }
 
@@ -219,6 +236,26 @@ namespace <%= Namespace %>
         }
 <%
             }
+        }
+    }
+
+    if (GenerateGetByFK)
+    {
+        foreach (var fk in SourceTable.ForeignKeys)
+        {
+            var keyName = CutPrefixFromName(fk.Name);
+%>
+        
+        /// <summary>
+        /// Gets a <%= SourceTable.Name %> record by its "<%= fk.Name %>" foreign key values
+        /// </summary>
+        public async Task<<%= SourceTable.Name %>Record> Get<%= SourceTable.Name %>By<%= keyName %>Async(<%= GetArgumentList(fk.ForeignKeyMemberColumns) %>)
+        {
+            return await OperationAsync(ctx => ctx.FirstOrDefaultAsync<<%= SourceTable.Name %>Record>(
+                "where <%= GetConditionList(fk.ForeignKeyMemberColumns) %>", 
+                <%= GetParameterList(fk.ForeignKeyMemberColumns) %>));
+        }
+<%
         }
     }
 

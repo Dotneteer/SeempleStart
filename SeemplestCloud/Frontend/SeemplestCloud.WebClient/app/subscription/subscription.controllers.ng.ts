@@ -15,21 +15,29 @@
     export class UserInvitationVm {
         id: number;
         userId: string;
+        subscriptionId: number;
         invitedEmail: string;
         invitedUserName: string;
-        createdUtc: Date;
+        invitationCode: string;
         expirationDateUtc: Date;
         state: string;
+        type: string;
+        createdUtc: Date;
+        lastModifiedUtc: Date;
 
         constructor(d?: UserInvitationVm) {
             d = d || <UserInvitationVm>{};
             this.id = d.id;
             this.userId = d.userId;
+            this.subscriptionId = d.subscriptionId;
             this.invitedEmail = d.invitedEmail;
             this.invitedUserName = d.invitedUserName;
-            this.createdUtc = d.createdUtc;
+            this.invitationCode = d.invitationCode;
             this.expirationDateUtc = d.expirationDateUtc;
             this.state = d.state;
+            this.type = d.type;
+            this.createdUtc = d.createdUtc;
+            this.lastModifiedUtc = d.lastModifiedUtc;
         }
     }
 
@@ -62,7 +70,11 @@
                         invitedUserName: 'dotneteer',
                         createdUtc: new Date(),
                         expirationDateUtc: moment.utc(new Date(2015, 1, 1)).toDate(),
-                        state: 'Sent'
+                        state: 'Sent',
+                        type: 'User',
+                        invitationCode: '',
+                        lastModifiedUtc: null,
+                        subscriptionId: null
                     }),
                     new UserInvitationVm({
                         id: 2,
@@ -71,7 +83,11 @@
                         invitedUserName: 'vsxguy',
                         createdUtc: new Date(),
                         expirationDateUtc: moment.utc(new Date(2015, 1, 1)).toDate(),
-                        state: 'Read'
+                        state: 'Read',
+                        type: 'User',
+                        invitationCode: '',
+                        lastModifiedUtc: null,
+                        subscriptionId: null
                     }),
                     new UserInvitationVm({
                         id: 3,
@@ -80,7 +96,11 @@
                         invitedUserName: 'Novák István',
                         createdUtc: new Date(),
                         expirationDateUtc: moment.utc(new Date(2015, 1, 1)).toDate(),
-                        state: 'Activated'
+                        state: 'Activated',
+                        type: 'User',
+                        invitationCode: '',
+                        lastModifiedUtc: null,
+                        subscriptionId: null
                     })
                 ];
             };
@@ -138,11 +158,12 @@
 
             super($scope, $modalInstance);
 
-            $scope.ok = () => {
+            $scope.onOk = () => {
                 api.inviteUser(new InviteUserDto($scope.model.invitedUserName, $scope.model.invitedEmail))
-                .success(() => {
-                    $modalInstance.close();
-                });
+                    .onSuccess(() => { $modalInstance.close(); })
+                    .reject(() => { $scope.disableOk = false; })
+                    .go();
+                return false;
             };
 
             $scope.removeInvitation = () => {

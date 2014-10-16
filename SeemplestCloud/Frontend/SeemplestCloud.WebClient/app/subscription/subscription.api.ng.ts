@@ -38,7 +38,7 @@
         }
 
         inviteUser(userInfo: InviteUserDto) {
-            return this.req('POST', this.url('inviteUser'), userInfo);
+            return this.request('POST', this.url('inviteUser'), userInfo);
         }
     }
 }

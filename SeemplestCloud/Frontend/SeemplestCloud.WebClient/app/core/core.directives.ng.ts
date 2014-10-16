@@ -5,6 +5,9 @@
     // ------------------------------------------------------------------------
     export function initCommonDirectives() {
         Core.appModule
+            .filter('zeroAsEmpty', [zeroAsEmpty])
+            .filter('dateAsString', [dateAsStringFilter])
+            .filter('longText', [longTextFilter])
             .directive('noClick', [() => new NoClickDirective()])
             .directive('required', [() => new RequiredDirective()])
             .directive('matches', [() => new MatchesWidthDirective()])
@@ -39,6 +42,46 @@
 
         showError(ngModelController: ng.INgModelController, error: string) {
             return !!ngModelController.$dirty && ngModelController.$error[error];
+        }
+    }
+
+    // ------------------------------------------------------------------------
+    // This filter shows zeros as empty strings
+    // ------------------------------------------------------------------------
+    export function zeroAsEmpty() {
+        return (value: number) => {
+            if (angular.isNumber(value)) {
+                return value == 0 ? '' : value.toString();
+            } else {
+                return value.toString();
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------------
+    // This filter shows a text with a specified maximum length
+    // ------------------------------------------------------------------------
+    export function longTextFilter() {
+        var postfix = "...";
+
+        return (input: string, maxLength: number) => {
+            var ret;
+
+            if (input.length > (maxLength + postfix.length)) {
+                ret = input.substr(0, maxLength) + postfix;
+            } else {
+                ret = input;
+            }
+            return ret;
+        };
+    }
+
+    // ------------------------------------------------------------------------
+    // This filter converts a date to a string
+    // ------------------------------------------------------------------------
+    export function dateAsStringFilter() {
+        return (date: Date) => {
+            return moment(date).toDate();
         }
     }
 
@@ -293,6 +336,9 @@
         // --- for signing successful operation; otherwise, false
         onOk: () => boolean;
 
+        // --- This flag signs that the OK button should be disabled.
+        disableOk: boolean;
+
         // --- This method is called when the user executes Cancel.
         cancel: () => void;
 
@@ -311,7 +357,12 @@
             $scope: IPopupCtrlScopeBase<TWm>,
             $modalInstance: ng.ui.bootstrap.IModalServiceInstance) {
 
+            $scope.disableOk = false;
+            $scope.onOk = () => { return true; }
+            $scope.onCancel = () => { return true; }
+
             $scope.ok = () => {
+                $scope.disableOk = true;
                 if ($scope.onOk()) {
                     $modalInstance.close();
                 }

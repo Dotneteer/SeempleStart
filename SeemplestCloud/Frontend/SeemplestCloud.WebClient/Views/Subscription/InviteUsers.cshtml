@@ -57,6 +57,10 @@
         }
         using (f.Body())
         {
+            <div class="alert alert-danger">
+                Something wrong happened
+            </div>
+            
             @f.InputFor(m => m.InvitedUserName, autoFocus: AutoFocus.OnFormValid, validationOption: ValidationOption.WhenDirty)
             @f.InputFor(m => m.InvitedEmail, autoFocus: AutoFocus.OnFormValid, validationOption: ValidationOption.WhenDirty)
         }

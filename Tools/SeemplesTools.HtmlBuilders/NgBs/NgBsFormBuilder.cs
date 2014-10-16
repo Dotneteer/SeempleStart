@@ -142,7 +142,7 @@ namespace SeemplesTools.HtmlBuilders.NgBs
                 .CssClass(BsClass.Button)
                 .CssClass(BsClass.ButtonTheme.From(theme))
                 .Attr(NgTag.NgClick, ngClick)
-                .Attr(NgTag.NgDisabled, _form.FormName + ".$invalid");
+                .Attr(NgTag.NgDisabled, _form.FormName + ".$invalid || disableOk");
             button.AddChild(new HtmlText(buttonText));
             return button.Markup;
         }

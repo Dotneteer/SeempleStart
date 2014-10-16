@@ -43,6 +43,7 @@
     <Compile Include="Subscription\SubscriptionDto.cs" />
     <Compile Include="Subscription\UserAccountDto.cs" />
     <Compile Include="Subscription\UserDto.cs" />
+    <Compile Include="Subscription\UserInvitationDto.cs" />
     <Compile Include="Subscription\UserInvitationState.cs" />
     <Compile Include="Subscription\UserInvitationType.cs" />
     <Compile Include="Subscription\UserTokenDto.cs" />
