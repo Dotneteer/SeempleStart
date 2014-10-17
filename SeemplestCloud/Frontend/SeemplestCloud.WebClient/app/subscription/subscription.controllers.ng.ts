@@ -44,7 +44,8 @@
     // ------------------------------------------------------------------------
     // Defines the scope of the UserInvitation controller
     // ------------------------------------------------------------------------
-    export interface IUserInvitationCtrlScope extends Core.ISimpleSearch, ng.IScope {
+    export interface IUserInvitationCtrlScope extends Core.ISimpleSearch,
+        ng.ui.bootstrap.IModalScope {
         invitations: UserInvitationVm[];
         openInvitationEditor: () => void;
         refreshData: () => void;
@@ -110,14 +111,14 @@
             }
 
             $scope.openInvitationEditor = () => {
-
                 var modalInstance = $modal.open({
                     templateUrl: 'newInvitation',
                     backdrop: 'static',
                     controller: EditInvitationCtrl,
                     size: 'md',
-                    windowClass: 'popupPosition'
-                });
+                    windowClass: 'popupPosition',
+                    scope: $scope
+            });
 
                 modalInstance.result.then(
                     () => {

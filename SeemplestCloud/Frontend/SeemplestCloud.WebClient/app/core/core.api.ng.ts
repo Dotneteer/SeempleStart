@@ -5,7 +5,7 @@
     // ------------------------------------------------------------------------
     export function initApis() {
         Core.appModule
-            .service('intlnApi', ['$http', InternationalizationApi])
+            .service('intlnApi', ['$http', 'currentSpot', InternationalizationApi])
             .service('intlnSrv', ['intlnApi', InternationalizationService]);
     }
 
@@ -55,10 +55,21 @@
     }
 
     // ------------------------------------------------------------------------
+    // This structure represents a WebApi call response
+    // ------------------------------------------------------------------------
+    export class ResponseData<T> {
+        data: T;
+        status: number;
+        headers: (headerName: string) => string;
+        hasError: boolean;
+        handled: boolean;
+    }
+
+    // ------------------------------------------------------------------------
     // This interface defines a business promise callback of type T
     // ------------------------------------------------------------------------
     export interface IBusinessPromiseCallback<T> {
-        (data: T, status: number, headers: (headerName: string) => string): void;
+        (responseData: ResponseData<T>): void;
     }
 
     // ------------------------------------------------------------------------
@@ -96,7 +107,10 @@
     export class ApiServiceBase {
         request: IRequestMethod;
 
-        constructor($http: ng.IHttpService, private prefix: string) {
+        constructor(
+            $http: ng.IHttpService,
+            private currentSpot: Core.ICurrentSpotService,
+            private prefix: string) {
 
             this.request = (method: string, url: string, data?: any) => {
                 var httpPromise = $http({
@@ -105,13 +119,17 @@
                     data: data
                 });
 
+                // --- Callback information
                 var businessPromise: IBusinessPromise<any> = <IBusinessPromise<any>>{};
                 var successCallback: IBusinessPromiseCallback<any>;
                 var errorCallbacks: IErrorCallback[] = [];
                 var unexpectedCallback: IBusinessPromiseCallback<any>;
-                var acceptedCallback: () => void;
-                var rejectedCallback: () => void;
-                var concludedCallback: () => void;
+                var acceptedCallback: IBusinessPromiseCallback<any>;
+                var concludedCallback: IBusinessPromiseCallback<any>;
+                var rejectedCallback: IBusinessPromiseCallback<any>;
+
+                // --- Last response information
+                var lastResponse: ResponseData<any>;
 
                 // --- Set the "onSuccess" callback
                 businessPromise.onSuccess = (callback) => {
@@ -151,42 +169,50 @@
 
                 // --- Call the WebApi and handle issues
                 businessPromise.go = () => {
+                    currentSpot.resetError();
                     httpPromise.success((dataReceived, status, headers) => {
+                        lastResponse = <ResponseData<any>>{
+                             data: dataReceived, status: status, headers: headers, hasError: false, handled: false
+                        };
                         if (angular.isDefined(successCallback)) {
-                            successCallback(dataReceived, status, headers);
+                            successCallback(lastResponse);
                         }
                     }).error((dataReceived, status, headers) => {
+                        lastResponse = <ResponseData<any>>{
+                             data: dataReceived, status: status, headers: headers, hasError: true, handled: false
+                        };
                         if (status == 500 && angular.isDefined(dataReceived.isBusiness) && dataReceived.isBusiness) {
                             for (var i = 0; i < errorCallbacks.length; i++) {
                                 if (errorCallbacks[i].reasonCode == dataReceived.reasonCode
                                     && angular.isDefined(errorCallbacks[i].callback)) {
-                                    errorCallbacks[i].callback(dataReceived, status, headers);
+                                    errorCallbacks[i].callback(lastResponse);
+                                    lastResponse.handled = true;
                                     return;
                                 }
                             }
                         }
                         if (angular.isDefined(unexpectedCallback)) {
-                            unexpectedCallback(dataReceived, status, headers);
+                            unexpectedCallback(lastResponse);
                         }
                     }).then(() => {
                         try {
                             if (angular.isDefined(acceptedCallback)) {
-                                acceptedCallback();
+                                acceptedCallback(lastResponse);
                             }
                         } catch (ex) {
                         }
                         if (angular.isDefined(concludedCallback)) {
-                            concludedCallback();
+                            concludedCallback(lastResponse);
                         }
                     }, () => {
                         try {
                             if (angular.isDefined(rejectedCallback)) {
-                                rejectedCallback();
+                                rejectedCallback(lastResponse);
                             }
                         } catch (ex) {
                         }
                         if (angular.isDefined(concludedCallback)) {
-                            concludedCallback();
+                            concludedCallback(lastResponse);
                         }
                     });
                 }
@@ -198,6 +224,13 @@
         // --- Creates an URL according to the specified parameters
         url(...params: any[]) {
             return this.prefix + "/" + params.join("/");
+        }
+
+        defaultReject = (response: ResponseData<any>) => {
+            if (response.handled) return;
+            if (response.hasError) {
+                // TODO: implement it
+            }
         }
     }
 
@@ -225,8 +258,8 @@
     // ------------------------------------------------------------------------
     export class InternationalizationApi extends Core.ApiServiceBase implements IInternationalizationApi {
 
-        constructor($http: ng.IHttpService) {
-            super($http, '../api/intln');
+        constructor($http: ng.IHttpService, currentSpot: Core.ICurrentSpotService) {
+            super($http, currentSpot, '../api/intln');
         }
 
         getCurrentCulture() {
@@ -260,12 +293,12 @@
         constructor(intlnApi: IInternationalizationApi) {
             this.api = intlnApi;
             this.api.getCurrentCulture()
-                .onSuccess((dataReceived) => {
-                    this.currentCulture = dataReceived;
+                .onSuccess((response) => {
+                    this.currentCulture = response.data;
             }).go();
             this.api.getServiceMessages()
-                .onSuccess((dataReceived) => {
-                    this.serviceMessages = dataReceived;
+                .onSuccess((response) => {
+                    this.serviceMessages = response.data;
                 }).go();
         }
 

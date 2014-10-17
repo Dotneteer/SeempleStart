@@ -5,7 +5,7 @@
     // ------------------------------------------------------------------------
     export function initSubscriptionApi() {
         Subscription.appModule
-            .service('subscriptionApi', ['$http', SubScriptionApi]);
+            .service('subscriptionApi', ['$http', 'currentSpot', SubScriptionApi]);
     }
 
     // ------------------------------------------------------------------------
@@ -33,8 +33,8 @@
     // ------------------------------------------------------------------------
     export class SubScriptionApi extends Core.ApiServiceBase implements ISubscriptionApi {
 
-        constructor($http: ng.IHttpService) {
-            super($http, '../api/subscription');
+        constructor($http: ng.IHttpService, currentSpot: Core.ICurrentSpotService) {
+            super($http, currentSpot, '../api/subscription');
         }
 
         inviteUser(userInfo: InviteUserDto) {

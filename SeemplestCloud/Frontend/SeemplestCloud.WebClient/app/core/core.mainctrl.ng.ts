@@ -16,10 +16,10 @@
     // ------------------------------------------------------------------------
     export interface ICurrentSpotService {
         // --- Sets the current spot information
-        setCurrentSpot: (title: string, item: string) => {};
+        setCurrentSpot: (title: string, item: string) => void;
 
         // --- Disables the language choice menu
-        disableLanguageChoice: () => {};
+        disableLanguageChoice: () => void;
 
         // --- Gets the current title information
         getCurrentTitle: () => string;
@@ -29,6 +29,18 @@
 
         // --- Gets the flag indicating whether language choice is enable or not
         isLanguageChoiceEnabled: () => boolean;
+
+        // --- Sets the last error message to show
+        setLastError: (message: string) => void;
+
+        // --- Gets the last error message to show
+        getLastError: () => string;
+
+        // --- Resets the error
+        resetError: () => void;
+
+        // --- Gets the flag indicating if there is an error
+        hasError: () => boolean;
     }
 
     // ------------------------------------------------------------------------
@@ -38,6 +50,7 @@
         var currentTitle: string;
         var activeMenu: string;
         var languageChoiceEnabled = true;
+        var lastError: string = null;
 
         return <ICurrentSpotService>{
             setCurrentSpot: (title: string, item: string) => {
@@ -59,6 +72,22 @@
 
             isLanguageChoiceEnabled: () => {
                 return languageChoiceEnabled;
+            },
+
+            setLastError: (message: string) => {
+                lastError = message;
+            },
+
+            getLastError: () => {
+                return lastError;
+            },
+
+            resetError: () => {
+                lastError = null;
+            },
+
+            hasError: () => {
+                return !!lastError && lastError != "";
             }
         }
     }
@@ -119,14 +148,23 @@
     // The scope of the controller managing the main screen
     // ------------------------------------------------------------------------
     export interface IMainCtrlScope extends ng.IScope {
-        /**
-         * Checkes whether the passed menu identifier represents the active one
-         * @param menu
-         */
+        // --- Checkes whether the passed menu identifier represents the active one
         isActive: (menu: string) => boolean;
+
+        // --- Gets the flag indicating if language choice is enabled on UI
         isLanguageChoiceEnabled: () => boolean;
+
+        // --- Gets the current culture information
         getCurrentCulture: () => string;
+
+        // --- Gets the specified service message
         getServiceMessage: (code: string, pars?: {}) => string;
+
+        // --- Gets the string representing the last error
+        getLastError: () => string;
+
+        // --- Gets the flag indicating if there is an error
+        hasError: () => boolean;
     }
 
     // ------------------------------------------------------------------------
@@ -155,6 +193,14 @@
             $scope.getServiceMessage = (code: string, pars?: {}) => {
                 return intlnSrv.getServiceMessage (code, pars);
             };
+
+            $scope.getLastError = () => {
+                return currentSpot.getLastError();
+            }
+
+            $scope.hasError = () => {
+                return currentSpot.hasError();
+            }
         }
     }
 }
