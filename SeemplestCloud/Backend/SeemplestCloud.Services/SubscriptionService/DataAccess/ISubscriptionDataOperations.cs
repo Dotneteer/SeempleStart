@@ -124,14 +124,14 @@ namespace SeemplestCloud.Services.SubscriptionService.DataAccess
         Task<UserInvitationRecord> GetUserInvitationByIdAsync(int id);
 
         /// <summary>
-        /// Gets a UserInvitation record by its "FK_SubscriptionOfInvitation" foreign key values
+        /// Gets UserInvitation records by its "FK_SubscriptionOfInvitation" foreign key values
         /// </summary>
-        Task<UserInvitationRecord> GetUserInvitationBySubscriptionAsync(int? subscriptionId);
+        Task<List<UserInvitationRecord>> GetUserInvitationBySubscriptionAsync(int? subscriptionId);
 
         /// <summary>
-        /// Gets a UserInvitation record by its "FK_UserOfInvitation" foreign key values
+        /// Gets UserInvitation records by its "FK_UserOfInvitation" foreign key values
         /// </summary>
-        Task<UserInvitationRecord> GetUserInvitationByUserAsync(Guid userId);
+        Task<List<UserInvitationRecord>> GetUserInvitationByUserAsync(Guid userId);
 
         /// <summary>
         /// Inserts a UserInvitation record into the database

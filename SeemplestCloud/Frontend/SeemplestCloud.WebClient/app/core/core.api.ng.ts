@@ -126,7 +126,7 @@
                 var unexpectedCallback: IBusinessPromiseCallback<any>;
                 var acceptedCallback: IBusinessPromiseCallback<any>;
                 var concludedCallback: IBusinessPromiseCallback<any>;
-                var rejectedCallback: IBusinessPromiseCallback<any>;
+                var rejectedCallback: IBusinessPromiseCallback<any> = this.defaultReject;
 
                 // --- Last response information
                 var lastResponse: ResponseData<any>;
@@ -217,6 +217,7 @@
                     });
                 }
 
+                businessPromise.go();
                 return businessPromise;
             };
         }
@@ -226,10 +227,15 @@
             return this.prefix + "/" + params.join("/");
         }
 
+        // --- This method is used as the default callback for "reject"
         defaultReject = (response: ResponseData<any>) => {
             if (response.handled) return;
             if (response.hasError) {
-                // TODO: implement it
+                if (response.status == 500 && angular.isDefined(response.data.isBusiness) && response.data.isBusiness) {
+                    this.currentSpot.setError(response.data.reasonCode, response.data.message);
+                } else {
+                    this.currentSpot.setError("INFRA", response.data.message);
+                }
             }
         }
     }
@@ -295,7 +301,7 @@
             this.api.getCurrentCulture()
                 .onSuccess((response) => {
                     this.currentCulture = response.data;
-            }).go();
+                }).go();
             this.api.getServiceMessages()
                 .onSuccess((response) => {
                     this.serviceMessages = response.data;

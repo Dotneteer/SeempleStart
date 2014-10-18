@@ -6,7 +6,7 @@
     export function initCurrentSpot() {
         Core.appModule
             .controller('MainCtrl', MainCtrl)
-            .factory('currentSpot', [currentSpotService])
+            .service('currentSpot', [CurrentSpotService])
             .directive('currentSpot', currentSpotDirective)
             .directive('activeMenu', ['currentSpot', currentSpotMarkerDirective]);
     }
@@ -31,10 +31,16 @@
         isLanguageChoiceEnabled: () => boolean;
 
         // --- Sets the last error message to show
-        setLastError: (message: string) => void;
+        setError: (reasonCode: string, message: string, errorObject?) => void;
+
+        // --- Gets last error code to show
+        getErrorCode: () => string;
 
         // --- Gets the last error message to show
-        getLastError: () => string;
+        getErrorMessage: () => string;
+
+        // --- Get the last error object
+        getErrorObject: () => {};
 
         // --- Resets the error
         resetError: () => void;
@@ -46,49 +52,58 @@
     // ------------------------------------------------------------------------
     // This service stores the current spot information
     // ------------------------------------------------------------------------
-    export function currentSpotService(): ICurrentSpotService {
-        var currentTitle: string;
-        var activeMenu: string;
-        var languageChoiceEnabled = true;
-        var lastError: string = null;
+    export class CurrentSpotService implements ICurrentSpotService {
+        currentTitle: string;
+        activeMenu: string;
+        languageChoiceEnabled = true;
+        errorCode: string = null;
+        errorMessage: string = null;
+        errorObject = null;
 
-        return <ICurrentSpotService>{
-            setCurrentSpot: (title: string, item: string) => {
-                currentTitle = title;
-                activeMenu = item;
-            },
+        setCurrentSpot = (title: string, item: string) => {
+            this.currentTitle = title;
+            this.activeMenu = item;
+        }
 
-            disableLanguageChoice: () => {
-                languageChoiceEnabled = false;
-            },
+        disableLanguageChoice = () => {
+            this.languageChoiceEnabled = false;
+        }
 
-            getCurrentTitle: () => {
-                return currentTitle;
-            },
+        getCurrentTitle = () => {
+            return this.currentTitle;
+        }
 
-            getActiveMenu: () => {
-                return activeMenu;
-            },
+        getActiveMenu = () => {
+            return this.activeMenu;
+        }
 
-            isLanguageChoiceEnabled: () => {
-                return languageChoiceEnabled;
-            },
+        isLanguageChoiceEnabled = () => {
+            return this.languageChoiceEnabled;
+        }
 
-            setLastError: (message: string) => {
-                lastError = message;
-            },
+        setError = (reasonCode: string, message: string) => {
+            this.errorCode = reasonCode;
+            this.errorMessage = message;
+        }
 
-            getLastError: () => {
-                return lastError;
-            },
+        getErrorCode = () => {
+            return this.errorCode;
+        }
 
-            resetError: () => {
-                lastError = null;
-            },
+        getErrorMessage = () => {
+            return this.errorMessage;
+        }
 
-            hasError: () => {
-                return !!lastError && lastError != "";
-            }
+        getErrorObject = () => {
+            return this.errorObject;
+        }
+
+        resetError = () => {
+            this.errorCode = null;
+        }
+
+        hasError = () => {
+            return this.errorCode != null;
         }
     }
 
@@ -161,7 +176,7 @@
         getServiceMessage: (code: string, pars?: {}) => string;
 
         // --- Gets the string representing the last error
-        getLastError: () => string;
+        getErrorMessage: () => string;
 
         // --- Gets the flag indicating if there is an error
         hasError: () => boolean;
@@ -194,8 +209,12 @@
                 return intlnSrv.getServiceMessage (code, pars);
             };
 
-            $scope.getLastError = () => {
-                return currentSpot.getLastError();
+            $scope.getErrorMessage = () => {
+                if (currentSpot.hasError()) {
+                    return $scope.getServiceMessage(currentSpot.getErrorCode(), currentSpot.getErrorObject());
+                } else {
+                    return "";
+                }
             }
 
             $scope.hasError = () => {
@@ -203,6 +222,7 @@
             }
         }
     }
+
 }
 
 Core.initCurrentSpot();

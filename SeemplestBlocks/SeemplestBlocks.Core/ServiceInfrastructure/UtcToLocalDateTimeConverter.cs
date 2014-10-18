@@ -1,13 +1,14 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Schema;
 
 namespace SeemplestBlocks.Core.ServiceInfrastructure
 {
     /// <summary>
     /// This class converts UTC DateTime values to local DateTime values
     /// </summary>
-    public class UtcToLocConverter : DateTimeConverterBase
+    public class UtcToLocalDateTimeConverter : DateTimeConverterBase
     {
         /// <summary>
         /// Reads the JSON representation of the object.
@@ -42,9 +43,17 @@ namespace SeemplestBlocks.Core.ServiceInfrastructure
                 writer.WriteValue(value);
                 return;
             }
-            var dateTimeValue = (DateTime)value;
-            dateTimeValue = DateTime.SpecifyKind(dateTimeValue, DateTimeKind.Local);
-            writer.WriteValue((dateTimeValue.ToString("yyyy-MM-ddTHH:mm:ss")));
+            if (value is DateTime)
+            {
+                var dateTimeValue = (DateTime) value;
+                dateTimeValue = DateTime.SpecifyKind(dateTimeValue, DateTimeKind.Local);
+                writer.WriteValue((dateTimeValue.ToString("yyyy-MM-ddTHH:mm:ss")));
+            }
+            else
+            {
+                var dateTimeValue = ((DateTimeOffset)value).ToLocalTime();
+                writer.WriteValue((dateTimeValue.ToString("yyyy-MM-ddTHH:mm:ss")));
+            }
         }
     }
 }

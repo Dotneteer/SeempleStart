@@ -27,7 +27,7 @@ namespace SeemplestCloud.WebClient
                 Formatting = Formatting.None,
                 DateTimeZoneHandling = DateTimeZoneHandling.Local
             };
-            jSettings.Converters.Add(new UtcToLocConverter());
+            jSettings.Converters.Add(new UtcToLocalDateTimeConverter());
             jsonFormatter.SerializerSettings = jSettings;
             jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 

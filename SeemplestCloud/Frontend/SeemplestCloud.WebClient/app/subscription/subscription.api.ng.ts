@@ -9,6 +9,20 @@
     }
 
     // ------------------------------------------------------------------------
+    // This class represents an invitation entry view model
+    // ------------------------------------------------------------------------
+    export class UserInvitationVm {
+        id: number;
+        userId: string;
+        subscriptionId: number;
+        invitedEmail: string;
+        invitedUserName: string;
+        expirationDateUtc: Date;
+        state: string;
+        type: string;
+    }
+
+    // ------------------------------------------------------------------------
     // This DTO represents an invited user
     // ------------------------------------------------------------------------
     export class InviteUserDto {
@@ -25,6 +39,7 @@
     // This interface represents the WebAPI managing subscriptions
     // ------------------------------------------------------------------------
     export interface ISubscriptionApi {
+        getInvitedUsers(): Core.IBusinessPromise<UserInvitationVm[]>
         inviteUser(userInfo: InviteUserDto): Core.IBusinessPromise<any>;
     }
     
@@ -35,6 +50,10 @@
 
         constructor($http: ng.IHttpService, currentSpot: Core.ICurrentSpotService) {
             super($http, currentSpot, '../api/subscription');
+        }
+
+        getInvitedUsers() {
+            return this.request('GET', this.url('invitations'));
         }
 
         inviteUser(userInfo: InviteUserDto) {

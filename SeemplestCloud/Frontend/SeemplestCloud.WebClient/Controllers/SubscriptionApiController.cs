@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Seemplest.Core.ServiceObjects.Validation;
 using SeemplestBlocks.Core.ServiceInfrastructure;
 using SeemplestCloud.Dto.Subscription;
 using SeemplestCloud.Services.SubscriptionService;
@@ -14,6 +14,15 @@ namespace SeemplestCloud.WebClient.Controllers
     [RoutePrefix("api/subscription")]
     public class SubscriptionApiController: ApiController
     {
+        [HttpGet]
+        [Route("invitations")]
+        public async Task<List<UserInvitationCoreDto>> GetInvitedUsers()
+        {
+            var srvObj = HttpServiceFactory.CreateService<ISubscriptionService>();
+            var result = await srvObj.GetInvitedUsers();
+            return result;
+        }
+
         [HttpPost]
         [Route("inviteUser")]
         [Authorize]

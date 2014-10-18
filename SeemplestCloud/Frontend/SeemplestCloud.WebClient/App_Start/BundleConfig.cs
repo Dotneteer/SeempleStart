@@ -22,8 +22,8 @@ namespace SeemplestCloud.WebClient
             bundles.Add(new ScriptBundle("~/bundles/appInit").Include(
                 "~/app/core/core.init.ng.js",
                 "~/app/core/core.api.ng.js",
-                "~/app/core/core.ng.js",
                 "~/app/core/core.mainctrl.ng.js",
+                "~/app/core/core.ng.js",
                 "~/app/subscription/subscription.init.ng.js",
                 "~/app/subscription/subscription.api.ng.js",
                 "~/app/subscription/subscription.controllers.ng.js",

@@ -283,6 +283,23 @@ namespace SeemplestCloud.Services.SubscriptionService
         }
 
         /// <summary>
+        /// Gets the users invited to join to the subscription of the current user.
+        /// </summary>
+        /// <returns>List of user invitations</returns>
+        public async Task<List<UserInvitationCoreDto>> GetInvitedUsers()
+        {
+            if (!Principal.SubscriptionId.HasValue)
+            {
+                return new List<UserInvitationCoreDto>();
+            }
+            using (var ctx = DataAccessFactory.CreateReadOnlyContext<ISubscriptionDataOperations>())
+            {
+                return (await ctx.GetUserInvitationBySubscriptionAsync(Principal.SubscriptionId))
+                    .Select(MapUserInvitation).ToList();
+            }
+        }
+
+        /// <summary>
         /// Sends an invitation to the specified user
         /// </summary>
         /// <param name="userInfo">Information about the invited user</param>
@@ -449,6 +466,26 @@ namespace SeemplestCloud.Services.SubscriptionService
                 UserId = dto.UserId,
                 Provider = dto.Provider,
                 ProviderData = dto.ProviderData
+            };
+        }
+
+        /// <summary>
+        /// Maps the specified UserInvitationRecord to a UserInvitationDto instance
+        /// </summary>
+        /// <param name="record">UserInvitationRecord to map</param>
+        /// <returns>UserInvitationDto instance</returns>
+        public static UserInvitationCoreDto MapUserInvitation(UserInvitationRecord record)
+        {
+            return new UserInvitationCoreDto
+            {
+                Id = record.Id,
+                UserId = record.UserId,
+                SubscriptionId = record.SubscriptionId,
+                InvitedEmail = record.InvitedEmail,
+                InvitedUserName = record.InvitedUserName,
+                ExpirationDateUtc = record.ExpirationDateUtc,
+                State = record.State,
+                Type = record.Type,
             };
         }
     }

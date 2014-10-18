@@ -57,7 +57,7 @@
         }
         using (f.Body())
         {
-            <div class="alert alert-danger" ng-show="hasError()">{{$parent.getLastError()}}</div>
+            <div class="alert alert-danger" ng-show="hasError()">{{$parent.getErrorMessage()}}</div>
             
             @f.InputFor(m => m.InvitedUserName, autoFocus: AutoFocus.OnFormValid, validationOption: ValidationOption.WhenDirty)
             @f.InputFor(m => m.InvitedEmail, autoFocus: AutoFocus.OnFormValid, validationOption: ValidationOption.WhenDirty)

@@ -222,21 +222,21 @@ namespace SeemplestCloud.Services.SubscriptionService.DataAccess
         }
 
         /// <summary>
-        /// Gets a UserInvitation record by its "FK_SubscriptionOfInvitation" foreign key values
+        /// Gets UserInvitation records by its "FK_SubscriptionOfInvitation" foreign key values
         /// </summary>
-        public async Task<UserInvitationRecord> GetUserInvitationBySubscriptionAsync(int? subscriptionId)
+        public async Task<List<UserInvitationRecord>> GetUserInvitationBySubscriptionAsync(int? subscriptionId)
         {
-            return await OperationAsync(ctx => ctx.FirstOrDefaultAsync<UserInvitationRecord>(
+            return await OperationAsync(ctx => ctx.FetchAsync<UserInvitationRecord>(
                 "where [SubscriptionId]=@0",
                 subscriptionId));
         }
 
         /// <summary>
-        /// Gets a UserInvitation record by its "FK_UserOfInvitation" foreign key values
+        /// Gets UserInvitation records by its "FK_UserOfInvitation" foreign key values
         /// </summary>
-        public async Task<UserInvitationRecord> GetUserInvitationByUserAsync(Guid userId)
+        public async Task<List<UserInvitationRecord>> GetUserInvitationByUserAsync(Guid userId)
         {
-            return await OperationAsync(ctx => ctx.FirstOrDefaultAsync<UserInvitationRecord>(
+            return await OperationAsync(ctx => ctx.FetchAsync<UserInvitationRecord>(
                 "where [UserId]=@0",
                 userId));
         }

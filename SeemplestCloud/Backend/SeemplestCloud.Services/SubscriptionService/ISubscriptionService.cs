@@ -104,6 +104,12 @@ namespace SeemplestCloud.Services.SubscriptionService
         Task<List<UserAccountDto>> GetUserAccountsByUserId(Guid userId);
 
         /// <summary>
+        /// Gets the users invited to join to the subscription of the current user.
+        /// </summary>
+        /// <returns>List of user invitations</returns>
+        Task<List<UserInvitationCoreDto>> GetInvitedUsers();
+
+        /// <summary>
         /// Sends an invitation to the specified user
         /// </summary>
         /// <param name="userInfo">Information about the invited user</param>

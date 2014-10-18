@@ -10,38 +10,6 @@
     }
 
     // ------------------------------------------------------------------------
-    // This class represents an invitation entry view model
-    // ------------------------------------------------------------------------
-    export class UserInvitationVm {
-        id: number;
-        userId: string;
-        subscriptionId: number;
-        invitedEmail: string;
-        invitedUserName: string;
-        invitationCode: string;
-        expirationDateUtc: Date;
-        state: string;
-        type: string;
-        createdUtc: Date;
-        lastModifiedUtc: Date;
-
-        constructor(d?: UserInvitationVm) {
-            d = d || <UserInvitationVm>{};
-            this.id = d.id;
-            this.userId = d.userId;
-            this.subscriptionId = d.subscriptionId;
-            this.invitedEmail = d.invitedEmail;
-            this.invitedUserName = d.invitedUserName;
-            this.invitationCode = d.invitationCode;
-            this.expirationDateUtc = d.expirationDateUtc;
-            this.state = d.state;
-            this.type = d.type;
-            this.createdUtc = d.createdUtc;
-            this.lastModifiedUtc = d.lastModifiedUtc;
-        }
-    }
-
-    // ------------------------------------------------------------------------
     // Defines the scope of the UserInvitation controller
     // ------------------------------------------------------------------------
     export interface IUserInvitationCtrlScope extends Core.ISimpleSearch,
@@ -56,54 +24,18 @@
     // This controller manages the user invitation view
     // ------------------------------------------------------------------------
     export class UserInvitationCtrl {
-        public static $inject = ['$scope', '$modal']
+        public static $inject = ['$scope', '$modal', 'subscriptionApi']
 
         constructor(
             $scope: IUserInvitationCtrlScope,
-            $modal: ng.ui.bootstrap.IModalService) {
+            $modal: ng.ui.bootstrap.IModalService,
+            api: ISubscriptionApi) {
 
             $scope.refreshData = () => {
-                $scope.invitations = [
-                    new UserInvitationVm({
-                        id: 1,
-                        userId: '1',
-                        invitedEmail: 'dotneteer@hotmail.com',
-                        invitedUserName: 'dotneteer',
-                        createdUtc: new Date(),
-                        expirationDateUtc: moment.utc(new Date(2015, 1, 1)).toDate(),
-                        state: 'Sent',
-                        type: 'User',
-                        invitationCode: '',
-                        lastModifiedUtc: null,
-                        subscriptionId: null
-                    }),
-                    new UserInvitationVm({
-                        id: 2,
-                        userId: '1',
-                        invitedEmail: 'vsxguy@gmail.com',
-                        invitedUserName: 'vsxguy',
-                        createdUtc: new Date(),
-                        expirationDateUtc: moment.utc(new Date(2015, 1, 1)).toDate(),
-                        state: 'Read',
-                        type: 'User',
-                        invitationCode: '',
-                        lastModifiedUtc: null,
-                        subscriptionId: null
-                    }),
-                    new UserInvitationVm({
-                        id: 3,
-                        userId: '2',
-                        invitedEmail: 'inovak@grepton.hu',
-                        invitedUserName: 'Novák István',
-                        createdUtc: new Date(),
-                        expirationDateUtc: moment.utc(new Date(2015, 1, 1)).toDate(),
-                        state: 'Activated',
-                        type: 'User',
-                        invitationCode: '',
-                        lastModifiedUtc: null,
-                        subscriptionId: null
-                    })
-                ];
+                api.getInvitedUsers()
+                    .onSuccess((response: Core.ResponseData<UserInvitationVm[]>) => {
+                        $scope.invitations = response.data;
+                    });
             };
 
             $scope.clearSearchKey = () => {
@@ -161,8 +93,7 @@
             $scope.onOk = () => {
                 api.inviteUser(new InviteUserDto($scope.model.invitedUserName, $scope.model.invitedEmail))
                     .onSuccess(() => { $modalInstance.close(); })
-                    .reject(() => { $scope.disableOk = false; })
-                    .go();
+                    .conclude(() => { $scope.disableOk = false; });
                 return false;
             };
 
