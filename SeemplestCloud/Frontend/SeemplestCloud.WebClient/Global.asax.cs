@@ -7,11 +7,8 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using System.Web.Security;
 using Newtonsoft.Json;
-using Seemplest.Core.DependencyInjection;
 using SeemplestBlocks.Core.Internationalization;
 using SeemplestCloud.Services.Infrastructure;
-using SeemplestCloud.Services.SubscriptionService;
-using SeemplestCloud.WebClient.Controllers;
 using SeemplestCloud.WebClient.Infrastructure;
 using SeemplestCloud.WebClient.Models.UserManagement;
 
@@ -30,6 +27,15 @@ namespace SeemplestCloud.WebClient
 
             // --- Use implemented languages
             CultureHelper.SetImplementedCultures(ImplementedCultures.GetCultureCodes());
+
+            // --- Start background tasks
+            BackgroundTaskConfig.StartBackgroundProcessing();
+        }
+
+        protected void Application_Stop()
+        {
+            // --- Stop background tasks
+            BackgroundTaskConfig.StopBackgroundProcessing();
         }
 
         /// <summary>

@@ -17,5 +17,10 @@ namespace SeemplestCloud.WebClient.Controllers
             return View();
         }
 
+        [AllowAnonymous]
+        public ActionResult ConfirmInvitation(string code)
+        {
+            return View();
+        }
     }
 }

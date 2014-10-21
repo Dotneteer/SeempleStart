@@ -108,9 +108,9 @@ namespace <%= Namespace %>
 %>
         
         /// <summary>
-        /// Gets a <%= SourceTable.Name %> record by its "<%= fk.Name %>" foreign key values
+        /// Gets <%= SourceTable.Name %> records by its "<%= fk.Name %>" foreign key values
         /// </summary>
-        Task<<%= SourceTable.Name %>Record> Get<%= SourceTable.Name %>By<%= keyName %>Async(<%= GetArgumentList(fk.ForeignKeyMemberColumns) %>);
+        Task<List<<%= SourceTable.Name %>Record>> Get<%= SourceTable.Name %>By<%= keyName %>Async(<%= GetArgumentList(fk.ForeignKeyMemberColumns) %>);
 <%
         }
     }
@@ -247,11 +247,11 @@ namespace <%= Namespace %>
 %>
         
         /// <summary>
-        /// Gets a <%= SourceTable.Name %> record by its "<%= fk.Name %>" foreign key values
+        /// Gets <%= SourceTable.Name %> records by its "<%= fk.Name %>" foreign key values
         /// </summary>
-        public async Task<<%= SourceTable.Name %>Record> Get<%= SourceTable.Name %>By<%= keyName %>Async(<%= GetArgumentList(fk.ForeignKeyMemberColumns) %>)
+        public async Task<List<<%= SourceTable.Name %>Record>> Get<%= SourceTable.Name %>By<%= keyName %>Async(<%= GetArgumentList(fk.ForeignKeyMemberColumns) %>)
         {
-            return await OperationAsync(ctx => ctx.FirstOrDefaultAsync<<%= SourceTable.Name %>Record>(
+            return await OperationAsync(ctx => ctx.FetchAsync<<%= SourceTable.Name %>Record>(
                 "where <%= GetConditionList(fk.ForeignKeyMemberColumns) %>", 
                 <%= GetParameterList(fk.ForeignKeyMemberColumns) %>));
         }

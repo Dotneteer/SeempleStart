@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SeemplestBlocks.Core.ServiceInfrastructure;
@@ -12,6 +11,7 @@ namespace SeemplestCloud.WebClient.Controllers
     /// This API manages operations related to subscriptions
     /// </summary>
     [RoutePrefix("api/subscription")]
+    [Authorize]
     public class SubscriptionApiController: ApiController
     {
         [HttpGet]
@@ -25,7 +25,6 @@ namespace SeemplestCloud.WebClient.Controllers
 
         [HttpPost]
         [Route("inviteUser")]
-        [Authorize]
         public async Task InviteUserAsync(InviteUserDto userInfo)
         {
             var srvObj = HttpServiceFactory.CreateService<ISubscriptionService>();

@@ -78,7 +78,7 @@ namespace SeemplestBlocks.UnitTests.Email
                         value = "false";
                         return true;
                     case "SmtpServer":
-                        value = "smtp.gmail.ceom";
+                        value = "smtp.gmail.com";
                         return true;
                     case "PortNumber":
                         value = "587";

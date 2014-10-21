@@ -88,6 +88,7 @@
     <Compile Include="SubscriptionService\DataAccess\UserRoleRecord.cs" />
     <Compile Include="SubscriptionService\Exceptions\EmailReservedException.cs" />
     <Compile Include="SubscriptionService\ISubscriptionService.cs" />
+    <Compile Include="SubscriptionService\SubscriptionConfig.cs" />
     <Compile Include="SubscriptionService\SubscriptionService.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -138,7 +138,14 @@ namespace SeemplestBlocks.Core.Email
                     ProcessEmail(emailToSend, null, null, null, ex.ToString());
                 }
             }
-            Thread.Sleep(SmtpConfig.SendInterval);
+            try
+            {
+                Thread.Sleep(SmtpConfig.SendInterval);
+            }
+            catch (SystemException)
+            {
+                // --- This exception is caught intentionally
+            }
         }
 
         /// <summary>

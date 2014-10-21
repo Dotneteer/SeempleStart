@@ -18,18 +18,17 @@
     // Converts a JSON string into a date time value
     // ------------------------------------------------------------------------
     function convertDateStringsToDates(input) {
-        // Ha a paraméter nem object típusú, visszatérünk.
         if (!input || typeof input !== "object") return;
 
         for (var key in input) {
             if (!input.hasOwnProperty(key)) continue;
 
             var value = input[key];
-            // Ellenőrzés, hogy az adattag JSON dátum-e
+            // --- Check whether the data is a JSON datetime
             if (typeof value === "string" && (value.match(dateTimeStringRegex))) {
                 input[key] = moment(value).toDate();
             } else if (typeof value === "object") {
-                // Ha objektum, akkor rekurzívan ellenőrzünk
+                // --- Go on recursively with the check
                 convertDateStringsToDates(value);
             }
         }

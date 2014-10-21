@@ -1,5 +1,9 @@
 ﻿using Seemplest.Core.DataAccess.DataServices;
 using Seemplest.Core.DependencyInjection;
+using SeemplestBlocks.Core.AppConfig;
+using SeemplestBlocks.Core.AppConfig.DataAccess;
+using SeemplestBlocks.Core.Email;
+using SeemplestBlocks.Core.Email.DataAccess;
 using SeemplestBlocks.Core.Security;
 using SeemplestCloud.Services.SubscriptionService;
 using SeemplestCloud.Services.SubscriptionService.DataAccess;
@@ -18,6 +22,16 @@ namespace SeemplestCloud.WebClient
         {
             // --- Prepare the service manager
             ServiceManager.SetRegistry(new DefaultServiceRegistry());
+
+            // --- Register configuration handling
+            ServiceManager.Register<IConfigurationReader, AppConfigReader>();
+            ServiceManager.Register<IConfigurationDataOperations, ConfigurationDataOperations>(DB_CONN);
+            ServiceManager.Register<IConfigurationService, ConfigurationService>();
+
+            // --- Register email sending
+            ServiceManager.Register<IEmailDataOperations, EmailDataOperations>(DB_CONN);
+            ServiceManager.Register<IEmailComposerService, EmailComposerService>();
+            ServiceManager.Register<IEmailSender, SmtpEmailSender>();
 
             // --- Register services
             ServiceManager.Register<ISubscriptionDataOperations, SubscriptionDataOperations>(DB_CONN);

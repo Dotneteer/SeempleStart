@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Seemplest.Core.DataAccess.DataServices;
+using Seemplest.Core.DependencyInjection;
+using SeemplestBlocks.Core.Email;
 using SeemplestCloud.Dto.Subscription;
 using SeemplestCloud.Services.Infrastructure;
 using SeemplestCloud.Services.SubscriptionService.DataAccess;
@@ -320,6 +322,7 @@ namespace SeemplestCloud.Services.SubscriptionService
                     throw new EmailReservedException(userInfo.InvitedEmail);
                 }
 
+                // --- Administer invitation
                 var invitationCode = String.Format("{0:N}{1:N}{2:N}", Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
                 await ctx.InsertUserInvitationAsync(new UserInvitationRecord
                 {
@@ -334,6 +337,14 @@ namespace SeemplestCloud.Services.SubscriptionService
                     State = UserInvitationState.SENT,
                     Type = UserInvitationType.USER
                 });
+
+                // --- Send the email with the invitation link
+                var invitationLink = string.Format("{0}/{1}", SubscriptionConfig.InvitationLinkPrefix, invitationCode);
+                var sender = ServiceManager.GetService<IEmailSender>();
+                sender.SendEmail(SmtpConfig.EmailFromAddr, SmtpConfig.EmailFromName, 
+                    new[] { userInfo.InvitedEmail }, 
+                    "SeemplectCloud invitation",
+                    "Click here to confirm your invitation: " + invitationLink);
             }
         }
 

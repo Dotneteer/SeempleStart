@@ -10,7 +10,7 @@ namespace Setup.Commands
     /// </summary>
     [Command("deployscdatabase", "dscdb",
         UsageCommand = @"
-  deploy-sc-database          Deploys the Younderwater database.",
+  deploy-sc-database          Deploys the SeemplestCloud database.",
         UsageArguments = @"
 Arguments for deploy-sc-database:
   -sql-instance instance       SQL instance (required)
