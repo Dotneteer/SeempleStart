@@ -61,11 +61,65 @@ namespace SeemplestCloud.Services {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A megadott e-mail címet már meghívták felhasználónak..
+        /// </summary>
+        public static string EmailAlreadyInvited {
+            get {
+                return ResourceManager.GetString("EmailAlreadyInvited", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A megadott e-mail címet már foglalja egy felhasználó..
         /// </summary>
         public static string EmailReserved {
             get {
                 return ResourceManager.GetString("EmailReserved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A felhasználó meghívásához tartozó kód érvénytelen. Lehet, hogy már lejárt, vagy a meghívást időközben visszavonták..
+        /// </summary>
+        public static string InvalidInvitationCode {
+            get {
+                return ResourceManager.GetString("InvalidInvitationCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ismeretlen e-mail cím..
+        /// </summary>
+        public static string UnknownEmail {
+            get {
+                return ResourceManager.GetString("UnknownEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ismeretlen felhasználói azonosító..
+        /// </summary>
+        public static string UnknownUserId {
+            get {
+                return ResourceManager.GetString("UnknownUserId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ez a felhasználói név már szerepel egy meghívón..
+        /// </summary>
+        public static string UserNameAlreadyInvited {
+            get {
+                return ResourceManager.GetString("UserNameAlreadyInvited", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ez a felhasználói név már foglalt..
+        /// </summary>
+        public static string UserNameReserved {
+            get {
+                return ResourceManager.GetString("UserNameReserved", resourceCulture);
             }
         }
     }

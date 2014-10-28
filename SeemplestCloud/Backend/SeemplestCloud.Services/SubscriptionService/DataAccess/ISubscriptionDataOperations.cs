@@ -33,7 +33,7 @@ namespace SeemplestCloud.Services.SubscriptionService.DataAccess
         /// <summary>
         /// Gets a User record by its "AK_UserName" alternate key values
         /// </summary>
-        Task<UserRecord> GetUserByUserNameAsync(string userName);
+        Task<UserRecord> GetUserByUserNameAsync(int? subscriptionId, string userName);
 
         /// <summary>
         /// Inserts a User record into the database
@@ -131,7 +131,19 @@ namespace SeemplestCloud.Services.SubscriptionService.DataAccess
         /// <summary>
         /// Gets UserInvitation records by its "FK_UserOfInvitation" foreign key values
         /// </summary>
-        Task<List<UserInvitationRecord>> GetUserInvitationByUserAsync(Guid userId);
+        Task<List<UserInvitationRecord>> GetUserInvitationByUserAsync(int? subscriptionId, string userName);
+
+        /// <summary>
+        /// Gets UserInvitation records by email address
+        /// </summary>
+        Task<List<UserInvitationRecord>> GetUserInvitationByEmailAsync(string email);
+
+        /// <summary>
+        /// Gets the user invitation with the specified code
+        /// </summary>
+        /// <param name="code">User invitation code</param>
+        /// <returns>User invitation, if found; otherwise, null</returns>
+        Task<UserInvitationRecord> GetUserInvitationByCode(string code);
 
         /// <summary>
         /// Inserts a UserInvitation record into the database

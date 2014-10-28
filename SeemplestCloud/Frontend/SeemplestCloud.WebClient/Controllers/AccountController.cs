@@ -79,7 +79,7 @@ namespace SeemplestCloud.WebClient.Controllers
             {
                 case SignInStatus.Success:
                     var subscSrv = ServiceManager.GetService<ISubscriptionService>();
-                    var token = await subscSrv.GetUserTokenAsync(model.Email);
+                    var token = await subscSrv.GetUserTokenByEmailAsync(model.Email);
                     CreateAuthenticationTicket(model.RememberMe, token.UserId, token.UserName, token.IsServiceUser, token.SubscriptionId, token.IsSubscriptionOwner);
                     return RedirectToLocal(returnUrl);
                 

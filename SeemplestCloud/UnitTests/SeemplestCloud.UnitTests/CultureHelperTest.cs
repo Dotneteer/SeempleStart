@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Globalization;
-using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SeemplestBlocks.Core.Internationalization;
 using SoftwareApproach.TestingExtensions;
@@ -8,7 +6,7 @@ using SoftwareApproach.TestingExtensions;
 namespace SeemplestCloud.UnitTests
 {
     [TestClass]
-    public class UnitTest1
+    public class CultureHelperTest
     {
         [TestMethod]
         public void SetAndGetImplementedCulturesWorksAsExpected()

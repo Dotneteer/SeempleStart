@@ -117,7 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="EmailAlreadyInvited" xml:space="preserve">
+    <value>The specified e-mail address is already invited.</value>
+  </data>
   <data name="EmailReserved" xml:space="preserve">
     <value>The specified e-mail address is already used by another user.</value>
+  </data>
+  <data name="InvalidInvitationCode" xml:space="preserve">
+    <value>This user invitation code is invalid. It can be phony, expired or revoked.</value>
+  </data>
+  <data name="UnknownEmail" xml:space="preserve">
+    <value>Unknown e-mail address.</value>
+  </data>
+  <data name="UnknownUserId" xml:space="preserve">
+    <value>Unknown user identifier.</value>
+  </data>
+  <data name="UserNameAlreadyInvited" xml:space="preserve">
+    <value>A user with the specified name is already invited.</value>
+  </data>
+  <data name="UserNameReserved" xml:space="preserve">
+    <value>The specified user name is already used.</value>
   </data>
 </root>

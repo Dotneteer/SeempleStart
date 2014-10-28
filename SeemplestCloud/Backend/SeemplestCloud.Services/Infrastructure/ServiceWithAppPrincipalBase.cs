@@ -1,5 +1,5 @@
-﻿using Seemplest.Core.ServiceObjects;
-using System.Web;
+﻿using Seemplest.Core.DependencyInjection;
+using Seemplest.Core.ServiceObjects;
 
 namespace SeemplestCloud.Services.Infrastructure
 {
@@ -13,7 +13,11 @@ namespace SeemplestCloud.Services.Infrastructure
         /// </summary>
         public AppPrincipal Principal
         {
-            get { return (AppPrincipal)HttpContext.Current.User; }
+            get
+            {
+                var provider = ServiceManager.GetService<IAppPrincipalProvider>();
+                return provider.Principal;
+            }
         }
     }
 }

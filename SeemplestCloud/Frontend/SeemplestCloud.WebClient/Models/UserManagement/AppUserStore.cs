@@ -313,7 +313,7 @@ namespace SeemplestCloud.WebClient.Models.UserManagement
         public async Task<IList<UserLoginInfo>> GetLoginsAsync(AppUser user)
         {
             var secSrv = ServiceManager.GetService<ISubscriptionService>();
-            var logins = await secSrv.GetUserAccountsByUserId(new Guid(user.Id));
+            var logins = await secSrv.GetUserAccountsByUserIdAsync(new Guid(user.Id));
             return logins.Select(u => new UserLoginInfo(u.Provider, u.ProviderData)).ToList();
         }
 

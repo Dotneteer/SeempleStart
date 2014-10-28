@@ -5,6 +5,7 @@ using SeemplestBlocks.Core.AppConfig.DataAccess;
 using SeemplestBlocks.Core.Email;
 using SeemplestBlocks.Core.Email.DataAccess;
 using SeemplestBlocks.Core.Security;
+using SeemplestCloud.Services.Infrastructure;
 using SeemplestCloud.Services.SubscriptionService;
 using SeemplestCloud.Services.SubscriptionService.DataAccess;
 using SeemplestCloud.WebClient.Providers;
@@ -37,8 +38,9 @@ namespace SeemplestCloud.WebClient
             ServiceManager.Register<ISubscriptionDataOperations, SubscriptionDataOperations>(DB_CONN);
             ServiceManager.Register<ISubscriptionService, SubscriptionService>();
 
-            // --- Configure the user ID provider service
+            // --- Configure the user ID realted provider services
             ServiceManager.Register<IUserIdContextProvider, UserIdContextProvider>();
+            ServiceManager.Register<IAppPrincipalProvider, AppPrincipalProvider>();
 
             // --- Let the data access factory use the service manager
             DataAccessFactory.SetRegistry(ServiceManager.ServiceRegistry);

@@ -21,9 +21,10 @@ namespace SeemplestCloud.Services.SubscriptionService
         /// <summary>
         /// Gets the user with the specified name
         /// </summary>
+        /// <param name="subscriptionId">Subscription ID</param>
         /// <param name="userName">User name</param>
         /// <returns>The user information, if found; otherwise, null</returns>
-        Task<UserDto> GetUserByNameAsync(string userName);
+        Task<UserDto> GetUserByNameAsync(int? subscriptionId, string userName);
 
         /// <summary>
         /// Gets the user with the email
@@ -57,7 +58,7 @@ namespace SeemplestCloud.Services.SubscriptionService
         /// </summary>
         /// <param name="userEmail">Email of the user (used as unique ID)</param>
         /// <returns>User token</returns>
-        Task<UserTokenDto> GetUserTokenAsync(string userEmail);
+        Task<UserTokenDto> GetUserTokenByEmailAsync(string userEmail);
 
         /// <summary>
         /// Gets user information by the user ID provided
@@ -101,18 +102,24 @@ namespace SeemplestCloud.Services.SubscriptionService
         /// </summary>
         /// <param name="userId">User ID</param>
         /// <returns>Login accounts</returns>
-        Task<List<UserAccountDto>> GetUserAccountsByUserId(Guid userId);
+        Task<List<UserAccountDto>> GetUserAccountsByUserIdAsync(Guid userId);
 
         /// <summary>
         /// Gets the users invited to join to the subscription of the current user.
         /// </summary>
         /// <returns>List of user invitations</returns>
-        Task<List<UserInvitationCoreDto>> GetInvitedUsers();
+        Task<List<UserInvitationCoreDto>> GetInvitedUsersAsync();
 
         /// <summary>
         /// Sends an invitation to the specified user
         /// </summary>
         /// <param name="userInfo">Information about the invited user</param>
         Task InviteUserAsync(InviteUserDto userInfo);
+
+        /// <summary>
+        /// Confirms the specified invitation code, and creates the appropriate user.
+        /// </summary>
+        /// <param name="invitationCode">Invitation code</param>
+        Task ConfirmInvitationAsync(string invitationCode);
     }
 }

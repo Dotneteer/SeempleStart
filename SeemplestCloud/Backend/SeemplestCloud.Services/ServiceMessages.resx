@@ -117,7 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="EmailAlreadyInvited" xml:space="preserve">
+    <value>A megadott e-mail címet már meghívták felhasználónak.</value>
+  </data>
   <data name="EmailReserved" xml:space="preserve">
     <value>A megadott e-mail címet már foglalja egy felhasználó.</value>
+  </data>
+  <data name="InvalidInvitationCode" xml:space="preserve">
+    <value>A felhasználó meghívásához tartozó kód érvénytelen. Lehet, hogy már lejárt, vagy a meghívást időközben visszavonták.</value>
+  </data>
+  <data name="UnknownEmail" xml:space="preserve">
+    <value>Ismeretlen e-mail cím.</value>
+  </data>
+  <data name="UnknownUserId" xml:space="preserve">
+    <value>Ismeretlen felhasználói azonosító.</value>
+  </data>
+  <data name="UserNameAlreadyInvited" xml:space="preserve">
+    <value>Ez a felhasználói név már szerepel egy meghívón.</value>
+  </data>
+  <data name="UserNameReserved" xml:space="preserve">
+    <value>Ez a felhasználói név már foglalt.</value>
   </data>
 </root>

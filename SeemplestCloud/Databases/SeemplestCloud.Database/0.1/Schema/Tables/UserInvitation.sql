@@ -11,7 +11,10 @@
 	[Type] varchar(16) NOT NULL,
     [CreatedUtc] datetimeoffset NOT NULL, 
     [LastModifiedUtc] datetimeoffset NULL,
-    CONSTRAINT [PK_UserInvitation] PRIMARY KEY ([Id])
+    CONSTRAINT [PK_UserInvitation] PRIMARY KEY NONCLUSTERED ([Id])
 )
 
+CREATE UNIQUE INDEX [IX_UserInvitationOnCode] ON [Platform].[UserInvitation] ([InvitationCode])
 CREATE INDEX [IX_UserInvitationOnEmail] ON [Platform].[UserInvitation] ([InvitedEmail])
+CREATE CLUSTERED INDEX [IX_UserInvitationOnSubscriptionUser] ON [Platform].[UserInvitation] ([SubscriptionId], [InvitedUserName])
+

@@ -758,6 +758,41 @@ namespace Younderwater.Services.UnitTests.DiveLog
             await service.RemoveDiveLogEntryAsync(ANOTHER_USERS_DIVE_ID);
         }
 
+        [TestMethod]
+        public async Task RemoveDiveLogEntryWorksAsExpected()
+        {
+            // --- Arrange
+            var service = HttpServiceFactory.CreateService<IDiveLogService>();
+            var dive = new DiveLogEntryDto
+            {
+                Date = new DateTime(2008, 6, 7),
+                DiveSite = "Gotta Abu Ramada",
+                Location = "Hurghada, Egypt",
+                MaxDepth = 22.6M,
+                BottomTime = 54,
+                Comment = "It was a great dive"
+            };
+            var id = await service.RegisterDiveLogEntryAsync(dive);
+
+            // --- Act
+            var diveBack1 = await service.GetDiveByIdAsync(id);
+            await service.RemoveDiveLogEntryAsync(id);
+            var notFound = false;
+            try
+            {
+                await service.GetDiveByIdAsync(id);
+            }
+            catch (DiveNotFoundException)
+            {
+                notFound = true;
+            }
+
+            // --- Assert
+            diveBack1.ShouldNotBeNull();
+            notFound.ShouldBeTrue();
+        }
+
+
         #endregion
 
     }

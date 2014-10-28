@@ -62,8 +62,10 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="CultureHelperTest.cs" />
+    <Compile Include="Helpers\SqlScriptHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SubscriptionService\SubscriptionServiceTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\SeemplestBlocks\SeemplestBlocks.Core\SeemplestBlocks.Core.csproj">
@@ -82,9 +84,24 @@
       <Project>{c81edbc6-5989-4232-8b23-57831056e6eb}</Project>
       <Name>Seemplest.MsSql</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Backend\SeemplestCloud.Dto\SeemplestCloud.Dto.csproj">
+      <Project>{08465cb9-7161-4065-a4e5-ba01c8cb4264}</Project>
+      <Name>SeemplestCloud.Dto</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Backend\SeemplestCloud.Services\SeemplestCloud.Services.csproj">
+      <Project>{41590cc7-f057-43ee-84b6-c8bb172c9be5}</Project>
+      <Name>SeemplestCloud.Services</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SqlScripts\InsertTestUser.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SqlScripts\InitSubscriptions.sql" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

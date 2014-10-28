@@ -54,7 +54,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Infrastructure\AppPrincipal.cs" />
+    <Compile Include="Infrastructure\AppPrincipalProvider.cs" />
     <Compile Include="Infrastructure\IAppPrincipal.cs" />
+    <Compile Include="Infrastructure\IAppPrincipalProvider.cs" />
     <Compile Include="Infrastructure\ServiceRoleDescription.cs" />
     <Compile Include="Infrastructure\ServiceRoles.cs" />
     <Compile Include="Infrastructure\ServiceWithAppPrincipalBase.cs" />
@@ -86,7 +88,14 @@
     <Compile Include="SubscriptionService\DataAccess\UserInvitationRecord.cs" />
     <Compile Include="SubscriptionService\DataAccess\UserRecord.cs" />
     <Compile Include="SubscriptionService\DataAccess\UserRoleRecord.cs" />
+    <Compile Include="SubscriptionService\Exceptions\EmailAlreadyInvitedException.cs" />
     <Compile Include="SubscriptionService\Exceptions\EmailReservedException.cs" />
+    <Compile Include="SubscriptionService\Exceptions\InvalidInvitationCodeException.cs" />
+    <Compile Include="SubscriptionService\Exceptions\UnknownEmailException.cs" />
+    <Compile Include="SubscriptionService\Exceptions\UnknownProviderDataException.cs" />
+    <Compile Include="SubscriptionService\Exceptions\UnknownUserIdException.cs" />
+    <Compile Include="SubscriptionService\Exceptions\UserAlreadyInvitedException.cs" />
+    <Compile Include="SubscriptionService\Exceptions\UserNameReservedException.cs" />
     <Compile Include="SubscriptionService\ISubscriptionService.cs" />
     <Compile Include="SubscriptionService\SubscriptionConfig.cs" />
     <Compile Include="SubscriptionService\SubscriptionService.cs" />

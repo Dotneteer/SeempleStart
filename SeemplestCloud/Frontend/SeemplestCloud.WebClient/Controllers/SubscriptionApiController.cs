@@ -19,7 +19,7 @@ namespace SeemplestCloud.WebClient.Controllers
         public async Task<List<UserInvitationCoreDto>> GetInvitedUsers()
         {
             var srvObj = HttpServiceFactory.CreateService<ISubscriptionService>();
-            var result = await srvObj.GetInvitedUsers();
+            var result = await srvObj.GetInvitedUsersAsync();
             return result;
         }
 

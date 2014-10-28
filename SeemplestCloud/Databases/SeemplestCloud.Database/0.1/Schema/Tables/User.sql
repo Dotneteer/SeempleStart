@@ -13,7 +13,7 @@
 	[PasswordResetSuspend] bit NOT NULL,
     [CreatedUtc] datetimeoffset NOT NULL, 
     [LastModifiedUtc] datetimeoffset NULL,
-    CONSTRAINT [PK_User] PRIMARY KEY ([Id]), 
-    CONSTRAINT [AK_UserName] UNIQUE ([UserName]),
+    CONSTRAINT [PK_User] PRIMARY KEY NONCLUSTERED ([Id]), 
+    CONSTRAINT [AK_UserName] UNIQUE CLUSTERED ([SubscriptionID], [UserName]),
     CONSTRAINT [AK_Email] UNIQUE ([Email])
 )

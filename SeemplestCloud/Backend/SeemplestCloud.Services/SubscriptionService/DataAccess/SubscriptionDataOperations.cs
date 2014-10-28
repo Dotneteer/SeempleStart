@@ -53,13 +53,15 @@ namespace SeemplestCloud.Services.SubscriptionService.DataAccess
         }
 
         /// <summary>
-        /// Gets a User record by its "AK_UserName" alternate key values
+        /// Gets a User record by its subscriber and user name
         /// </summary>
-        public async Task<UserRecord> GetUserByUserNameAsync(string userName)
+        public async Task<UserRecord> GetUserByUserNameAsync(int? subscriptionId, string userName)
         {
             return await OperationAsync(ctx => ctx.FirstOrDefaultAsync<UserRecord>(
-                "where [UserName]=@0",
-                userName));
+                subscriptionId.HasValue
+                    ? "where [SubscriptionId]=@0 and [UserName]=@1"
+                    : "where [SubscriptionId] is null and [UserName]=@1",
+                subscriptionId, userName));
         }
 
         /// <summary>
@@ -234,11 +236,31 @@ namespace SeemplestCloud.Services.SubscriptionService.DataAccess
         /// <summary>
         /// Gets UserInvitation records by its "FK_UserOfInvitation" foreign key values
         /// </summary>
-        public async Task<List<UserInvitationRecord>> GetUserInvitationByUserAsync(Guid userId)
+        public async Task<List<UserInvitationRecord>> GetUserInvitationByUserAsync(int? subscriptionId, string userName)
         {
             return await OperationAsync(ctx => ctx.FetchAsync<UserInvitationRecord>(
-                "where [UserId]=@0",
-                userId));
+                "where [SubscriptionId]=@0 and [InvitedUserName]=@1",
+                subscriptionId, userName));
+        }
+
+        /// <summary>
+        /// Gets UserInvitation records by email address
+        /// </summary>
+        public async Task<List<UserInvitationRecord>> GetUserInvitationByEmailAsync(string email)
+        {
+            return await OperationAsync(ctx => ctx.FetchAsync<UserInvitationRecord>(
+                "where [InvitedEmail]=@0", email));
+        }
+
+        /// <summary>
+        /// Gets the user invitation with the specified code
+        /// </summary>
+        /// <param name="code">User invitation code</param>
+        /// <returns>User invitation, if found; otherwise, null</returns>
+        public async Task<UserInvitationRecord> GetUserInvitationByCode(string code)
+        {
+            return await OperationAsync(ctx => ctx.FirstOrDefaultAsync<UserInvitationRecord>(
+                "where [InvitationCode]=@0", code));
         }
 
         /// <summary>

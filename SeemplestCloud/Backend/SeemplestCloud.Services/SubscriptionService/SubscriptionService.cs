@@ -37,13 +37,17 @@ namespace SeemplestCloud.Services.SubscriptionService
         /// <summary>
         /// Gets the user with the specified name
         /// </summary>
+        /// <param name="subscriptionId">Subscription ID</param>
         /// <param name="userName">User name</param>
         /// <returns>The user information, if found; otherwise, null</returns>
-        public async Task<UserDto> GetUserByNameAsync(string userName)
+        public async Task<UserDto> GetUserByNameAsync(int? subscriptionId, string userName)
         {
+            Verify.NotNullOrEmpty(userName, "userName");
+            Verify.RaiseWhenFailed();
+
             using (var ctx = DataAccessFactory.CreateReadOnlyContext<ISubscriptionDataOperations>())
             {
-                var user = await ctx.GetUserByUserNameAsync(userName);
+                var user = await ctx.GetUserByUserNameAsync(subscriptionId, userName);
                 return user == null
                     ? await Task.FromResult<UserDto>(null)
                     : MapUser(user);
@@ -57,6 +61,9 @@ namespace SeemplestCloud.Services.SubscriptionService
         /// <returns>The user information, if found; otherwise, null</returns>
         public async Task<UserDto> GetUserByEmailAsync(string email)
         {
+            Verify.NotNullOrEmpty(email, "email");
+            Verify.RaiseWhenFailed();
+
             using (var ctx = DataAccessFactory.CreateReadOnlyContext<ISubscriptionDataOperations>())
             {
                 var user = await ctx.GetUserByEmailAsync(email);
@@ -72,6 +79,14 @@ namespace SeemplestCloud.Services.SubscriptionService
         /// <param name="user">User information</param>
         public async Task InsertUserAsync(UserDto user)
         {
+            Verify.NotNull(user, "user");
+            Verify.RaiseWhenFailed();
+            Verify.NotNullOrEmpty(user.Email, "user.Email");
+            Verify.IsEmail(user.Email, "user.Email");
+            Verify.NotNullOrEmpty(user.UserName, "user.UserName");
+            Verify.NotNullOrEmpty(user.SecurityStamp, "user.SecurityStamp");
+            Verify.RaiseWhenFailed();
+
             using (var ctx = DataAccessFactory.CreateContext<ISubscriptionDataOperations>())
             {
                 await ctx.InsertUserAsync(MapUser(user));
@@ -84,6 +99,14 @@ namespace SeemplestCloud.Services.SubscriptionService
         /// <param name="user">User information</param>
         public async Task UpdateUserAsync(UserDto user)
         {
+            Verify.NotNull(user, "user");
+            Verify.RaiseWhenFailed();
+            Verify.NotNullOrEmpty(user.Email, "user.Email");
+            Verify.IsEmail(user.Email, "user.Email");
+            Verify.NotNullOrEmpty(user.UserName, "user.UserName");
+            Verify.NotNullOrEmpty(user.SecurityStamp, "user.SecurityStamp");
+            Verify.RaiseWhenFailed();
+
             using (var ctx = DataAccessFactory.CreateContext<ISubscriptionDataOperations>())
             {
                 await ctx.UpdateUserAsync(MapUser(user));
@@ -99,6 +122,11 @@ namespace SeemplestCloud.Services.SubscriptionService
         public async Task<int> CreateSubscriptionAsync(SubscriptionDto subscription, string userId)
         {
             Verify.NotNull(subscription, "subscription");
+            Verify.RaiseWhenFailed();
+            Verify.NotNullOrEmpty(subscription.SubscriberName, "subscription.SubscriberName");
+            Verify.NotNullOrEmpty(subscription.PrimaryEmail, "subscription.PrimaryEmail");
+            Verify.IsEmail(subscription.PrimaryEmail, "subscription.PrimaryEmail");
+            Verify.NotNullOrEmpty(userId, "userId");
             Verify.RaiseWhenFailed();
 
             using (var ctx = DataAccessFactory.CreateContext<ISubscriptionDataOperations>())
@@ -131,7 +159,7 @@ namespace SeemplestCloud.Services.SubscriptionService
         /// </summary>
         /// <param name="userEmail">Email of the user (used as unique ID)</param>
         /// <returns>User token</returns>
-        public async Task<UserTokenDto> GetUserTokenAsync(string userEmail)
+        public async Task<UserTokenDto> GetUserTokenByEmailAsync(string userEmail)
         {
             Verify.NotNullOrEmpty(userEmail, "userEmail");
             Verify.RaiseWhenFailed();
@@ -141,8 +169,7 @@ namespace SeemplestCloud.Services.SubscriptionService
                 var userRecord = await ctx.GetUserByEmailAsync(userEmail);
                 if (userRecord == null)
                 {
-                    throw new InvalidOperationException(
-                        string.Format("User with email '{0}' have not been found in the database", userEmail));
+                    throw new UnknownEmailException(userEmail);
                 }
                 var owner = await ctx.GetSubscriptionOwnerByIdAsync(userRecord.SubscriptionId ?? -1, userRecord.Id);
 
@@ -170,8 +197,7 @@ namespace SeemplestCloud.Services.SubscriptionService
                 var userRecord = await ctx.GetUserByIdAsync(userId);
                 if (userRecord == null)
                 {
-                    throw new InvalidOperationException(
-                        string.Format("User with ID '{0}' have not been found in the database", userId));
+                    throw new UnknownUserIdException(userId.ToString("N"));
                 }
                 var owner = await ctx.GetSubscriptionOwnerByIdAsync(userRecord.SubscriptionId ?? -1, userRecord.Id);
 
@@ -202,9 +228,7 @@ namespace SeemplestCloud.Services.SubscriptionService
             var user = await GetUserByProviderDataAsync(provider, providerData);
             if (user == null)
             {
-                throw new InvalidOperationException(
-                    string.Format("User with provider data '{0}, {1}' have not been found in the database", 
-                    provider, providerData));
+                throw new UnknownProviderDataException(provider, providerData);
             }
             using (var ctx = DataAccessFactory.CreateReadOnlyContext<ISubscriptionDataOperations>())
             {
@@ -246,6 +270,12 @@ namespace SeemplestCloud.Services.SubscriptionService
         /// <returns></returns>
         public async Task InsertUserAccountAsync(UserAccountDto account)
         {
+            Verify.NotNull(account, "account");
+            Verify.RaiseWhenFailed();
+            Verify.NotNullOrEmpty(account.Provider, "account.Provider");
+            Verify.NotNullOrEmpty(account.ProviderData, "account.ProviderData");
+            Verify.RaiseWhenFailed();
+
             using (var ctx = DataAccessFactory.CreateContext<ISubscriptionDataOperations>())
             {
                 await ctx.InsertUserAccountAsync(new UserAccountRecord
@@ -264,6 +294,9 @@ namespace SeemplestCloud.Services.SubscriptionService
         /// <param name="provider">Account provider</param>
         public async Task RemoveUserAccountAsync(Guid userId, string provider)
         {
+            Verify.NotNullOrEmpty(provider, "provider");
+            Verify.RaiseWhenFailed();
+
             using (var ctx = DataAccessFactory.CreateContext<ISubscriptionDataOperations>())
             {
                 await ctx.DeleteUserAccountAsync(userId, provider);
@@ -275,7 +308,7 @@ namespace SeemplestCloud.Services.SubscriptionService
         /// </summary>
         /// <param name="userId">User ID</param>
         /// <returns>Login accounts</returns>
-        public async Task<List<UserAccountDto>> GetUserAccountsByUserId(Guid userId)
+        public async Task<List<UserAccountDto>> GetUserAccountsByUserIdAsync(Guid userId)
         {
             using (var ctx = DataAccessFactory.CreateReadOnlyContext<ISubscriptionDataOperations>())
             {
@@ -288,7 +321,7 @@ namespace SeemplestCloud.Services.SubscriptionService
         /// Gets the users invited to join to the subscription of the current user.
         /// </summary>
         /// <returns>List of user invitations</returns>
-        public async Task<List<UserInvitationCoreDto>> GetInvitedUsers()
+        public async Task<List<UserInvitationCoreDto>> GetInvitedUsersAsync()
         {
             if (!Principal.SubscriptionId.HasValue)
             {
@@ -307,12 +340,12 @@ namespace SeemplestCloud.Services.SubscriptionService
         /// <param name="userInfo">Information about the invited user</param>
         public async Task InviteUserAsync(InviteUserDto userInfo)
         {
-            Verify
-                .NotNull(userInfo, "userInfo")
-                .NotNullOrEmpty(userInfo.InvitedEmail, "InvitedEmail")
-                .IsEmail(userInfo.InvitedEmail, "InvitedEmail")
-                .NotNullOrEmpty(userInfo.InvitedUserName, "InvitedUserName")
-                .RaiseWhenFailed();
+            Verify.NotNull(userInfo, "userInfo");
+            Verify.RaiseWhenFailed();
+            Verify.NotNullOrEmpty(userInfo.InvitedEmail, "userInfo.InvitedEmail");
+            Verify.IsEmail(userInfo.InvitedEmail, "userInfo.InvitedEmail");
+            Verify.NotNullOrEmpty(userInfo.InvitedUserName, "userInfo.InvitedUserName");
+            Verify.RaiseWhenFailed();
 
             using (var ctx = DataAccessFactory.CreateContext<ISubscriptionDataOperations>())
             {
@@ -320,6 +353,24 @@ namespace SeemplestCloud.Services.SubscriptionService
                 if (email != null)
                 {
                     throw new EmailReservedException(userInfo.InvitedEmail);
+                }
+
+                var user = await ctx.GetUserByUserNameAsync(Principal.SubscriptionId, userInfo.InvitedUserName);
+                if (user != null)
+                {
+                    throw new UserNameReservedException(userInfo.InvitedUserName);
+                }
+
+                var invitations = await ctx.GetUserInvitationByEmailAsync(userInfo.InvitedEmail);
+                if (invitations.Any(i => i.State != UserInvitationState.REVOKED))
+                {
+                    throw new EmailAlreadyInvitedException(userInfo.InvitedEmail);
+                }
+
+                invitations = await ctx.GetUserInvitationByUserAsync(Principal.SubscriptionId, userInfo.InvitedUserName);
+                if (invitations.Any(i => i.State != UserInvitationState.REVOKED))
+                {
+                    throw new UserAlreadyInvitedException(userInfo.InvitedEmail);
                 }
 
                 // --- Administer invitation
@@ -346,6 +397,27 @@ namespace SeemplestCloud.Services.SubscriptionService
                     "SeemplectCloud invitation",
                     "Click here to confirm your invitation: " + invitationLink);
             }
+        }
+
+        /// <summary>
+        /// Confirms the specified invitation code, and creates the appropriate user.
+        /// </summary>
+        /// <param name="invitationCode">Invitation code</param>
+        public async Task ConfirmInvitationAsync(string invitationCode)
+        {
+            Verify.NotNullOrEmpty(invitationCode, "invitationCode");
+            Verify.RaiseWhenFailed();
+
+            using (var ctx = DataAccessFactory.CreateContext<ISubscriptionDataOperations>())
+            {
+                var invitation = await ctx.GetUserInvitationByCode(invitationCode);
+                if (invitation == null || invitation.ExpirationDateUtc < DateTimeOffset.UtcNow ||
+                    invitation.State != UserInvitationState.SENT)
+                {
+                    throw new InvalidInvitationCodeException();
+                }
+            }
+            throw new NotImplementedException();
         }
 
         /// <summary>
