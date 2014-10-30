@@ -257,7 +257,7 @@ namespace SeemplestCloud.Services.SubscriptionService.DataAccess
         /// </summary>
         /// <param name="code">User invitation code</param>
         /// <returns>User invitation, if found; otherwise, null</returns>
-        public async Task<UserInvitationRecord> GetUserInvitationByCode(string code)
+        public async Task<UserInvitationRecord> GetUserInvitationByCodeAsync(string code)
         {
             return await OperationAsync(ctx => ctx.FirstOrDefaultAsync<UserInvitationRecord>(
                 "where [InvitationCode]=@0", code));

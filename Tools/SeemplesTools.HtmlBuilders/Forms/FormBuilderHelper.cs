@@ -128,7 +128,7 @@ namespace SeemplesTools.HtmlBuilders.Forms
         }
 
         /// <summary>
-        /// Builds a horizontal input control
+        /// Builds a columnar input control
         /// </summary>
         /// <param name="modelMetadata">Model metadata</param>
         /// <param name="inputTagType">Type of the input tag</param>
@@ -136,6 +136,59 @@ namespace SeemplesTools.HtmlBuilders.Forms
         /// <param name="validationOption">Validation type</param>
         public MvcHtmlString BuildColumnarInput(ModelMetadata modelMetadata, InputTagType inputTagType,
             AutoFocus autoFocus, ValidationOption validationOption)
+        {
+            return MvcHtmlString.Empty;
+        }
+
+        /// <summary>
+        /// Builds a horizontal static text control
+        /// </summary>
+        /// <param name="modelMetadata">Model metadata</param>
+        public MvcHtmlString BuildHorizontalStatic(ModelMetadata modelMetadata)
+        {
+            // --- The form group that encapsulates the label and the control
+            var propName = CamelCase(modelMetadata.PropertyName);
+            var formGroup = new BsFormGroup { Depth = _formBuilder.Depth + 1 };
+            var label = CreateTextLabel(modelMetadata);
+            var staticDiv = new BsHtmlElement(HtmlTag.Div);
+            staticDiv.ApplyColumnWidths(null,
+                _formBuilder.BsForm.InputWidthXs,
+                _formBuilder.BsForm.InputWidthSm,
+                _formBuilder.BsForm.InputWidthMd,
+                _formBuilder.BsForm.InputWidthLg);
+            var staticText = new BsHtmlElement(HtmlTag.P);
+            staticText.AddChild(new HtmlText(modelMetadata.Model.ToString()));
+            var hidden = new BsHtmlElement(HtmlTag.Input)
+                .Attr(HtmlAttr.Type, "hidden")
+                .Attr(HtmlAttr.Id, propName)
+                .Attr(HtmlAttr.Name, propName)
+                .Attr(NgTag.NgModel, string.Format("model.{0}", propName));
+            if (modelMetadata.Model != null)
+            {
+                var modelValue = modelMetadata.Model.ToString();
+                hidden
+                    .Attr(HtmlAttr.Value, modelValue)
+                    .Attr(NgTag.NgInit,
+                        string.Format("model.{0}={1}", propName, JsonConvert.SerializeObject(modelMetadata.Model)));
+            }
+            formGroup.AddChild(label).AddChild(staticDiv).AddChild(hidden);
+
+            // --- Add optional help text
+            if (!string.IsNullOrEmpty(modelMetadata.Description))
+            {
+                var helpText = new BsHtmlElement(HtmlTag.Span);
+                helpText.CssClass(BsClass.Control.Help);
+                helpText.AddChild(new HtmlText(modelMetadata.Description));
+                staticDiv.AddChild(helpText);
+            }
+            return formGroup.Markup;
+        }
+
+        /// <summary>
+        /// Builds a horizontal static text control
+        /// </summary>
+        /// <param name="modelMetadata">Model metadata</param>
+        public MvcHtmlString BuildColumnarStatic(ModelMetadata modelMetadata)
         {
             return MvcHtmlString.Empty;
         }
@@ -243,6 +296,5 @@ namespace SeemplesTools.HtmlBuilders.Forms
         {
             return str.Substring(0, 1).ToLower() + str.Substring(1);
         }
-
     }
 }

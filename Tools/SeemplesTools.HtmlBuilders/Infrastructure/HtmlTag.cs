@@ -12,6 +12,7 @@
         public const string Input = "input";
         public const string Button = "button";
         public const string Span = "span";
+        public const string P = "p";
     }
     // ReSharper restore InconsistentNaming
 }

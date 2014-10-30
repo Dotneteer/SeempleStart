@@ -12,5 +12,6 @@
         public const string INVALID_INVITATION_CODE = "InvalidInvitationCode";
         public const string UNKNOWN_EMAIL = "UnknownEmail";
         public const string UNKNOWN_USER_ID = "UnknownUserId";
+        public const string UNKNOWN_INVITATION_ID = "UnknownInvitationId";
     }
 }

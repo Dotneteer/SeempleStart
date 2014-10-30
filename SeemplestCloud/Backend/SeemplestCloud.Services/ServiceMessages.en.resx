@@ -129,6 +129,9 @@
   <data name="UnknownEmail" xml:space="preserve">
     <value>Unknown e-mail address.</value>
   </data>
+  <data name="UnknownInvitationId" xml:space="preserve">
+    <value>Unknown invitation identifier.</value>
+  </data>
   <data name="UnknownUserId" xml:space="preserve">
     <value>Unknown user identifier.</value>
   </data>

@@ -120,6 +120,20 @@ namespace SeemplestCloud.Services.SubscriptionService
         /// Confirms the specified invitation code, and creates the appropriate user.
         /// </summary>
         /// <param name="invitationCode">Invitation code</param>
-        Task ConfirmInvitationAsync(string invitationCode);
+        Task<UserInvitationCoreDto> GetUserInvitationByCodeAsync(string invitationCode);
+
+        /// <summary>
+        /// Assigns the specified user to the given subscription
+        /// </summary>
+        /// <param name="userId">User ID</param>
+        /// <param name="subscriptionId">Subscription ID</param>
+        Task AssignUserToSubscription(Guid userId, int subscriptionId);
+
+        /// <summary>
+        /// Sets the state of the invitation with the specified id
+        /// </summary>
+        /// <param name="invitationId">Invitation ID</param>
+        /// <param name="state">New invitation state</param>
+        Task SetInvitationState(int invitationId, string state);
     }
 }

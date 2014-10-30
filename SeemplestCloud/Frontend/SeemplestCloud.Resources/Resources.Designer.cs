@@ -61,6 +61,24 @@ namespace SeemplestCloud.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A meghívás elfogadásának megerősítése.
+        /// </summary>
+        public static string ConfirmInvitation_CurrentSpot {
+            get {
+                return ResourceManager.GetString("ConfirmInvitation_CurrentSpot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Felhasználói regisztrációd megerősítéséhez add meg azt a &lt;strong&gt;jelszót&lt;/strong&gt;, amellyel a rendszerbe szeretnél bejelentkezni!.
+        /// </summary>
+        public static string ConfirmInvitation_Description {
+            get {
+                return ResourceManager.GetString("ConfirmInvitation_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sikertelen bejelentkezés.
         /// </summary>
         public static string Error_InvalidLogin {

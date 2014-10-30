@@ -97,6 +97,15 @@ namespace SeemplestCloud.Services {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ismeretlen meghívó azonosító.
+        /// </summary>
+        public static string UnknownInvitationId {
+            get {
+                return ResourceManager.GetString("UnknownInvitationId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ismeretlen felhasználói azonosító..
         /// </summary>
         public static string UnknownUserId {

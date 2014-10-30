@@ -129,6 +129,9 @@
   <data name="UnknownEmail" xml:space="preserve">
     <value>Ismeretlen e-mail cím.</value>
   </data>
+  <data name="UnknownInvitationId" xml:space="preserve">
+    <value>Ismeretlen meghívó azonosító</value>
+  </data>
   <data name="UnknownUserId" xml:space="preserve">
     <value>Ismeretlen felhasználói azonosító.</value>
   </data>

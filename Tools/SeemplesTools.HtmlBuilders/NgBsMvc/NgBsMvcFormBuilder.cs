@@ -64,6 +64,20 @@ namespace SeemplesTools.HtmlBuilders.NgBsMvc
         }
 
         /// <summary>
+        /// Renders an input tag for the specified model element
+        /// </summary>
+        /// <typeparam name="TProperty">Property type of the element</typeparam>
+        /// <param name="expression">Property expression</param>
+        public MvcHtmlString StaticFor<TProperty>(
+            Expression<Func<TModel, TProperty>> expression)
+        {
+            var modelMetadata = ModelMetadata.FromLambdaExpression(expression, HtmlHelper.ViewData);
+            return _form.IsHorizontal
+                ? _buildHelper.BuildHorizontalStatic(modelMetadata)
+                : _buildHelper.BuildColumnarStatic(modelMetadata);
+        }
+
+        /// <summary>
         /// Renders a submit button
         /// </summary>
         /// <param name="value">Button text</param>

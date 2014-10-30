@@ -92,6 +92,7 @@
     <Compile Include="SubscriptionService\Exceptions\EmailReservedException.cs" />
     <Compile Include="SubscriptionService\Exceptions\InvalidInvitationCodeException.cs" />
     <Compile Include="SubscriptionService\Exceptions\UnknownEmailException.cs" />
+    <Compile Include="SubscriptionService\Exceptions\UnknownInvitationIdException.cs" />
     <Compile Include="SubscriptionService\Exceptions\UnknownProviderDataException.cs" />
     <Compile Include="SubscriptionService\Exceptions\UnknownUserIdException.cs" />
     <Compile Include="SubscriptionService\Exceptions\UserAlreadyInvitedException.cs" />

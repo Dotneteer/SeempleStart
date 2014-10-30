@@ -199,12 +199,13 @@
     <Compile Include="Controllers\LanguageController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\SubscriptionApiController.cs" />
-    <Compile Include="Controllers\SubscriptionController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\ControllerWithAppPrincipalBase.cs" />
     <Compile Include="Infrastructure\ImplementedCultures.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\ConfirmInvitationViewModel.cs" />
     <Compile Include="Models\InviteUserViewModel.cs" />
     <Compile Include="Models\LoginViewModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -356,9 +357,10 @@
     <Content Include="Views\Account\SaveSubscriptionPackage.cshtml" />
     <Content Include="Views\Account\SignUpWithExternalLogin.cshtml" />
     <Content Include="Views\Account\LoginWithNoSubscriptionView.cshtml" />
-    <Content Include="Views\Subscription\InviteUsers.cshtml" />
-    <Content Include="Views\Subscription\ManageUserRights.cshtml" />
-    <Content Include="Views\Subscription\ConfirmInvitation.cshtml" />
+    <Content Include="Views\Account\InviteUsers.cshtml" />
+    <Content Include="Views\Account\ManageUserRights.cshtml" />
+    <Content Include="Views\Account\InvalidInvitationCode.cshtml" />
+    <Content Include="Views\Account\RegisterInvitedUser.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

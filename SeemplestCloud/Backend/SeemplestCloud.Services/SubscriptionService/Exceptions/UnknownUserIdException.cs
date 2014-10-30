@@ -8,7 +8,7 @@ namespace SeemplestCloud.Services.SubscriptionService.Exceptions
     /// </summary>
     public class UnknownUserIdException: InvalidBusinessRuleException
     {
-        public UnknownUserIdException(string userId) : base(ScErrorCodes.UNKNOWN_EMAIL, userId)
+        public UnknownUserIdException(string userId) : base(ScErrorCodes.UNKNOWN_USER_ID, userId)
         {
         }
     }

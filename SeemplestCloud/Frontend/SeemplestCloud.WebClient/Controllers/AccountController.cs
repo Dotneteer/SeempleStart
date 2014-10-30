@@ -11,6 +11,7 @@ using SeemplestBlocks.Core.Internationalization;
 using SeemplestCloud.Dto.Subscription;
 using SeemplestCloud.Services.Infrastructure;
 using SeemplestCloud.Services.SubscriptionService;
+using SeemplestCloud.WebClient.Infrastructure;
 using SeemplestCloud.WebClient.Models;
 using SeemplestCloud.WebClient.Models.UserManagement;
 using Res = SeemplestCloud.Resources.Resources;
@@ -329,6 +330,64 @@ namespace SeemplestCloud.WebClient.Controllers
         {
             // TODO: implement this view
             return View();
+        }
+
+        // GET: Subscription
+        public ActionResult InviteUsers()
+        {
+            return View();
+        }
+
+        public ActionResult ManageUserRights()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Checks whether the invitation code provided is valid
+        /// </summary>
+        /// <param name="id">Invitiation code</param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        public async Task<ActionResult> ConfirmInvitation(string id)
+        {
+            // --- Check the invitation code
+            var subscrSrv = ServiceManager.GetService<ISubscriptionService>();
+            var invitation = await subscrSrv.GetUserInvitationByCodeAsync(id);
+            if (invitation == null)
+            {
+                return View("InvalidInvitationCode");
+            }
+            var model = new ConfirmInvitationViewModel
+            {
+                InvitationId = invitation.Id,
+                SubscriptionId = invitation.SubscriptionId ?? -1,
+                UserName = invitation.InvitedUserName,
+                Email = invitation.InvitedEmail
+            };
+            return View("RegisterInvitedUser", model);
+        }
+
+        [AllowAnonymous]
+        public async Task<ActionResult> RegisterInvitedUser(ConfirmInvitationViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = new AppUser { UserName = model.UserName, Email = model.Email };
+                var result = await UserManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    var subscrSrv = ServiceManager.GetService<ISubscriptionService>();
+                    var userGuid = new Guid(user.Id);
+                    await subscrSrv.AssignUserToSubscription(userGuid, model.SubscriptionId);
+                    await subscrSrv.SetInvitationState(model.InvitationId, UserInvitationState.ACTIVATED);
+                    CreateAuthenticationTicket(false, userGuid, user.UserName, false, model.SubscriptionId, false);
+                    await SignInManager.SignInAsync(user, false, false);
+                    return RedirectToAction("Index", "Home");
+                }
+                AddErrors(result);
+            }
+            return View(model);
         }
 
         #region Helpers

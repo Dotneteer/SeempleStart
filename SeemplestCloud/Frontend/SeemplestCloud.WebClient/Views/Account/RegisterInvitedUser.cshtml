@@ -1,0 +1,30 @@
+﻿@using SeemplesTools.HtmlBuilders.Bs
+@using SeemplesTools.HtmlBuilders.Infrastructure
+@using SeemplesTools.HtmlBuilders.Ng
+@using SeemplesTools.HtmlBuilders.NgBsMvc
+@model ConfirmInvitationViewModel
+@{
+    ViewBag.Title = "Valid Invitation Code";
+}
+<div data-active-menu="InviteUsers"
+     data-active-title="@Resources.ConfirmInvitation_CurrentSpot"
+     data-no-language-choice>
+    <div class="col-md-8 col-md-offset-2">
+        <div class="panel panel-info">
+            <div class="panel-heading">@Html.Raw(Resources.ConfirmInvitation_Description)</div>
+            <div class="panel-body">
+                @using (var f = Html.Begin(new NgBsMvcForm("registerForm", "RegisterInvitedUser", "Account").Horizontal().LabelMd(4).InputMd(8)))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.InvitationId)
+                    @Html.HiddenFor(m => m.SubscriptionId)
+                    @f.StaticFor(m => m.UserName);
+                    @f.StaticFor(m => m.Email);
+                    @f.InputFor(m => m.Password, autoFocus: AutoFocus.OnFormInvalid, validate: ValidationOption.WhenDirty)
+                    @f.InputFor(m => m.ConfirmPassword, validate: ValidationOption.WhenDirty)
+                    @f.SubmitButton(FormsData.SignUpViewModel_RegisterButton, BsButtonTheme.Primary)
+                }
+            </div>
+        </div>
+    </div>
+</div>

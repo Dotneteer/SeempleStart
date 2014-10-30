@@ -143,7 +143,7 @@ namespace SeemplestCloud.Services.SubscriptionService.DataAccess
         /// </summary>
         /// <param name="code">User invitation code</param>
         /// <returns>User invitation, if found; otherwise, null</returns>
-        Task<UserInvitationRecord> GetUserInvitationByCode(string code);
+        Task<UserInvitationRecord> GetUserInvitationByCodeAsync(string code);
 
         /// <summary>
         /// Inserts a UserInvitation record into the database

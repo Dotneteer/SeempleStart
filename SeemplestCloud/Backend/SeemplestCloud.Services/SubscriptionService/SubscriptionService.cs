@@ -403,21 +403,60 @@ namespace SeemplestCloud.Services.SubscriptionService
         /// Confirms the specified invitation code, and creates the appropriate user.
         /// </summary>
         /// <param name="invitationCode">Invitation code</param>
-        public async Task ConfirmInvitationAsync(string invitationCode)
+        public async Task<UserInvitationCoreDto> GetUserInvitationByCodeAsync(string invitationCode)
         {
             Verify.NotNullOrEmpty(invitationCode, "invitationCode");
             Verify.RaiseWhenFailed();
 
             using (var ctx = DataAccessFactory.CreateContext<ISubscriptionDataOperations>())
             {
-                var invitation = await ctx.GetUserInvitationByCode(invitationCode);
-                if (invitation == null || invitation.ExpirationDateUtc < DateTimeOffset.UtcNow ||
-                    invitation.State != UserInvitationState.SENT)
-                {
-                    throw new InvalidInvitationCodeException();
-                }
+                var invitation = await ctx.GetUserInvitationByCodeAsync(invitationCode);
+                return invitation == null || invitation.ExpirationDateUtc < DateTimeOffset.UtcNow ||
+                       invitation.State != UserInvitationState.SENT
+                    ? null
+                    : MapUserInvitation(invitation);
             }
-            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Assigns the specified user to the given subscription
+        /// </summary>
+        /// <param name="userId">User ID</param>
+        /// <param name="subscriptionId">Subscription ID</param>
+        public async Task AssignUserToSubscription(Guid userId, int subscriptionId)
+        {
+            using (var ctx = DataAccessFactory.CreateContext<ISubscriptionDataOperations>())
+            {
+                var user = await ctx.GetUserByIdAsync(userId);
+                if (user == null)
+                {
+                    throw new UnknownUserIdException(userId.ToString());
+                }
+                user.SubscriptionId = subscriptionId;
+                await ctx.UpdateUserAsync(user);
+            }
+        }
+
+        /// <summary>
+        /// Sets the state of the invitation with the specified id
+        /// </summary>
+        /// <param name="invitationId">Invitation ID</param>
+        /// <param name="state">New invitation state</param>
+        public async Task SetInvitationState(int invitationId, string state)
+        {
+            Verify.Require(state == UserInvitationState.SENT || state == UserInvitationState.ACTIVATED 
+                || state == UserInvitationState.REVOKED,
+                "state");
+            using (var ctx = DataAccessFactory.CreateContext<ISubscriptionDataOperations>())
+            {
+                var invitation = await ctx.GetUserInvitationByIdAsync(invitationId);
+                if (invitation == null)
+                {
+                    throw new UnknownInvitationIdException(invitationId);
+                }
+                invitation.State = state;
+                await ctx.UpdateUserInvitationAsync(invitation);
+            }
         }
 
         /// <summary>

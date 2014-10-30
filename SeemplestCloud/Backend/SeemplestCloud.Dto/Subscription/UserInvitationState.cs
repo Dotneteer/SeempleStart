@@ -6,7 +6,6 @@
     public class UserInvitationState
     {
         public const string SENT = "Sent";
-        public const string READ = "Read";
         public const string ACTIVATED = "Activated";
         public const string REVOKED = "Revoked";
     }
