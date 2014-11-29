@@ -157,7 +157,9 @@ namespace SeemplesTools.HtmlBuilders.Forms
                 _formBuilder.BsForm.InputWidthMd,
                 _formBuilder.BsForm.InputWidthLg);
             var staticText = new BsHtmlElement(HtmlTag.P);
+            staticText.CssClass(BsClass.Control.Static);
             staticText.AddChild(new HtmlText(modelMetadata.Model.ToString()));
+            staticDiv.AddChild(staticText);
             var hidden = new BsHtmlElement(HtmlTag.Input)
                 .Attr(HtmlAttr.Type, "hidden")
                 .Attr(HtmlAttr.Id, propName)
@@ -172,15 +174,6 @@ namespace SeemplesTools.HtmlBuilders.Forms
                         string.Format("model.{0}={1}", propName, JsonConvert.SerializeObject(modelMetadata.Model)));
             }
             formGroup.AddChild(label).AddChild(staticDiv).AddChild(hidden);
-
-            // --- Add optional help text
-            if (!string.IsNullOrEmpty(modelMetadata.Description))
-            {
-                var helpText = new BsHtmlElement(HtmlTag.Span);
-                helpText.CssClass(BsClass.Control.Help);
-                helpText.AddChild(new HtmlText(modelMetadata.Description));
-                staticDiv.AddChild(helpText);
-            }
             return formGroup.Markup;
         }
 

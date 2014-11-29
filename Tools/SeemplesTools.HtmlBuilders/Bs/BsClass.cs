@@ -33,6 +33,7 @@ namespace SeemplesTools.HtmlBuilders.Bs
             public const string InputGroup = "input-group";
             public const string InputGroupAddOn = "input-group-addon";
             public const string Help = "help-block";
+            public const string Static = "form-control-static";
         }
 
         public const string Button = "btn";

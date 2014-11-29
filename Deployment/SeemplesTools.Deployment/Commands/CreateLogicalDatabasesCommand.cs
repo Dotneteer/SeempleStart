@@ -20,6 +20,8 @@ namespace SeemplesTools.Deployment.Commands
 Arguments for create-logical-databases:
   -sql-instance instance       SQL server instance (required)
   -sql-database database       SQL database name (required)
+  -user                        SQL user name (optional)
+  -password                    SQL user password (optional)
   -databases    databases      Comma-separated list of logical database names
                                or database-version pairs (required)
   -paths        directory      Directories containing SQL scripts (default:
@@ -64,8 +66,6 @@ Arguments for create-logical-databases:
             get { return "Rolling back creation of logical databases"; }
         }
 
-        private string _sqlInstance;
-        private string _sqlDatabase;
         private readonly List<DatabaseNameVersionPair> _databases;
         private readonly List<string> _paths;
         private readonly List<string> _serviceUsers;
@@ -89,6 +89,8 @@ Arguments for create-logical-databases:
         /// </summary>
         /// <param name="sqlInstance">Az SQL Server neve</param>
         /// <param name="sqlDatabase">Az adatbázis neve</param>
+        /// <param name="userName">Az SQL felhasználó neve</param>
+        /// <param name="password">Az SQL felhasználó jelszava</param>
         /// <param name="databases">Az adatbázisok listája</param>
         /// <param name="paths">A szkriptekhez tartozó útvonalak</param>
         /// <param name="serviceUsers">A létrehozáshoz tartozó felhasználók</param>
@@ -96,6 +98,8 @@ Arguments for create-logical-databases:
         public CreateLogicalDatabasesCommand(
             string sqlInstance,
             string sqlDatabase,
+            string userName,
+            string password,
             IEnumerable<DatabaseNameVersionPair> databases,
             IEnumerable<string> paths,
             IEnumerable<string> serviceUsers,
@@ -117,8 +121,10 @@ Arguments for create-logical-databases:
                 throw new ArgumentNullException("databases");
             }
 
-            _sqlInstance = sqlInstance.Trim();
-            _sqlDatabase = sqlDatabase.Trim();
+            SqlInstance = sqlInstance.Trim();
+            SqlDatabase = sqlDatabase.Trim();
+            UserName = userName == null ? null : userName.Trim();
+            Password = password == null ? null : password.Trim();
 
             _databases = new List<DatabaseNameVersionPair>();
 
@@ -190,31 +196,12 @@ Arguments for create-logical-databases:
         /// <returns>Sikerült az értelmezés?</returns>
         protected override bool DoParseOption(string option, string argument, string original)
         {
+            if (base.DoParseOption(option, argument, original))
+            {
+                return true;
+            }
             switch (option)
             {
-                case "sqlinstance":
-                case "si":
-                case "instance":
-                case "i":
-                    argument = ParameterHelper.Mandatory(argument, original).Trim();
-                    if (argument.Length == 0)
-                    {
-                        throw new ParameterException("SQL instance name cannot be empty.");
-                    }
-                    _sqlInstance = argument;
-                    return true;
-                
-                case "sqldatabase":
-                case "sd":
-                case "sdb":
-                    argument = ParameterHelper.Mandatory(argument, original).Trim();
-                    if (argument.Length == 0)
-                    {
-                        throw new ParameterException("SQL database name cannot be empty.");
-                    }
-                    _sqlDatabase = argument;
-                    return true;
-                
                 case "databases":
                 case "database":
                 case "d":
@@ -364,8 +351,8 @@ Arguments for create-logical-databases:
         /// </summary>
         protected override void DoFinishInitialization()
         {
-            CheckMandatoryParameter(_sqlInstance, "sql-instance", Original);
-            CheckMandatoryParameter(_sqlDatabase, "sql-database", Original);
+            CheckMandatoryParameter(SqlInstance, "sql-instance", Original);
+            CheckMandatoryParameter(SqlDatabase, "sql-database", Original);
 
             if (_databases.Count == 0)
             {
@@ -389,7 +376,7 @@ Arguments for create-logical-databases:
         {
             SqlConnection connection;
             SqlTransaction transaction;
-            GetConnection(_sqlInstance, _sqlDatabase, out connection, out transaction);
+            GetConnection(SqlInstance, SqlDatabase, UserName, Password, out connection, out transaction);
 
             CreateMetadataSchema(connection, transaction);
 

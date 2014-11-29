@@ -14,6 +14,8 @@ namespace SeemplesTools.Deployment.Commands
     {
         private string _sqlInstance;
         private string _sqlDatabase;
+        private string _userName;
+        private string _password;
         private readonly List<string> _paths;
         private readonly List<string> _serviceUsers;
         private bool _insertTestData;
@@ -64,12 +66,16 @@ namespace SeemplesTools.Deployment.Commands
         /// </summary>
         /// <param name="sqlInstance">The name of the SQL instance</param>
         /// <param name="sqlDatabase">The name of the SQL database</param>
+        /// <param name="userName">Az SQL felhasználó neve</param>
+        /// <param name="password">Az SQL felhasználó jelszava</param>
         /// <param name="paths">Folders of the SQL scripts to execute</param>
         /// <param name="serviceUsers">Users with full access to the database</param>
         /// <param name="inserTestData">Should test data to be inserted into the database?</param>
         protected DeployDatabaseCommandBase(
             string sqlInstance,
             string sqlDatabase,
+            string userName,
+            string password,
             IEnumerable<string> paths,
             IEnumerable<string> serviceUsers,
             bool inserTestData)
@@ -86,6 +92,8 @@ namespace SeemplesTools.Deployment.Commands
 
             _sqlInstance = sqlInstance.Trim();
             _sqlDatabase = sqlDatabase.Trim();
+            _userName = userName == null ? null : userName.Trim();
+           _password = password == null ? null : password.Trim();
 
             _paths = new List<string>();
             if (paths != null)
@@ -154,7 +162,28 @@ namespace SeemplesTools.Deployment.Commands
                     }
                     _sqlDatabase = argument;
                     return true;
-                
+
+                case "username":
+                case "user":
+                case "userid":
+                    argument = ParameterHelper.Mandatory(argument, original).Trim();
+                    if (argument.Length == 0)
+                    {
+                        throw new ParameterException("User name cannot be empty.");
+                    }
+                    _userName = argument;
+                    return true;
+
+                case "password":
+                case "pwd":
+                    argument = ParameterHelper.Mandatory(argument, original).Trim();
+                    if (argument.Length == 0)
+                    {
+                        throw new ParameterException("Password cannot be empty.");
+                    }
+                    _password = argument;
+                    return true;
+
                 case "paths":
                 case "path":
                 case "p":
@@ -195,12 +224,6 @@ namespace SeemplesTools.Deployment.Commands
                 
                 case "serviceuser":
                 case "serviceusers":
-                case "su":
-                case "sus":
-                case "user":
-                case "users":
-                case "u":
-                case "us":
                     argument = ParameterHelper.Mandatory(argument, original);
 
                     var users = argument.Split(',');
@@ -264,11 +287,15 @@ namespace SeemplesTools.Deployment.Commands
             Commands.Add(new CreateSqlDatabaseCommand(
                 _sqlInstance,
                 _sqlDatabase,
+                _userName,
+                _password,
                 true));
 
             Commands.Add(new CreateLogicalDatabasesCommand(
                 _sqlInstance,
                 _sqlDatabase,
+                _userName,
+                _password,
                 LogicalDatabases,
                 _paths,
                 _serviceUsers,

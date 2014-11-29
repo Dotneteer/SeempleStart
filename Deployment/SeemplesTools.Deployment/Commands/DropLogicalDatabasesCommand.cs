@@ -21,6 +21,8 @@ namespace SeemplesTools.Deployment.Commands
 Arguments for drop-logical-databases:
   -sql-instance instance       SQL server instance (required)
   -sql-database database       SQL database name (required)
+  -user                        SQL user name (optional)
+  -password                    SQL user password (optional)
   -databases    databases      Comma-separated list of logical database names
                                (required)
   -optional     no             The logical database is always deleted (default)
@@ -62,8 +64,6 @@ Arguments for drop-logical-databases:
             get { return "Rolling back deletion of logical databases"; }
         }
 
-        private string _sqlInstance;
-        private string _sqlDatabase;
         private readonly List<string> _databases;
         private bool _optional;
 
@@ -84,11 +84,15 @@ Arguments for drop-logical-databases:
         /// </summary>
         /// <param name="sqlInstance">Az SQL Server példány neve</param>
         /// <param name="sqlDatabase">Az adatbázis neve</param>
+        /// <param name="userName">Az SQL felhasználó neve</param>
+        /// <param name="password">Az SQL felhasználó jelszava</param>
         /// <param name="databases">A logikai adatbázis sémák neve (vesszővel elválasztva)</param>
         /// <param name="optional">A logikai adatbázis csak akkor kerül törlésre, ha már létre van hozva.</param>
         public DropLogicalDatabasesCommand(
             string sqlInstance,
             string sqlDatabase,
+            string userName,
+            string password,
             IEnumerable<string> databases,
             bool optional)
         {
@@ -108,8 +112,10 @@ Arguments for drop-logical-databases:
                 throw new ArgumentNullException("databases");
             }
 
-            _sqlInstance = sqlInstance.Trim();
-            _sqlDatabase = sqlDatabase.Trim();
+            SqlInstance = sqlInstance.Trim();
+            SqlDatabase = sqlDatabase.Trim();
+            UserName = userName == null ? null : userName.Trim();
+            Password = password == null ? null : password.Trim();
 
             _databases = new List<string>();
 
@@ -139,31 +145,12 @@ Arguments for drop-logical-databases:
         /// <returns>Sikerült az értelmezés?</returns>
         protected override bool DoParseOption(string option, string argument, string original)
         {
+            if (base.DoParseOption(option, argument, original))
+            {
+                return true;
+            }
             switch (option)
             {
-                case "sqlinstance":
-                case "si":
-                case "instance":
-                case "i":
-                    argument = ParameterHelper.Mandatory(argument, original).Trim();
-                    if (argument.Length == 0)
-                    {
-                        throw new ParameterException("SQL instance name cannot be empty.");
-                    }
-                    _sqlInstance = argument;
-                    return true;
-                
-                case "sqldatabase":
-                case "sd":
-                case "sdb":
-                    argument = ParameterHelper.Mandatory(argument, original).Trim();
-                    if (argument.Length == 0)
-                    {
-                        throw new ParameterException("SQL database name cannot be empty.");
-                    }
-                    _sqlDatabase = argument;
-                    return true;
-                
                 case "databases":
                 case "database":
                 case "d":
@@ -223,8 +210,8 @@ Arguments for drop-logical-databases:
         /// </summary>
         protected override void DoFinishInitialization()
         {
-            CheckMandatoryParameter(_sqlInstance, "sql-instance", Original);
-            CheckMandatoryParameter(_sqlDatabase, "sql-database", Original);
+            CheckMandatoryParameter(SqlInstance, "sql-instance", Original);
+            CheckMandatoryParameter(SqlDatabase, "sql-database", Original);
 
             if (_databases.Count == 0)
             {
@@ -244,7 +231,7 @@ Arguments for drop-logical-databases:
         {
             SqlConnection connection;
             SqlTransaction transaction;
-            GetConnection(_sqlInstance, _sqlDatabase, out connection, out transaction);
+            GetConnection(SqlInstance, SqlDatabase, UserName, Password, out connection, out transaction);
 
             foreach (var database in _databases)
             {

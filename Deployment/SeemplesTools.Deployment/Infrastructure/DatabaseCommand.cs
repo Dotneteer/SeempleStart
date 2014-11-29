@@ -11,6 +11,11 @@ namespace SeemplesTools.Deployment.Infrastructure
     /// </summary>
     public abstract class DatabaseCommand : LeafCommand
     {
+        protected string SqlInstance;
+        protected string SqlDatabase;
+        protected string UserName;
+        protected string Password;
+
         #region Connect to SQL Server
 
         /// <summary>
@@ -23,11 +28,15 @@ namespace SeemplesTools.Deployment.Infrastructure
         /// </summary>
         /// <param name="instance">Az SQL Server példány neve</param>
         /// <param name="database">Az adatbázis neve a szerveren</param>
+        /// <param name="userName">Az SQL felhasználó neve</param>
+        /// <param name="password">Az SQL felhasználó jelszava</param>
         /// <param name="connection">A kapcsolati információ</param>
         /// <param name="transaction">Az elindított tranzakciót leíró példány</param>
         protected void GetConnection(
             string instance,
             string database,
+            string userName,
+            string password,
             out SqlConnection connection,
             out SqlTransaction transaction)
         {
@@ -41,7 +50,13 @@ namespace SeemplesTools.Deployment.Infrastructure
                 throw new ArgumentNullException("instance");
             }
 
-            var connectionString = DatabaseHelper.GetConnectionString(instance, database);
+            var connectionString = DatabaseHelper.GetConnectionString(instance, database, userName, password);
+            GetConnection(connectionString, instance, database, out connection, out transaction);
+        }
+
+        private void GetConnection(string connectionString, string instance, string database, 
+            out SqlConnection connection, out SqlTransaction transaction)
+        {
             var connectionKey = "DatabaseConnection:" + connectionString;
             var transactionKey = "DatabaseTransaction:" + connectionString;
 
@@ -55,14 +70,14 @@ namespace SeemplesTools.Deployment.Infrastructure
                 }
 
                 // --- Ezt a parancsot is hozzávesszük a tranzakciós listához
-                var databaseTransaction = (DatabaseTransaction)DeploymentTransaction.Current.Properties[transactionKey];
+                var databaseTransaction = (DatabaseTransaction) DeploymentTransaction.Current.Properties[transactionKey];
                 if (!databaseTransaction.Commands.Contains(this))
                 {
                     _transactions.Add(databaseTransaction);
                     databaseTransaction.Commands.Add(this);
                 }
 
-                connection = (SqlConnection)DeploymentTransaction.Current.Properties[connectionKey];
+                connection = (SqlConnection) DeploymentTransaction.Current.Properties[connectionKey];
                 transaction = databaseTransaction.Transaction;
             }
             else
@@ -92,6 +107,84 @@ namespace SeemplesTools.Deployment.Infrastructure
                 DeploymentTransaction.Current.Properties.Add(connectionKey, connection);
                 DeploymentTransaction.Current.Properties.Add(transactionKey, databaseTransaction);
             }
+        }
+
+        #endregion
+
+        #region Initialization
+
+        /// <summary>
+        /// Értelmezi a parancs argumentumait
+        /// </summary>
+        /// <param name="option">Az opció neve</param>
+        /// <param name="argument">Az argumentum értéke</param>
+        /// <param name="original">A parancs szövege</param>
+        /// <returns>Sikerült az értelmezés?</returns>
+        protected override bool DoParseOption(string option, string argument, string original)
+        {
+            switch (option)
+            {
+                case "sqlinstance":
+                case "si":
+                case "instance":
+                case "i":
+                    argument = ParameterHelper.Mandatory(argument, original).Trim();
+                    if (argument.Length == 0)
+                    {
+                        throw new ParameterException("SQL instance name cannot be empty.");
+                    }
+                    SqlInstance = argument;
+                    return true;
+                
+                case "sqldatabase":
+                case "sd":
+                case "sdb":
+                case "database":
+                case "d":
+                case "db":
+                    argument = ParameterHelper.Mandatory(argument, original).Trim();
+                    if (argument.Length == 0)
+                    {
+                        throw new ParameterException("SQL database name cannot be empty.");
+                    }
+                    SqlDatabase = argument;
+                    return true;
+
+                case "user":
+                case "username":
+                case "userid":
+                case "u":
+                    argument = ParameterHelper.Mandatory(argument, original).Trim();
+                    if (argument.Length == 0)
+                    {
+                        throw new ParameterException("User name cannot be empty.");
+                    }
+                    UserName = argument;
+                    return true;
+
+                case "password":
+                case "pwd":
+                case "p":
+                    argument = ParameterHelper.Mandatory(argument, original).Trim();
+                    if (argument.Length == 0)
+                    {
+                        throw new ParameterException("Password cannot be empty.");
+                    }
+                    Password = argument;
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// Befejezi a parancs inicializálását
+        /// </summary>
+        protected override void DoFinishInitialization()
+        {
+            CheckMandatoryParameter(SqlInstance, "sql-instance", Original);
+            CheckMandatoryParameter(SqlDatabase, "sql-database", Original);
         }
 
         #endregion

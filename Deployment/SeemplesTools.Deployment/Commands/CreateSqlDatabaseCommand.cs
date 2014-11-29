@@ -16,11 +16,16 @@ namespace SeemplesTools.Deployment.Commands
 Arguments for create-sql-database:
   -sql-instance instance       SQL instance (required)
   -sql-database database       SQL database (required)
+  -user                        SQL user name (optional)
+  -password                    SQL user password (optional)
   -optional     no             The SQL database is always created (default)
                 yes            The SQL database is only created if it doesn't
                                already exist")]
-    public class CreateSqlDatabaseCommand : LeafCommand
+    public class CreateSqlDatabaseCommand : DatabaseCommand
     {
+        private bool _optional;
+        private bool _created;
+
         #region Properties
 
         /// <summary>
@@ -28,7 +33,7 @@ Arguments for create-sql-database:
         /// </summary>
         public override string Name
         {
-            get { return String.Format("SQL database {0} on instance {1}", _sqlDatabase, _sqlInstance); }
+            get { return String.Format("SQL database {0} on instance {1}", SqlDatabase, SqlInstance); }
         }
 
         /// <summary>
@@ -36,7 +41,7 @@ Arguments for create-sql-database:
         /// </summary>
         public override string ProgressText
         {
-            get { return String.Format("Creating SQL database {0} on instance {1}", _sqlDatabase, _sqlInstance); }
+            get { return String.Format("Creating SQL database {0} on instance {1}", SqlDatabase, SqlInstance); }
         }
 
         /// <summary>
@@ -52,14 +57,8 @@ Arguments for create-sql-database:
         /// </summary>
         public override string RollbackProgressText
         {
-            get { return String.Format("Deleting SQL database {0} on instance {1}", _sqlDatabase, _sqlInstance); }
+            get { return String.Format("Deleting SQL database {0} on instance {1}", SqlDatabase, SqlInstance); }
         }
-
-        private string _sqlInstance;
-        private string _sqlDatabase;
-        private bool _optional;
-
-        private bool _created;
 
         #endregion
 
@@ -77,8 +76,10 @@ Arguments for create-sql-database:
         /// </summary>
         /// <param name="sqlInstance">Az SQL Server példány neve</param>
         /// <param name="sqlDatabase">Az adatbázis neve</param>
+        /// <param name="userName">Az SQL felhasználó neve</param>
+        /// <param name="password">Az SQL felhasználó jelszava</param>
         /// <param name="optional">Ha az adatbázis létezik, nem kell létrehozni?</param>
-        public CreateSqlDatabaseCommand(string sqlInstance, string sqlDatabase, bool optional)
+        public CreateSqlDatabaseCommand(string sqlInstance, string sqlDatabase, string userName, string password, bool optional)
         {
             if (String.IsNullOrWhiteSpace(sqlInstance))
             {
@@ -90,8 +91,10 @@ Arguments for create-sql-database:
                 throw new ArgumentNullException("sqlDatabase");
             }
 
-            _sqlInstance = sqlInstance.Trim();
-            _sqlDatabase = sqlDatabase.Trim();
+            SqlInstance = sqlInstance.Trim();
+            SqlDatabase = sqlDatabase.Trim();
+            UserName = userName == null ? null : userName.Trim();
+            Password = password == null ? null : password.Trim();
             _optional = optional;
         }
 
@@ -104,32 +107,12 @@ Arguments for create-sql-database:
         /// <returns>Sikerült az értelmezés?</returns>
         protected override bool DoParseOption(string option, string argument, string original)
         {
+            if (base.DoParseOption(option, argument, original))
+            {
+                return true;
+            }
             switch (option)
             {
-                case "sqlinstance":
-                case "si":
-                case "instance":
-                case "i":
-                    argument = ParameterHelper.Mandatory(argument, original).Trim();
-                    if (argument.Length == 0)
-                    {
-                        throw new ParameterException("SQL instance name cannot be empty.");
-                    }
-                    _sqlInstance = argument;
-                    return true;
-                case "sqldatabase":
-                case "sd":
-                case "sdb":
-                case "database":
-                case "d":
-                case "db":
-                    argument = ParameterHelper.Mandatory(argument, original).Trim();
-                    if (argument.Length == 0)
-                    {
-                        throw new ParameterException("SQL database name cannot be empty.");
-                    }
-                    _sqlDatabase = argument;
-                    return true;
                 case "optional":
                 case "o":
                     argument = ParameterHelper.Mandatory(argument, original).Trim();
@@ -161,8 +144,8 @@ Arguments for create-sql-database:
         /// </summary>
         protected override void DoFinishInitialization()
         {
-            CheckMandatoryParameter(_sqlInstance, "sql-instance", Original);
-            CheckMandatoryParameter(_sqlDatabase, "sql-database", Original);
+            CheckMandatoryParameter(SqlInstance, "sql-instance", Original);
+            CheckMandatoryParameter(SqlDatabase, "sql-database", Original);
         }
 
         #endregion
@@ -185,10 +168,10 @@ EXEC sp_executesql @query
         /// </summary>
         protected override void DoRun()
         {
-            var connectionString = DatabaseHelper.GetConnectionString(_sqlInstance, _sqlDatabase);
+            var connectionString = DatabaseHelper.GetConnectionString(SqlInstance, SqlDatabase, UserName, Password);
 
             DeploymentTransaction.Current.Log("Trying to connect to existing database {0} on instance {1}.",
-                _sqlDatabase, _sqlInstance);
+                SqlDatabase, SqlInstance);
 
             SqlConnection connection;
             try
@@ -202,7 +185,7 @@ EXEC sp_executesql @query
                     if (!_optional)
                     {
                         throw new ApplicationException(String.Format(
-                            "SQL database {0} already exists on SQL instance {1}.", _sqlDatabase, _sqlInstance));
+                            "SQL database {0} already exists on SQL instance {1}.", SqlDatabase, SqlInstance));
                     }
                 }
 
@@ -216,8 +199,8 @@ EXEC sp_executesql @query
 
             DeploymentTransaction.Current.Log("Database does not exist.");
 
-            var masterConnectionString = DatabaseHelper.GetConnectionString(_sqlInstance, "master");
-            DeploymentTransaction.Current.Log("Connecting to master database on instance {0}.", _sqlInstance);
+            var masterConnectionString = DatabaseHelper.GetConnectionString(SqlInstance, "master", UserName, Password);
+            DeploymentTransaction.Current.Log("Connecting to master database on instance {0}.", SqlInstance);
             using (connection = new SqlConnection(masterConnectionString))
             {
                 connection.Open();
@@ -225,7 +208,7 @@ EXEC sp_executesql @query
                 using (var command = new SqlCommand(CREATE_DATABASE_QUERY, connection))
                 {
                     command.Parameters.Add("@name", SqlDbType.NVarChar, 128);
-                    command.Parameters["@name"].Value = _sqlDatabase;
+                    command.Parameters["@name"].Value = SqlDatabase;
                     DeploymentTransaction.Current.LogSqlCommand(command);
                     command.ExecuteNonQuery();
                     _created = true;
@@ -258,8 +241,8 @@ EXEC sp_executesql @query
         {
             if (!_created) return;
 
-            var masterConnectionString = DatabaseHelper.GetConnectionString(_sqlInstance, "master");
-            DeploymentTransaction.Current.Log("Connecting to master database on instance {0}.", _sqlInstance);
+            var masterConnectionString = DatabaseHelper.GetConnectionString(SqlInstance, "master", UserName, Password);
+            DeploymentTransaction.Current.Log("Connecting to master database on instance {0}.", SqlInstance);
             using (var connection = new SqlConnection(masterConnectionString))
             {
                 connection.Open();
@@ -267,7 +250,7 @@ EXEC sp_executesql @query
                 using (var command = new SqlCommand(DROP_DATABASE_QUERY, connection))
                 {
                     command.Parameters.Add("@name", SqlDbType.NVarChar, 128);
-                    command.Parameters["@name"].Value = _sqlDatabase;
+                    command.Parameters["@name"].Value = SqlDatabase;
                     DeploymentTransaction.Current.LogSqlCommand(command);
                     command.ExecuteNonQuery();
                 }
