@@ -47,6 +47,7 @@ namespace Seemplest.MsSql.DataAccess
                 if (_context != null) return _context;
                 _context = new EventedSqlDatabase(_connectionParam, _mode);
                 _context.OnCommandExecuting += OnCommandExecuting;
+                _context.OnCommandExecuted += OnCommandExecuted;
                 return _context;
             }
         }
@@ -191,10 +192,26 @@ namespace Seemplest.MsSql.DataAccess
         }
 
         /// <summary>
+        /// Handles the event when a command is being executed.
+        /// </summary>
+        private void OnCommandExecuted(object sender, SqlCommandEventArgs e)
+        {
+            OnCommandExecuted(e.SqlCommand);
+        }
+
+        /// <summary>
         /// Override this method to catch the event when a command is about to be executed.
         /// </summary>
         /// <param name="command">Command being executed</param>
         protected virtual void OnCommandExecuting(SqlCommand command)
+        {
+        }
+
+        /// <summary>
+        /// Override this method to catch the event when a command has been executed.
+        /// </summary>
+        /// <param name="command">Command being executed</param>
+        protected virtual void OnCommandExecuted(SqlCommand command)
         {
         }
 
@@ -211,6 +228,7 @@ namespace Seemplest.MsSql.DataAccess
             }
 
             public EventHandler<SqlCommandEventArgs> OnCommandExecuting;
+            public EventHandler<SqlCommandEventArgs> OnCommandExecuted;
 
             /// <summary>
             /// This method is called when a <see cref="SqlCommand"/> is about to be executed.
@@ -219,6 +237,19 @@ namespace Seemplest.MsSql.DataAccess
             public override void OnExecutingCommand(SqlCommand command)
             {
                 var handler = OnCommandExecuting;
+                if (handler != null)
+                {
+                    handler(this, new SqlCommandEventArgs(command));
+                }
+            }
+
+            /// <summary>
+            /// This method is called when a <see cref="SqlCommand"/> is about to be executed.
+            /// </summary>
+            /// <param name="command">Command to execute</param>
+            public override void OnExecutedCommand(SqlCommand command)
+            {
+                var handler = OnCommandExecuted;
                 if (handler != null)
                 {
                     handler(this, new SqlCommandEventArgs(command));

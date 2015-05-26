@@ -85,10 +85,12 @@ namespace Seemplest.MsSql.UnitTests.DataAccess
             await db.InsertAsync(record1);
             var record2 = new SampleRecordWithIdentity { Name = "Second" };
             await db.InsertAsync(record2, withGet: false);
+            var count = await db.ExecuteScalarAsync<int>("select count(*) from sample");
 
             // --- Assert
             record1.Id.ShouldEqual(1);
             record2.Id.ShouldEqual(0);
+            count.ShouldEqual(2);
         }
 
         [TestMethod]

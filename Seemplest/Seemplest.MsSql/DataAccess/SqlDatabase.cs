@@ -853,7 +853,7 @@ namespace Seemplest.MsSql.DataAccess
         /// This method is called when a <see cref="SqlCommand"/> has been executed.
         /// </summary>
         /// <param name="command">Command that has been executed</param>
-        public virtual void OnExecutedCommand(IDbCommand command)
+        public virtual void OnExecutedCommand(SqlCommand command)
         {
         }
 
@@ -2446,6 +2446,11 @@ namespace Seemplest.MsSql.DataAccess
                                 r.Read();
                                 recordFactory(r, record);
                             }
+                        }
+                        else
+                        {
+                            await cmd.ExecuteNonQueryAsync(token);
+                            OnExecutedCommand(cmd);
                         }
 
                         // --- Track insertion
