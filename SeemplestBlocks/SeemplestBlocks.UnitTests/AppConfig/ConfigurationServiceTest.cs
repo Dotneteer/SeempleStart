@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Evolution.BuildingBlocks.Dto.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Seemplest.Core.DataAccess.DataServices;
 using Seemplest.Core.DependencyInjection;
@@ -7,6 +6,7 @@ using Seemplest.Core.ServiceObjects.Validation;
 using SeemplestBlocks.Core.AppConfig;
 using SeemplestBlocks.Core.AppConfig.DataAccess;
 using SeemplestBlocks.Core.AppConfig.Exceptions;
+using SeemplestBlocks.Dto.AppConfig;
 using SeemplestBlocks.UnitTests.Helpers;
 using SoftwareApproach.TestingExtensions;
 

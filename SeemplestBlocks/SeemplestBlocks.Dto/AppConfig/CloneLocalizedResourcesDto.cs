@@ -1,4 +1,4 @@
-﻿namespace Evolution.BuildingBlocks.Dto.Configuration
+﻿namespace SeemplestBlocks.Dto.AppConfig
 {
     /// <summary>
     /// Ez az osztály az erőforrások másolásához tartozó kérést írja le

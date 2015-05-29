@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
-using Evolution.BuildingBlocks.Dto.Configuration;
 using Seemplest.Core.DataAccess.DataServices;
 using Seemplest.Core.DataAccess.Exceptions;
 using Seemplest.Core.ServiceObjects;
 using SeemplestBlocks.Core.AppConfig.DataAccess;
 using SeemplestBlocks.Core.AppConfig.Exceptions;
 using SeemplestBlocks.Core.Diagnostics;
+using SeemplestBlocks.Dto.AppConfig;
 
 namespace SeemplestBlocks.Core.AppConfig
 {

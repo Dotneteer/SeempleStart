@@ -92,7 +92,7 @@ namespace SeemplestBlocks.Core.Email
         {
             var str = new StringBuilder();
             str.AppendLine("BEGIN:VCALENDAR");
-            str.AppendLine("PRODID:-//Evolution Consulting//NONSGML hrMaster//EN");
+            str.AppendLine("PRODID:-//MyCompany//NONSGML myProduct//EN");
             str.AppendLine("TZ:+1");
             str.AppendLine("VERSION:2.0");
             str.AppendLine("METHOD:REQUEST");

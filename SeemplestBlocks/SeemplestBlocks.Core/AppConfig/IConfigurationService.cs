@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Evolution.BuildingBlocks.Dto.Configuration;
 using Seemplest.Core.ServiceObjects;
+using SeemplestBlocks.Dto.AppConfig;
 
 namespace SeemplestBlocks.Core.AppConfig
 {

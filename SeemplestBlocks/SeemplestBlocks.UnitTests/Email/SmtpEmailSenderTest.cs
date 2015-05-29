@@ -41,8 +41,8 @@ namespace SeemplestBlocks.UnitTests.Email
                 "This is a test email",
                 new AppointmentDefinitionDto
                 {
-                    OrganizerEmail = "bukszar.zoltan@evolution-consulting.hu",
-                    OrganizerName = "Bukszár Zoltán",
+                    OrganizerEmail = "onovak@grpton.hu",
+                    OrganizerName = "István Novák",
                     Date = new DateTime(2014, 8, 22),
                     StartHour = 8,
                     StartMinute = 30,
@@ -53,7 +53,7 @@ namespace SeemplestBlocks.UnitTests.Email
                     Location = "Nálunk",
                     Recepients = new[] {
                         "inovak@grepton.hu",
-                        "mester.csaba@innovitas.hu"
+                        "vsxguy@gmail.com"
                     },
                     ReminderMinutesBefore = 15,
                     UseReminder = true

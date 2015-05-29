@@ -1,4 +1,4 @@
-﻿namespace Evolution.BuildingBlocks.Dto.Configuration
+﻿namespace SeemplestBlocks.Dto.AppConfig
 {
     /// <summary>
     /// Egy lokalizált erőforrás adatai
