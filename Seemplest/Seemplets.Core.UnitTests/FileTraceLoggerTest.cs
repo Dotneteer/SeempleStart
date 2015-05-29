@@ -46,7 +46,7 @@ namespace Seemplest.Core.UnitTests
             var lines = text.Split(new [] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
             foreach (var line in lines)
             {
-                line.ShouldEqual("2012.01.01. 8:00:00\tInformational\tServer\t123\tTestOp\tMessage\t");
+                line.ShouldContain("Informational\tServer\t123\tTestOp\tMessage\t");
             }
             lines.ShouldHaveCountOf(5);
         }
@@ -101,14 +101,14 @@ namespace Seemplest.Core.UnitTests
             lines1.ShouldHaveCountOf(9);
             foreach (var line in lines1)
             {
-                line.ShouldEqual("2012.01.01. 8:00:00\tInformational\tServer\t123\tTestOp\tMessage\t");
+                line.ShouldContain("\tInformational\tServer\t123\tTestOp\tMessage\t");
             }
             var text2 = File.ReadAllText(Path.Combine(LOG_ROOT, "09", LOG_FILE));
             var lines2 = text2.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             lines2.ShouldHaveCountOf(3);
             foreach (var line in lines2)
             {
-                line.ShouldEqual("2012.01.01. 9:00:00\tInformational\tServer\t123\tTestOp\tMessage\t");
+                line.ShouldContain("\tInformational\tServer\t123\tTestOp\tMessage\t");
             }
         }
 

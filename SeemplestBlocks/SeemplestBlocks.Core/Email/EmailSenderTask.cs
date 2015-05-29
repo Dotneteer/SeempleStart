@@ -198,7 +198,7 @@ namespace SeemplestBlocks.Core.Email
                         LastError = errorMessage,
                         RetryCount = emailToSend.RetryCount,
                         FailedUtc = DateTime.Now
-                    });
+                    }).Wait();
                     ctx.DeleteEmailToSendAsync(emailToSend.Id).Wait();
                 }
 
