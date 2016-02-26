@@ -1,4 +1,4 @@
-YounderwaterSample\Deployment\Setup\bin\Debug\Setup.exe deploy-sb-database -sql-instance:.\SQLEXPRESS2012 -sql-database:Seemplest.Test -paths:SeemplestBlocks\SeemplestBlocks.Database\bin\Default
-YounderwaterSample\Deployment\Setup\bin\Debug\Setup.exe deploy-sb-database -sql-instance:.\SQLEXPRESS2012 -sql-database:Younderwater.Poc -paths:SeemplestBlocks\SeemplestBlocks.Database\bin\Default
-YounderwaterSample\Deployment\Setup\bin\Debug\Setup.exe deploy-yw-database -sql-instance:.\SQLEXPRESS2012 -sql-database:Younderwater.Poc -paths:YounderwaterSample\Databases\Younderwater.Database\bin\Default
+YounderwaterSample\Deployment\Setup\bin\Debug\Setup.exe deploy-sb-database -sql-instance:(localdb)\mssqllocaldb -sql-database:Seemplest.Test -paths:SeemplestBlocks\SeemplestBlocks.Database\bin\Default
+YounderwaterSample\Deployment\Setup\bin\Debug\Setup.exe deploy-sb-database -sql-instance:(localdb)\mssqllocaldb -sql-database:Younderwater.Poc -paths:SeemplestBlocks\SeemplestBlocks.Database\bin\Default
+YounderwaterSample\Deployment\Setup\bin\Debug\Setup.exe deploy-yw-database -sql-instance:(localdb)\mssqllocaldb -sql-database:Younderwater.Poc -paths:YounderwaterSample\Databases\Younderwater.Database\bin\Default
 pause

@@ -10,7 +10,7 @@ namespace Seemplest.MsSql.UnitTests.DataAccess
     public class SqlHelperTest
     {
         private const string DB_CONN_NAME = "connStr=Seemplest";
-        private const string DB_CONN = @"Data Source=.\sqlexpress;Integrated Security=True;Initial Catalog=Seemplest.Test;";
+        private const string DB_CONN = @"Data Source=(localdb)\mssqllocaldb;Integrated Security=True;Initial Catalog=Seemplest.Test;";
 
         [TestMethod]
         public void GetConnectionStringWorksAsExpected()
