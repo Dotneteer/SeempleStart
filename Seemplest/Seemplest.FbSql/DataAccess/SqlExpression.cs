@@ -164,7 +164,7 @@ namespace Seemplest.FbSql.DataAccess
             if (columnList.Count == 0)
                 throw new ArgumentException("At least one column should be specified", nameof(columns));
             return Append(new SqlExpression("select " +
-                string.Join(SEPARATOR, columnList.Select(c => "\"" + c.ToString() + "\""))));
+                string.Join(SEPARATOR, columnList.Select(c => c.ToString() == "*" ? "*" : "\"" + c.ToString() + "\""))));
         }
 
         /// <summary>
@@ -313,7 +313,7 @@ namespace Seemplest.FbSql.DataAccess
         /// <returns>FROM clause</returns>
         public SqlExpression From<T1>()
         {
-            var t1Name = FbDatabase.EscapeSqlTableName<T1>();
+            var t1Name = RecordMetadataManager.GetMetadata<T1>().TableName;
             return From(t1Name);
         }
 
@@ -327,8 +327,8 @@ namespace Seemplest.FbSql.DataAccess
             where T1 : IDataRecord
             where T2 : IDataRecord
         {
-            var t1Name = FbDatabase.EscapeSqlTableName<T1>();
-            var t2Name = FbDatabase.EscapeSqlTableName<T2>();
+            var t1Name = RecordMetadataManager.GetMetadata<T1>().TableName;
+            var t2Name = RecordMetadataManager.GetMetadata<T2>().TableName;
             return From(t1Name, t2Name);
         }
 
@@ -344,9 +344,9 @@ namespace Seemplest.FbSql.DataAccess
             where T2 : IDataRecord
             where T3 : IDataRecord
         {
-            var t1Name = FbDatabase.EscapeSqlTableName<T1>();
-            var t2Name = FbDatabase.EscapeSqlTableName<T2>();
-            var t3Name = FbDatabase.EscapeSqlTableName<T3>();
+            var t1Name = RecordMetadataManager.GetMetadata<T1>().TableName;
+            var t2Name = RecordMetadataManager.GetMetadata<T2>().TableName;
+            var t3Name = RecordMetadataManager.GetMetadata<T3>().TableName;
             return From(t1Name, t2Name, t3Name);
         }
 
@@ -364,10 +364,10 @@ namespace Seemplest.FbSql.DataAccess
             where T3 : IDataRecord
             where T4 : IDataRecord
         {
-            var t1Name = FbDatabase.EscapeSqlTableName<T1>();
-            var t2Name = FbDatabase.EscapeSqlTableName<T2>();
-            var t3Name = FbDatabase.EscapeSqlTableName<T3>();
-            var t4Name = FbDatabase.EscapeSqlTableName<T4>();
+            var t1Name = RecordMetadataManager.GetMetadata<T1>().TableName;
+            var t2Name = RecordMetadataManager.GetMetadata<T2>().TableName;
+            var t3Name = RecordMetadataManager.GetMetadata<T3>().TableName;
+            var t4Name = RecordMetadataManager.GetMetadata<T4>().TableName;
             return From(t1Name, t2Name, t3Name, t4Name);
         }
 

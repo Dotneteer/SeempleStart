@@ -51,7 +51,7 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
             var clause = SqlExpression.New.Select("a", "b", "c");
 
             // --- Assert
-            clause.SqlText.ShouldEqualIgnoringCase("select a, b, c");
+            clause.SqlText.ShouldEqualIgnoringCase("select \"a\", \"b\", \"c\"");
             clause.Arguments.ShouldHaveCountOf(0);
         }
 
@@ -62,7 +62,7 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
             var clause = SqlExpression.New.Select<Record1>();
 
             // --- Assert
-            clause.SqlText.ShouldEqualIgnoringCase("select Id, DisplayName, Description");
+            clause.SqlText.ShouldEqualIgnoringCase("select \"Id\", \"DisplayName\", \"Description\"");
         }
 
         [TestMethod]
@@ -72,7 +72,7 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
             var clause = SqlExpression.New.Select<Record1>(r => r.Id, r => r.Description, r => r.Name);
 
             // --- Assert
-            clause.SqlText.ShouldEqualIgnoringCase("select Id, Description, DisplayName");
+            clause.SqlText.ShouldEqualIgnoringCase("select \"Id\", \"Description\", \"DisplayName\"");
         }
 
         [TestMethod]
@@ -80,17 +80,11 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         {
             // --- Act
             var expr1 = SqlExpression.New.Select("a", "b").Distinct;
-            var expr2 = new SqlExpression("select all c, d").Distinct;
-            var expr3 = new SqlExpression("select all top 3 c, d").Distinct;
-            var expr4 = new SqlExpression("select top 3 c, d").Distinct;
-            var expr5 = new SqlExpression("select distinct top 3 c, d").Distinct;
+            var expr2 = new SqlExpression("select all \"c\", \"d\"").Distinct;
 
             // --- Assert
-            expr1.SqlText.ShouldEqual("select distinct a, b");
-            expr2.SqlText.ShouldEqual("select distinct c, d");
-            expr3.SqlText.ShouldEqual("select distinct top 3 c, d");
-            expr4.SqlText.ShouldEqual("select distinct top 3 c, d");
-            expr5.SqlText.ShouldEqual("select distinct top 3 c, d");
+            expr1.SqlText.ShouldEqual("select distinct \"a\", \"b\"");
+            expr2.SqlText.ShouldEqual("select distinct \"c\", \"d\"");
         }
 
         [TestMethod]
@@ -98,17 +92,11 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         {
             // --- Act
             var expr1 = SqlExpression.New.Select("a", "b").All;
-            var expr2 = new SqlExpression("select distinct c, d").All;
-            var expr3 = new SqlExpression("select distinct top 3 c, d").All;
-            var expr4 = new SqlExpression("select top 3 c, d").All;
-            var expr5 = new SqlExpression("select distinct top 3 c, d").All;
+            var expr2 = new SqlExpression("select distinct \"c\", \"d\"").All;
 
             // --- Assert
-            expr1.SqlText.ShouldEqual("select all a, b");
-            expr2.SqlText.ShouldEqual("select all c, d");
-            expr3.SqlText.ShouldEqual("select all top 3 c, d");
-            expr4.SqlText.ShouldEqual("select all top 3 c, d");
-            expr5.SqlText.ShouldEqual("select all top 3 c, d");
+            expr1.SqlText.ShouldEqual("select all \"a\", \"b\"");
+            expr2.SqlText.ShouldEqual("select all \"c\", \"d\"");
         }
 
         [TestMethod]
@@ -134,7 +122,7 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
             var clause = SqlExpression.New.Select("*").From("a", "b");
 
             // --- Assert
-            clause.SqlText.ShouldEqualIgnoringCase("select *\nfrom a, b");
+            clause.SqlText.ShouldEqualIgnoringCase("select *\nfrom \"a\", \"b\"");
             clause.Arguments.ShouldHaveCountOf(0);
         }
 
@@ -148,10 +136,10 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
             var clause4 = SqlExpression.New.Select("a", "b").From<Record1, Record2, Record3, Record4>();
 
             // --- Assert
-            clause1.SqlText.ShouldEqualIgnoringCase("select a, b\nfrom [dbo].[Record1]");
-            clause2.SqlText.ShouldEqualIgnoringCase("select a, b\nfrom [dbo].[Record1], [user1].[Record2]");
-            clause3.SqlText.ShouldEqualIgnoringCase("select a, b\nfrom [dbo].[Record1], [user1].[Record2], [dbo].[Record3]");
-            clause4.SqlText.ShouldEqualIgnoringCase("select a, b\nfrom [dbo].[Record1], [user1].[Record2], [dbo].[Record3], [user2].[Record4]");
+            clause1.SqlText.ShouldEqualIgnoringCase("select \"a\", \"b\"\nfrom \"Record1\"");
+            clause2.SqlText.ShouldEqualIgnoringCase("select \"a\", \"b\"\nfrom \"Record1\", \"Record2\"");
+            clause3.SqlText.ShouldEqualIgnoringCase("select \"a\", \"b\"\nfrom \"Record1\", \"Record2\", \"Record3\"");
+            clause4.SqlText.ShouldEqualIgnoringCase("select \"a\", \"b\"\nfrom \"Record1\", \"Record2\", \"Record3\", \"Record4\"");
         }
 
         [TestMethod]
@@ -170,28 +158,28 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
             var clause10 = SqlExpression.New.Select("a", "b").From("x").Where(false, "x.a = x.b", null);
 
             // --- Assert
-            clause1.SqlText.ShouldEqual("select a, b\nfrom x\nwhere x.a = x.b");
-            clause2.SqlText.ShouldEqual("select a, b\nfrom x\nwhere @0 = @1");
+            clause1.SqlText.ShouldEqual("select \"a\", \"b\"\nfrom \"x\"\nwhere x.a = x.b");
+            clause2.SqlText.ShouldEqual("select \"a\", \"b\"\nfrom \"x\"\nwhere @0 = @1");
             clause2.Arguments.ShouldHaveCountOf(2);
             clause2.Arguments[0].ShouldEqual(1);
             clause2.Arguments[1].ShouldEqual(2);
-            clause3.SqlText.ShouldEqual("select a, b\nfrom x\nwhere @0 = @1");
+            clause3.SqlText.ShouldEqual("select \"a\", \"b\"\nfrom \"x\"\nwhere @0 = @1");
             clause3.Arguments.ShouldHaveCountOf(2);
             clause3.Arguments[0].ShouldEqual(1);
             clause3.Arguments[1].ShouldEqual(2);
-            clause4.SqlText.ShouldEqual("select a, b\nfrom x\nwhere x.a = x.b");
-            clause5.SqlText.ShouldEqual("select a, b\nfrom x\nwhere @0 = @1");
+            clause4.SqlText.ShouldEqual("select \"a\", \"b\"\nfrom \"x\"\nwhere x.a = x.b");
+            clause5.SqlText.ShouldEqual("select \"a\", \"b\"\nfrom \"x\"\nwhere @0 = @1");
             clause5.Arguments.ShouldHaveCountOf(2);
             clause5.Arguments[0].ShouldEqual(1);
             clause5.Arguments[1].ShouldEqual(2);
-            clause6.SqlText.ShouldEqual("select a, b\nfrom x\nwhere @0 = @1");
+            clause6.SqlText.ShouldEqual("select \"a\", \"b\"\nfrom \"x\"\nwhere @0 = @1");
             clause6.Arguments.ShouldHaveCountOf(2);
             clause6.Arguments[0].ShouldEqual(1);
             clause6.Arguments[1].ShouldEqual(2);
-            clause7.SqlText.ShouldEqual("select a, b\nfrom x");
-            clause8.SqlText.ShouldEqual("select a, b\nfrom x");
-            clause9.SqlText.ShouldEqual("select a, b\nfrom x\nwhere x.a = x.b");
-            clause10.SqlText.ShouldEqual("select a, b\nfrom x");
+            clause7.SqlText.ShouldEqual("select \"a\", \"b\"\nfrom \"x\"");
+            clause8.SqlText.ShouldEqual("select \"a\", \"b\"\nfrom \"x\"");
+            clause9.SqlText.ShouldEqual("select \"a\", \"b\"\nfrom \"x\"\nwhere x.a = x.b");
+            clause10.SqlText.ShouldEqual("select \"a\", \"b\"\nfrom \"x\"");
         }
 
         [TestMethod]
@@ -220,10 +208,10 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
             var clause4 = SqlExpression.New.Select("a").From("x").OrderBy<Record1>(r => r.Id, r => r.Name);
 
             // --- Assert
-            clause1.SqlText.ShouldEqual("select a\nfrom x\norder by a");
-            clause2.SqlText.ShouldEqual("select a, b\nfrom x\norder by a, b");
-            clause3.SqlText.ShouldEqual("select a\nfrom x\norder by Id");
-            clause4.SqlText.ShouldEqual("select a\nfrom x\norder by Id, DisplayName");
+            clause1.SqlText.ShouldEqual("select \"a\"\nfrom \"x\"\norder by \"a\"");
+            clause2.SqlText.ShouldEqual("select \"a\", \"b\"\nfrom \"x\"\norder by \"a\", \"b\"");
+            clause3.SqlText.ShouldEqual("select \"a\"\nfrom \"x\"\norder by \"Id\"");
+            clause4.SqlText.ShouldEqual("select \"a\"\nfrom \"x\"\norder by \"Id\", \"DisplayName\"");
         }
 
         [TestMethod]
@@ -324,7 +312,7 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
             var clause = SqlExpression.New.Select("a", "b").From("x").Where("a = b").Where("c = d");
 
             // --- Assert
-            clause.SqlText.ShouldEqual("select a, b\nfrom x\nwhere a = b\nand c = d");
+            clause.SqlText.ShouldEqual("select \"a\", \"b\"\nfrom \"x\"\nwhere a = b\nand c = d");
         }
 
         [TestMethod]
@@ -334,7 +322,7 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
             var clause = SqlExpression.New.Select("a", "b").From("x").OrderBy("a").OrderBy("b");
 
             // --- Assert
-            clause.SqlText.ShouldEqual("select a, b\nfrom x\norder by a\n, b");
+            clause.SqlText.ShouldEqual("select \"a\", \"b\"\nfrom \"x\"\norder by \"a\"\n, \"b\"");
         }
 
         [TestMethod]
@@ -347,8 +335,8 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
             var completeClause2 = clause2.CompleteSelect<Record1>();
 
             // --- Assert
-            completeClause1.SqlText.ShouldEqual("select Id, DisplayName, Description\nfrom [dbo].[Record1]\nwhere Id = 0");
-            completeClause2.SqlText.ShouldEqual("select Id, DisplayName, Description\nfrom [dbo].[Record1]\nwhere Id = 0");
+            completeClause1.SqlText.ShouldEqual("select \"Id\", \"DisplayName\", \"Description\"\nfrom \"Record1\"\nwhere Id = 0");
+            completeClause2.SqlText.ShouldEqual("select \"Id\", \"DisplayName\", \"Description\"\nfrom \"Record1\"\nwhere Id = 0");
         }
 
         [TableName("Record1")]
@@ -364,7 +352,6 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
             // ReSharper restore UnusedMember.Local
         }
 
-        [SchemaName("user1")]
         [TableName("Record2")]
         class Record2 : DataRecord<Record2>
         {

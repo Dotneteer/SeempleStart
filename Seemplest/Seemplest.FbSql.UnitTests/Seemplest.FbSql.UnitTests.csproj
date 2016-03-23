@@ -63,6 +63,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="DataAccess\DefaultSqlParameterMapperTest.cs" />
+    <Compile Include="DataAccess\FetchAsyncTest.cs" />
     <Compile Include="DataAccess\SqlExpressionTests.cs" />
     <Compile Include="DataAccess\SqlHelperTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
