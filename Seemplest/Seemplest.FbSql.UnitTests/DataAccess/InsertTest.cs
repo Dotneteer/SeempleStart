@@ -141,7 +141,8 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
             db.BeginTransaction();
-            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name1"" varchar(50), ""Name2"" varchar(50), ""Name3"" as ""Name1"" + ""Name2"")");
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name1"" varchar(50), ""Name2"" varchar(50), 
+                         ""Name3"" computed by (""Name1"" || ""Name2"") )");
             db.CompleteTransaction();
             db.Insert(new SampleRecordWithCalculation { Id = 1, Name1 = "1", Name2 = "2" });
 
@@ -162,7 +163,8 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
             db.BeginTransaction();
-            db.Execute(@"create table ""sample"" (""Id"" int, ""Name1"" varchar(50), ""Name2"" as ""Name1"")");
+            db.Execute(@"create table ""sample"" (""Id"" int, ""Name1"" varchar(50), 
+                         ""Name2"" computed by (""Name1"") )");
             db.CompleteTransaction();
             db.Insert(new SampleRecordWithNulls());
 
@@ -182,7 +184,7 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
             db.BeginTransaction();
-            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Date"" datetime not null)");
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Date"" timestamp not null)");
             db.CompleteTransaction();
             db.Insert(new SampleRecordWithDate { Id = 1, Date = DateTime.MinValue });
             db.Insert(new SampleRecordWithDate { Id = 2, Date = DateTime.Now });

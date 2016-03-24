@@ -37,10 +37,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FirebirdSql.Data.FirebirdClient">
-      <HintPath>..\Assets\Libs\Firebird\FirebirdSql.Data.FirebirdClient.dll</HintPath>
+      <HintPath>..\..\Assets\Libs\Firebird\FirebirdSql.Data.FirebirdClient.dll</HintPath>
     </Reference>
     <Reference Include="SoftwareApproach.TestingExtensions, Version=1.2.4420.19431, Culture=neutral, PublicKeyToken=8643fe5b014704ca, processorArchitecture=MSIL">
-      <HintPath>..\packages\VisualStudioTestingExtensions.1.2.0.0\lib\net40\SoftwareApproach.TestingExtensions.dll</HintPath>
+      <HintPath>..\..\packages\VisualStudioTestingExtensions.1.2.0.0\lib\net40\SoftwareApproach.TestingExtensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
