@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Seemplest.Core.DataAccess.Attributes;
@@ -13,7 +12,7 @@ using SoftwareApproach.TestingExtensions;
 namespace Seemplest.FbSql.UnitTests.DataAccess
 {
     [TestClass]
-    public class FetchAsyncTest
+    public class FetchTest
     {
         const string DB_CONN = "connStr=Seemplest";
 
@@ -29,69 +28,56 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void NullReaderRaisesException()
+        {
+            // --- Act
+            DataReaderMappingManager.Reset();
+            DataReaderMappingManager.GetMapperFor<SampleRecord>(null);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(FbException))]
-        public async Task InvalidAsyncQueryRaisesException()
+        public void InvalidQueryRaisesException()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
 
             // --- Act
-            await db.FetchAsync<SampleRecord>("this is a dummy SQL");
+            db.Fetch<SampleRecord>("this is a dummy SQL");
         }
 
         [TestMethod]
-        public async Task SimpleFetchAsyncWorksAsExpected()
+        public void SimpleFetchWorksAsExpected()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, 'Second')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, 'First')");
+            db.Execute(@"insert into ""sample"" values(2, 'Second')");
 
             // --- Act
-            var rows = await db.FetchAsync<SampleRecord>();
+            var rows = db.Fetch<SampleRecord>();
 
             // --- Assert
             rows.ShouldHaveCountOf(2);
         }
 
         [TestMethod]
-        public async Task FetchAsyncWorksAsExpected()
+        public void FetchWorksAsExpected()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, 'Second')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, 'First')");
+            db.Execute(@"insert into ""sample"" values(2, 'Second')");
 
             // --- Act
-            var rows = await db.FetchAsync<SampleRecord>(@"order by ""Id""");
-
-            // --- Assert
-            rows.ShouldHaveCountOf(2);
-            rows[0].Id.ShouldEqual(1);
-            rows[0].Name.ShouldEqual("First");
-            rows[1].Id.ShouldEqual(2);
-            rows[1].Name.ShouldEqual("Second");
-        }
-
-        [TestMethod]
-        public async Task QueryAsyncWorksAsExpected()
-        {
-            // --- Arrange
-            var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, 'Second')");
-
-            // --- Act
-            var rows = (await db.QueryAsync<SampleRecord>(@"select ""Id"", ""Name"" from ""sample"" order by ""Id""")).ToList();
+            var rows = db.Fetch<SampleRecord>(@"order by ""Id""");
 
             // --- Assert
             rows.ShouldHaveCountOf(2);
@@ -102,18 +88,41 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         }
 
         [TestMethod]
-        public async Task FetchAsyncManagesNullValues()
+        public void QueryhWorksAsExpected()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, null)");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, null)");
-            
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, 'First')");
+            db.Execute(@"insert into ""sample"" values(2, 'Second')");
+
             // --- Act
-            var rows = await db.FetchAsync<SampleRecord>(@"order by ""Id""");
+            var rows = db.Query<SampleRecord>(
+                @"select ""Id"", ""Name"" from ""sample"" order by ""Id""").ToList();
+
+            // --- Assert
+            rows.ShouldHaveCountOf(2);
+            rows[0].Id.ShouldEqual(1);
+            rows[0].Name.ShouldEqual("First");
+            rows[1].Id.ShouldEqual(2);
+            rows[1].Name.ShouldEqual("Second");
+        }
+
+        [TestMethod]
+        public void FetchManagesNullValues()
+        {
+            // --- Arrange
+            var db = new FbDatabase(DB_CONN);
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, null)");
+            db.Execute(@"insert into ""sample"" values(2, null)");
+
+            // --- Act
+            var rows = db.Fetch<SampleRecord>(@"order by ""Id""");
 
             // --- Assert
             rows.ShouldHaveCountOf(2);
@@ -124,18 +133,18 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         }
 
         [TestMethod]
-        public async Task FetchAsyncWorksWithMissingClrField()
+        public void FetchWorksWithMissingClrField()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, 'Second')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, 'First')");
+            db.Execute(@"insert into ""sample"" values(2, 'Second')");
 
             // --- Act
-            var rows = await db.FetchAsync<SampleRecordWithMissingField>(
+            var rows = db.Fetch<SampleRecordWithMissingField>(
                 @"select ""Id"", ""Name"" from ""sample"" order by ""Name""");
 
             // --- Assert
@@ -145,18 +154,18 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         }
 
         [TestMethod]
-        public async Task FetchAsyncWorksWithMissingDataField()
+        public void FetchWorksWithMissingDataField()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, 'Second')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, 'First')");
+            db.Execute(@"insert into ""sample"" values(2, 'Second')");
 
             // --- Act
-            var rows = await db.FetchAsync<SampleRecordWithExtraField>(
+            var rows = db.Fetch<SampleRecordWithExtraField>(
                 @"select ""Id"", ""Name"" from ""sample"" order by ""Id""");
 
             // --- Assert
@@ -170,18 +179,18 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         }
 
         [TestMethod]
-        public async Task FetchWorksWithNarrowingConversion()
+        public void FetchWorksWithNarrowingConversion()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, 'Second')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, 'First')");
+            db.Execute(@"insert into ""sample"" values(2, 'Second')");
 
             // --- Act
-            var rows = await db.FetchAsync<SampleRecordWithNarrowingConversion>(
+            var rows = db.Fetch<SampleRecordWithNarrowingConversion>(
                 @"select ""Id"", ""Name"" from ""sample"" order by ""Id""");
 
             // --- Assert
@@ -193,18 +202,18 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         }
 
         [TestMethod]
-        public async Task FetchAsyncWorksWithWideningConversion()
+        public void FetchWorksWithWideningConversion()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, 'Second')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, 'First')");
+            db.Execute(@"insert into ""sample"" values(2, 'Second')");
 
             // --- Act
-            var rows = await db.FetchAsync<SampleRecordWithWideningConversion>(
+            var rows = db.Fetch<SampleRecordWithWideningConversion>(
                 @"select ""Id"", ""Name"" from ""sample"" order by ""Id""");
 
             // --- Assert
@@ -216,18 +225,18 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         }
 
         [TestMethod]
-        public async Task FetchAsyncWorksWithTypeConversion()
+        public void FetchWorksWithTypeConversion()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, 'Second')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, 'First')");
+            db.Execute(@"insert into ""sample"" values(2, 'Second')");
 
             // --- Act
-            var rows = await db.FetchAsync<SampleRecordWithTypeConversion>(
+            var rows = db.Fetch<SampleRecordWithTypeConversion>(
                 @"select ""Id"", ""Name"" from ""sample"" order by ""Id""");
 
             // --- Assert
@@ -239,18 +248,18 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         }
 
         [TestMethod]
-        public async Task FetchAsyncWorksWithIntegerBasedEnumValues()
+        public void FetchWorksWithIntegerBasedEnumValues()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, 'Second')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, 'First')");
+            db.Execute(@"insert into ""sample"" values(2, 'Second')");
 
             // --- Act
-            var rows = await db.FetchAsync<SampleRecordWithEnum>(@"order by ""Id""");
+            var rows = db.Fetch<SampleRecordWithEnum>(@"order by ""Id""");
 
             // --- Assert
             rows.ShouldHaveCountOf(2);
@@ -261,18 +270,18 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         }
 
         [TestMethod]
-        public async Task FetchAsyncWorksWithNonIntegerBasedEnumValues()
+        public void FetchWorksWithNonIntegerBasedEnumValues()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, 'Second')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, 'First')");
+            db.Execute(@"insert into ""sample"" values(2, 'Second')");
 
             // --- Act
-            var rows = await db.FetchAsync<SampleRecordWithEnum>(@"order by ""Id""");
+            var rows = db.Fetch<SampleRecordWithEnum>(@"order by ""Id""");
 
             // --- Assert
             rows.ShouldHaveCountOf(2);
@@ -283,18 +292,18 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         }
 
         [TestMethod]
-        public async Task FetchAsyncWorksWithEnumStringValues()
+        public void FetchWorksWithEnumStringValues()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" varchar(20) not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values('BigInt', 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values('Binary', 'Second')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" varchar(20) not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values('BigInt', 'First')");
+            db.Execute(@"insert into ""sample"" values('Binary', 'Second')");
 
             // --- Act
-            var rows = await db.FetchAsync<SampleRecordWithEnum>(@"order by ""Id""");
+            var rows = db.Fetch<SampleRecordWithEnum>(@"order by ""Id""");
 
             // --- Assert
             rows.ShouldHaveCountOf(2);
@@ -306,33 +315,33 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
 
         [TestMethod]
         [ExpectedException(typeof(InvalidCastException))]
-        public async Task InvalidMappingRaisesAnException()
+        public void InvalidMappingRaisesAnException()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" blob not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, 'Second')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" blob not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, 'First')");
+            db.Execute(@"insert into ""sample"" values(2, 'Second')");
 
             // --- Act
-            await db.FetchAsync<SampleRecordWithEnum>(@"order by ""Id""");
+            db.Fetch<SampleRecordWithEnum>();
         }
 
         [TestMethod]
-        public async Task SourceConverterWorksAsExpected()
+        public void SourceConverterWorksAsExpected()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, '1, 2, 3, 4')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, '5, 6')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, '1, 2, 3, 4')");
+            db.Execute(@"insert into ""sample"" values(2, '5, 6')");
 
             // --- Act
-            var rows = await db.FetchAsync<SampleRecordWithList>(@"order by ""Id""");
+            var rows = db.Fetch<SampleRecordWithList>(@"order by ""Id""");
 
             // --- Assert
             rows.ShouldHaveCountOf(2);
@@ -349,18 +358,18 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         }
 
         [TestMethod]
-        public async Task UnusedSourceConverterIsSkipped()
+        public void UnusedSourceConverterIsSkipped()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, 'Second')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, 'First')");
+            db.Execute(@"insert into ""sample"" values(2, 'Second')");
 
             // --- Act
-            var rows = await db.FetchAsync<SampleRecordUnusedConverter>(@"order by ""Id""");
+            var rows = db.Fetch<SampleRecordUnusedConverter>(@"order by ""Id""");
 
             // --- Assert
             rows.ShouldHaveCountOf(2);
@@ -369,19 +378,19 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         }
 
         [TestMethod]
-        public async Task FirstAsyncWorksAsExpected()
+        public void FirstWorksAsExpected()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, 'Second')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, 'First')");
+            db.Execute(@"insert into ""sample"" values(2, 'Second')");
 
             // --- Act
-            var row1 = await db.FirstAsync<SampleRecord>(@"order by ""Id""");
-            var row2 = await db.FirstAsync<SampleRecord>(SqlExpression.New
+            var row1 = db.First<SampleRecord>(@"order by ""Id""");
+            var row2 = db.First<SampleRecord>(SqlExpression.New
                 .Select<SampleRecord>().From<SampleRecord>().OrderBy<SampleRecord>(r => r.Id));
 
             // --- Assert
@@ -392,21 +401,20 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         }
 
         [TestMethod]
-        public async Task FirstAsyncIntoWorksAsExpected()
+        public void FirstIntoWorksAsExpected()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, 'Second')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, 'First')");
+            db.Execute(@"insert into ""sample"" values(2, 'Second')");
 
             // --- Act
             var instance = new SampleRecord { Id = 3 };
-            var row1 = await db.FirstIntoAsync(instance, 
-                @"select ""Name"" from ""sample"" order by ""Id""");
-            var row2 = await db.FirstIntoAsync(instance, SqlExpression.CreateFrom(
+            var row1 = db.FirstInto(instance, @"select ""Name"" from ""sample"" order by ""Id""");
+            var row2 = db.FirstInto(instance, SqlExpression.CreateFrom(
                 @"select ""Name"" from ""sample"" order by ""Id"""));
 
             // --- Assert
@@ -417,22 +425,22 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         }
 
         [TestMethod]
-        public async Task FirstOrDefaultAsyncWorksAsExpected()
+        public void FirstOrDefaultWorksAsExpected()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, 'Second')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, 'First')");
+            db.Execute(@"insert into ""sample"" values(2, 'Second')");
 
             // --- Act
-            var row1 = await db.FirstOrDefaultAsync<SampleRecord>(@"order by ""Id""");
-            var row2 = await db.FirstOrDefaultAsync<SampleRecord>(SqlExpression.CreateFrom(
+            var row1 = db.FirstOrDefault<SampleRecord>(@"order by ""Id""");
+            var row2 = db.FirstOrDefault<SampleRecord>(SqlExpression.CreateFrom(
                 @"select * from ""sample"" order by ""Id"""));
-            var row3 = await db.FirstOrDefaultAsync<SampleRecord>(@"where ""Id"" = 3");
-            var row4 = await db.FirstOrDefaultAsync<SampleRecord>(SqlExpression.CreateFrom(
+            var row3 = db.FirstOrDefault<SampleRecord>(@"where ""Id"" = 3");
+            var row4 = db.FirstOrDefault<SampleRecord>(SqlExpression.CreateFrom(
                 @"select * from ""sample"" where ""Id"" = 3"));
 
             // --- Assert
@@ -445,25 +453,25 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         }
 
         [TestMethod]
-        public async Task FirstOrDefaultAsyncIntoWorksAsExpected()
+        public void FirstOrDefaultIntoWorksAsExpected()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, 'Second')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, 'First')");
+            db.Execute(@"insert into ""sample"" values(2, 'Second')");
 
             // --- Act
             var instance = new SampleRecord { Id = 3 };
-            var row1 = await db.FirstOrDefaultIntoAsync(instance, 
+            var row1 = db.FirstOrDefaultInto(instance, 
                 @"select ""Name"" from ""sample"" order by ""Id""");
-            var row2 = await db.FirstOrDefaultIntoAsync(instance, 
+            var row2 = db.FirstOrDefaultInto(instance, 
                 SqlExpression.CreateFrom(@"select ""Name"" from ""sample"" order by ""Id"""));
-            var row3 = await db.FirstOrDefaultIntoAsync(instance, 
+            var row3 = db.FirstOrDefaultInto(instance, 
                 @"select ""Name"" from ""sample"" where ""Id"" = 3");
-            var row4 = await db.FirstOrDefaultIntoAsync(instance, 
+            var row4 = db.FirstOrDefaultInto(instance, 
                 SqlExpression.CreateFrom(@"select ""Name"" from ""sample"" where ""Id"" = 3"));
 
             // --- Assert
@@ -476,19 +484,19 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         }
 
         [TestMethod]
-        public async Task SingleAsyncWorksAsExpected()
+        public void SingleWorksAsExpected()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, 'Second')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, 'First')");
+            db.Execute(@"insert into ""sample"" values(2, 'Second')");
 
             // --- Act
-            var row1 = await db.SingleAsync<SampleRecord>(@"where ""Id"" = 2");
-            var row2 = await db.SingleAsync<SampleRecord>(new SqlExpression(
+            var row1 = db.Single<SampleRecord>(@"where ""Id"" = 2");
+            var row2 = db.Single<SampleRecord>(new SqlExpression(
                 @"select ""Id"", ""Name"" from ""sample"" where ""Id"" = 2"));
 
             // --- Assert
@@ -500,52 +508,51 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
-        public async Task SingleAsyncRaisesExceptionWithZeroRecord()
+        public void SingleRaisesExceptionWithZeroRecord()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, 'Second')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, 'First')");
+            db.Execute(@"insert into ""sample"" values(2, 'Second')");
 
             // --- Act
-            await db.SingleAsync<SampleRecord>(@"where ""Id"" = 3");
+            db.Single<SampleRecord>(@"where ""Id"" = 3");
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
-        public async Task SingleAsyncRaisesExceptionWithMoreThanOneRecord()
+        public void SingleRaisesExceptionWithMoreThanOneRecord()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, 'Second')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, 'First')");
+            db.Execute(@"insert into ""sample"" values(2, 'Second')");
 
             // --- Act
-            await db.SingleAsync<SampleRecord>(@"where ""Id"" < 10");
+            db.Single<SampleRecord>(@"where ""Id"" < 10");
         }
 
         [TestMethod]
-        public async Task SingleIntoAsyncWorksAsExpected()
+        public void SingleIntoWorksAsExpected()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            await db.BeginTransactionAsync();
-            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            await db.CompleteTransactionAsync();
-            await db.ExecuteAsync(@"insert into ""sample"" values(1, 'First')");
-            await db.ExecuteAsync(@"insert into ""sample"" values(2, 'Second')");
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            db.CompleteTransaction();
+            db.Execute(@"insert into ""sample"" values(1, 'First')");
+            db.Execute(@"insert into ""sample"" values(2, 'Second')");
 
             // --- Act
             var instance = new SampleRecord { Id = 3 };
-            var row1 = await db.SingleIntoAsync(instance, 
-                @"select ""Name"" from ""sample"" where ""Id"" = 1");
-            var row2 = await db.SingleIntoAsync(instance, SqlExpression.CreateFrom(
+            var row1 = db.SingleInto(instance, @"select ""Name"" from ""sample"" where ""Id"" = 1");
+            var row2 = db.SingleInto(instance, SqlExpression.CreateFrom(
                 @"select ""Name"" from ""sample"" where ""Id"" = 1"));
 
             // --- Assert
