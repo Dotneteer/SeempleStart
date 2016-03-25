@@ -68,6 +68,7 @@
     <Compile Include="DataAccess\DeleteTest.cs" />
     <Compile Include="DataAccess\FetchAsyncTest.cs" />
     <Compile Include="DataAccess\FetchTest.cs" />
+    <Compile Include="DataAccess\InsertAsyncTest.cs" />
     <Compile Include="DataAccess\InsertTest.cs" />
     <Compile Include="DataAccess\PagingAsyncTest.cs" />
     <Compile Include="DataAccess\PagingTest.cs" />
@@ -75,6 +76,8 @@
     <Compile Include="DataAccess\SqlExpressionTests.cs" />
     <Compile Include="DataAccess\SqlHelperTest.cs" />
     <Compile Include="DataAccess\SingleFetchAsyncTest.cs" />
+    <Compile Include="DataAccess\TargetConverterTest.cs" />
+    <Compile Include="DataAccess\UpdateTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

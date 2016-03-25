@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Seemplest.Core.DataAccess;
 using Seemplest.Core.DataAccess.Attributes;
@@ -9,7 +10,7 @@ using SoftwareApproach.TestingExtensions;
 namespace Seemplest.FbSql.UnitTests.DataAccess
 {
     [TestClass]
-    public class InsertTest
+    public class InsertAsyncTest
     {
         const string DB_CONN = "connStr=Seemplest";
 
@@ -26,29 +27,29 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void InsertWithNullRaisesException()
+        public async Task InsertAsyncWithNullRaisesException()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            db.BeginTransaction();
-            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            db.CompleteTransaction();
-            db.Insert<SampleRecord>(null);
+            await db.BeginTransactionAsync();
+            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            await db.CompleteTransactionAsync();
+            await db.InsertAsync<SampleRecord>(null);
         }
 
         [TestMethod]
-        public void InsertWorksWithSimpleRecord()
+        public async Task InsertAsyncWorksWithSimpleRecord()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            db.BeginTransaction();
-            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
-            db.CompleteTransaction();
-            db.Insert(new SampleRecord { Id = 1, Name = "First" });
-            db.Insert(new SampleRecord { Id = 2, Name = "Second" });
+            await db.BeginTransactionAsync();
+            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name"" varchar(50))");
+            await db.CompleteTransactionAsync();
+            await db.InsertAsync(new SampleRecord { Id = 1, Name = "First" });
+            await db.InsertAsync(new SampleRecord { Id = 2, Name = "Second" });
 
             // --- Act
-            var rows = db.Fetch<SampleRecord>(@"order by ""Id""");
+            var rows = await db.FetchAsync<SampleRecord>(@"order by ""Id""");
 
             // --- Assert
             rows.ShouldHaveCountOf(2);
@@ -59,18 +60,18 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         }
 
         [TestMethod]
-        public void InsertWorksWithCalculated()
+        public async Task InsertAsyncWorksWithCalculated()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            db.BeginTransaction();
-            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name1"" varchar(50), ""Name2"" varchar(50), 
+            await db.BeginTransactionAsync();
+            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name1"" varchar(50), ""Name2"" varchar(50), 
                          ""Name3"" computed by (""Name1"" || ""Name2"") )");
-            db.CompleteTransaction();
-            db.Insert(new SampleRecordWithCalculation { Id = 1, Name1 = "1", Name2 = "2" });
+            await db.CompleteTransactionAsync();
+            await db.InsertAsync(new SampleRecordWithCalculation { Id = 1, Name1 = "1", Name2 = "2" });
 
             // --- Act
-            var rows = db.Fetch<SampleRecordWithCalculation>();
+            var rows = await db.FetchAsync<SampleRecordWithCalculation>();
 
             // --- Assert
             rows.ShouldHaveCountOf(1);
@@ -81,18 +82,18 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         }
 
         [TestMethod]
-        public void InsertWorksWithEmptyFields()
+        public async Task InsertAsyncWorksWithEmptyFields()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            db.BeginTransaction();
-            db.Execute(@"create table ""sample"" (""Id"" int, ""Name1"" varchar(50), 
+            await db.BeginTransactionAsync();
+            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int, ""Name1"" varchar(50), 
                          ""Name2"" computed by (""Name1"") )");
-            db.CompleteTransaction();
-            db.Insert(new SampleRecordWithNulls());
+            await db.CompleteTransactionAsync();
+            await db.InsertAsync(new SampleRecordWithNulls());
 
             // --- Act
-            var rows = db.Fetch<SampleRecordWithNulls>();
+            var rows = await db.FetchAsync<SampleRecordWithNulls>();
 
             // --- Assert
             rows.ShouldHaveCountOf(1);
@@ -102,18 +103,18 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
         }
 
         [TestMethod]
-        public void InsertWorksWithDate()
+        public async Task InsertAsyncWorksWithDate()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN);
-            db.BeginTransaction();
-            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Date"" timestamp not null)");
-            db.CompleteTransaction();
-            db.Insert(new SampleRecordWithDate { Id = 1, Date = DateTime.MinValue });
-            db.Insert(new SampleRecordWithDate { Id = 2, Date = DateTime.Now });
+            await db.BeginTransactionAsync();
+            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Date"" timestamp not null)");
+            await db.CompleteTransactionAsync();
+            await db.InsertAsync(new SampleRecordWithDate { Id = 1, Date = DateTime.MinValue });
+            await db.InsertAsync(new SampleRecordWithDate { Id = 2, Date = DateTime.Now });
 
             // --- Act
-            var rows = db.Fetch<SampleRecordWithDate>(@"order by ""Id""");
+            var rows = await db.FetchAsync<SampleRecordWithDate>(@"order by ""Id""");
 
             // --- Assert
             rows.ShouldHaveCountOf(2);
@@ -123,13 +124,13 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void InsertFailsInReadOnlyMode()
+        public async Task InsertAsyncFailsInReadOnlyMode()
         {
             // --- Arrange
             var db = new FbDatabase(DB_CONN, SqlOperationMode.ReadOnly);
 
             // --- Act
-            db.Insert(new SampleRecord { Id = 1, Name = "First" });
+            await db.InsertAsync(new SampleRecord { Id = 1, Name = "First" });
         }
 
         [TableName("sample")]
@@ -149,46 +150,6 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
             {
                 get { return _name; }
                 set { _name = Modify(value, "Name"); }
-            }
-        }
-
-        [TableName("sample")]
-        class SampleRecordWithIdentity : DataRecord<SampleRecordWithIdentity>
-        {
-            [AutoGenerated]
-            public int Id { get; set; }
-            // ReSharper disable UnusedAutoPropertyAccessor.Local
-            public string Name { get; set; }
-            // ReSharper restore UnusedAutoPropertyAccessor.Local
-        }
-
-        [TableName("sample")]
-        class SampleRecordWithVersion : DataRecord<SampleRecordWithVersion>
-        {
-            private int _id;
-            private string _name;
-            private byte[] _version;
-
-            [PrimaryKey]
-            public int Id
-            {
-                get { return _id; }
-                set { _id = Modify(value, "Id"); }
-            }
-
-            public string Name
-            {
-                get { return _name; }
-                set { _name = Modify(value, "Name"); }
-            }
-
-            [VersionColumn]
-            public byte[] Version
-            {
-                get { return _version; }
-                // ReSharper disable UnusedMember.Local
-                set { _version = Modify(value, "Version"); }
-                // ReSharper restore UnusedMember.Local
             }
         }
 

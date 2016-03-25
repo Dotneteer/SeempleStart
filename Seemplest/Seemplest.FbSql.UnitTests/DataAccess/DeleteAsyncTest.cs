@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using FirebirdSql.Data.FirebirdClient;
@@ -28,7 +27,6 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
                   execute statement 'drop table ""sample"";';
                   END");
         }
-
 
         [TestMethod]
         public void TestReturning()
