@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
+using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Seemplest.Core.DataAccess;
 using Seemplest.Core.DataAccess.Attributes;
@@ -25,6 +27,29 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
                   if (exists(select 1 from rdb$relations where rdb$relation_name = 'sample')) then 
                   execute statement 'drop table ""sample"";';
                   END");
+        }
+
+
+        [TestMethod]
+        public void TestReturning()
+        {
+            var db = new FbDatabase(DB_CONN);
+            db.BeginTransaction();
+            db.Execute(@"create table ""sample"" (""Id"" int not null, ""Name"" timestamp)");
+            db.CompleteTransaction();
+            using (
+                var conn =
+                    new FbConnection(
+                        @"User=SYSDBA;Password=masterkey;DataSource=localhost;Database=C:\Temp\SeemplestTest.KSFDB;"))
+            {
+                conn.Open();
+                var cmd = new FbCommand(
+                    @"execute block returns (""Id"" int, ""Name"" timestamp) as begin insert into ""sample"" (""Id"", ""Name"") values(1, '02/29/2016 03:20:22.443') returning ""Id"", ""Name"" into :""Id"", :""Name""; suspend; end", conn);
+                var reader = cmd.ExecuteReader();
+                var row = reader.Read();
+                row.ShouldBeTrue();
+            }
+            //db.Insert(new SampleRecord { Id = 1, Name = "First" });
         }
 
         [TestMethod]

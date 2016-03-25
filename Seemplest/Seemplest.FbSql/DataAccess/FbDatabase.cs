@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -2013,10 +2014,12 @@ namespace Seemplest.FbSql.DataAccess
         /// </summary>
         /// <typeparam name="T">Record type</typeparam>
         /// <param name="record">record instance</param>
+        /// <param name="insertIdentity">True shows that identity value is inserted explicitly</param>
+        /// <param name="withGet">True indicates that the newly inserted record should be read back</param>
         /// <remarks>The insert and get operations are atomic.</remarks>
-        public void Insert<T>(T record)
+        public void Insert<T>(T record, bool insertIdentity = false, bool withGet = true)
         {
-            var task = InsertAsync(record);
+            var task = InsertAsync(record, insertIdentity, withGet);
             task.WaitAndUnwrapException();
         }
 
@@ -2025,9 +2028,12 @@ namespace Seemplest.FbSql.DataAccess
         /// </summary>
         /// <typeparam name="T">Record type</typeparam>
         /// <param name="record">record instance</param>
+        /// <param name="insertIdentity">True shows that identity value is inserted explicitly</param>
+        /// <param name="withGet">True indicates that the newly inserted record should be read back</param>
         /// <param name="token">Optional cancellation token</param>
         /// <remarks>The insert and get operations are atomic.</remarks>
-        public async Task InsertAsync<T>(T record, CancellationToken token = default(CancellationToken))
+        public async Task InsertAsync<T>(T record, bool insertIdentity = false, bool withGet = true,
+            CancellationToken token = default(CancellationToken))
         {
             // --- Read-only mode prevents this operation to run
             if (OperationMode == SqlOperationMode.ReadOnly)
@@ -2055,15 +2061,33 @@ namespace Seemplest.FbSql.DataAccess
                 try
                 {
                     // --- Create and excute the insert command
+                    var shouldGetBack = withGet || IsTracked();
                     using (var cmd = CreateCommand(Connection, ""))
                     {
                         var tableName = EscapeSqlTableName(metadata.TableName);
-                        PrepareInsertCommand(cmd, tableName,
+                        PrepareInsertCommand(metadata, cmd, shouldGetBack, tableName,
                             columnNames, columnValues, rawValues);
 
-                        // --- Read back the inserted record with the OUTPUT clause
-                        await cmd.ExecuteNonQueryAsync(token);
-                        OnExecutedCommand(cmd);
+                        // --- Read back the inserted record with the RETURNING clause
+                        if (shouldGetBack)
+                        {
+                            IDataReader r = await cmd.ExecuteReaderAsync(token);
+                            OnExecutedCommand(cmd);
+                            using (r)
+                            {
+                                var recordFactory = DataReaderMappingManager.GetMapperFor(r, record);
+                                r.Read();
+                                recordFactory(r, record);
+                            }
+                        }
+                        else
+                        {
+                            await cmd.ExecuteNonQueryAsync(token);
+                            OnExecutedCommand(cmd);
+                        }
+
+                        // --- Track insertion
+                        TrackInsert(record);
                     }
                 }
                 finally
@@ -2086,7 +2110,7 @@ namespace Seemplest.FbSql.DataAccess
         /// <remarks>The record must have a primary key</remarks>
         public void Update<T>(T record)
         {
-            var task = UpdateInternalAsync(record, UpdateMode.Simple);
+            var task = UpdateInternalAsync(record, IsTracked() ? UpdateMode.GetCurrent : UpdateMode.Simple);
             task.WaitAndUnwrapException();
         }
 
@@ -2099,7 +2123,7 @@ namespace Seemplest.FbSql.DataAccess
         /// <remarks>The record must have a primary key</remarks>
         public async Task UpdateAsync<T>(T record, CancellationToken token = default(CancellationToken))
         {
-            await UpdateInternalAsync(record, UpdateMode.Simple, token);
+            await UpdateInternalAsync(record, IsTracked() ? UpdateMode.GetCurrent : UpdateMode.Simple, token);
         }
 
         /// <summary>
@@ -2158,7 +2182,6 @@ namespace Seemplest.FbSql.DataAccess
             return outRecord;
         }
 
-        // TODO: Check OUTPUT TO clause with Firebird
         /// <summary>
         /// Implements the update operation
         /// </summary>
@@ -2271,6 +2294,7 @@ namespace Seemplest.FbSql.DataAccess
                     var resultCount = 0;
 
                     // --- Execute the command
+                    var toTrack = record;
                     using (var cmd = CreateCommand(Connection, sql.ToString(), rawValues.ToArray()))
                     {
                         if (mode == UpdateMode.Simple)
@@ -2290,6 +2314,7 @@ namespace Seemplest.FbSql.DataAccess
                                     resultCount = 1;
                                     outRecord = Activator.CreateInstance<T>();
                                     recordFactory(r, outRecord);
+                                    if (mode == UpdateMode.GetCurrent) toTrack = outRecord;
                                 }
                             }
                         }
@@ -2302,6 +2327,9 @@ namespace Seemplest.FbSql.DataAccess
                             $"A Concurrency update occurred in table '{tableName}' for primary key " +
                             $"value(s) = '{string.Join(", ", metadata.PrimaryKeyColumns.Select(col => col.PropertyInfo.GetValue(record)).ToArray())}' and version = '{TypeConversionHelper.ByteArrayToString((byte[]) versionColumn.PropertyInfo.GetValue(record))}'");
                     }
+
+                    // --- Track the record update
+                    TrackUpdate(toTrack);
                 }
                 finally
                 {
@@ -2323,7 +2351,7 @@ namespace Seemplest.FbSql.DataAccess
         /// <param name="record">Record to delete</param>
         public bool Delete<T>(T record)
         {
-            var task = DeleteInternalAsync(record);
+            var task = DeleteInternalAsync(record, IsTracked());
             task.WaitAndUnwrapException();
             return task.Result.Item1;
         }
@@ -2336,7 +2364,33 @@ namespace Seemplest.FbSql.DataAccess
         /// <param name="token">Optional cancellation token</param>
         public async Task<bool> DeleteAsync<T>(T record, CancellationToken token = default(CancellationToken))
         {
-            return (await DeleteInternalAsync(record, token)).Item1;
+            return (await DeleteInternalAsync(record, IsTracked(), token)).Item1;
+        }
+
+        /// <summary>
+        /// Deletes the specified record from the database and retrieves
+        /// the record before the deletion.
+        /// </summary>
+        /// <typeparam name="T">Reocrd type</typeparam>
+        /// <param name="record">Record to delete</param>
+        public T DeleteAndGetPrevious<T>(T record)
+        {
+            var task = DeleteInternalAsync(record, true);
+            task.WaitAndUnwrapException();
+            return task.Result.Item2;
+        }
+
+        /// <summary>
+        /// Deletes the specified record from the database and retrieves -- async
+        /// the record before the deletion.
+        /// </summary>
+        /// <typeparam name="T">Reocrd type</typeparam>
+        /// <param name="record">Record to delete</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<T> DeleteAndGetPreviousAsync<T>(T record, CancellationToken token = default(CancellationToken))
+        {
+            var result = await DeleteInternalAsync(record, true, token);
+            return result.Item2;
         }
 
         /// <summary>
@@ -2402,7 +2456,72 @@ namespace Seemplest.FbSql.DataAccess
         public async Task<bool> DeleteByIdAsync<T>(IEnumerable<object> pkValues,
             CancellationToken token = default(CancellationToken))
         {
-            return (await DeleteInternalAsync<T>(pkValues, token)).Item1;
+            return (await DeleteInternalAsync<T>(pkValues, IsTracked(), token)).Item1;
+        }
+
+        /// <summary>
+        /// Deletes the specified record from the database
+        /// </summary>
+        /// <typeparam name="T">Reocrd type</typeparam>
+        /// <param name="pkFirst">First element of the primary key</param>
+        /// <param name="pkOthers">Other elements of the primary key</param>
+        public T DeleteByIdAndGetPrevious<T>(object pkFirst, params object[] pkOthers)
+        {
+            var pkValues = new object[pkOthers.Length + 1];
+            pkValues[0] = pkFirst;
+            for (var i = 0; i < pkOthers.Length; i++) pkValues[i + 1] = pkOthers[i];
+            return DeleteByIdAndGetPrevious<T>(pkValues);
+        }
+
+        /// <summary>
+        /// Deletes the specified record from the database -- async
+        /// </summary>
+        /// <typeparam name="T">Reocrd type</typeparam>
+        /// <param name="pkFirst">First element of the primary key</param>
+        /// <param name="pkOthers">Other elements of the primary key</param>
+        public async Task<T> DeleteByIdAndGetPreviousAsync<T>(object pkFirst, params object[] pkOthers)
+        {
+            return await DeleteByIdAndGetPreviousAsync<T>(default(CancellationToken), pkFirst, pkOthers);
+        }
+
+        /// <summary>
+        /// Deletes the specified record from the database -- async
+        /// </summary>
+        /// <typeparam name="T">Reocrd type</typeparam>
+        /// <param name="token">Cancellation token</param>
+        /// <param name="pkFirst">First element of the primary key</param>
+        /// <param name="pkOthers">Other elements of the primary key</param>
+        public async Task<T> DeleteByIdAndGetPreviousAsync<T>(CancellationToken token, object pkFirst, params object[] pkOthers)
+        {
+            var pkValues = new object[pkOthers.Length + 1];
+            pkValues[0] = pkFirst;
+            for (var i = 0; i < pkOthers.Length; i++) pkValues[i + 1] = pkOthers[i];
+            return await DeleteByIdAndGetPreviousAsync<T>(pkValues, token);
+        }
+
+        /// <summary>
+        /// Deletes a record from the database using its primary key values
+        /// </summary>
+        /// <typeparam name="T">Reocrd type</typeparam>
+        /// <param name="pkValues">Collection of primary key values</param>
+        public T DeleteByIdAndGetPrevious<T>(IEnumerable<object> pkValues)
+        {
+            var task = DeleteByIdAndGetPreviousAsync<T>(pkValues);
+            task.WaitAndUnwrapException();
+            return task.Result;
+        }
+
+        /// <summary>
+        /// Deletes a record from the database using its primary key values
+        /// </summary>
+        /// <typeparam name="T">Reocrd type</typeparam>
+        /// <param name="pkValues">Collection of primary key values</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<T> DeleteByIdAndGetPreviousAsync<T>(IEnumerable<object> pkValues,
+            CancellationToken token = default(CancellationToken))
+        {
+            var result = await DeleteInternalAsync<T>(pkValues, true, token);
+            return result.Item2;
         }
 
         /// <summary>
@@ -2410,9 +2529,10 @@ namespace Seemplest.FbSql.DataAccess
         /// </summary>
         /// <typeparam name="T">Record type</typeparam>
         /// <param name="pkValues">Collection of primary key values</param>
+        /// <param name="withGet">Should get the previous record?</param>
         /// <param name="token">Optional cancellation token</param>
         /// <remarks>The record must have a primary key</remarks>
-        private async Task<Tuple<bool, T>> DeleteInternalAsync<T>(IEnumerable<object> pkValues,
+        private async Task<Tuple<bool, T>> DeleteInternalAsync<T>(IEnumerable<object> pkValues, bool withGet,
             CancellationToken token = default(CancellationToken))
         {
             // --- Read-only mode prevents this operation to run
@@ -2463,15 +2583,56 @@ namespace Seemplest.FbSql.DataAccess
                     rawValues.Add(pkValue);
                 }
 
+                // --- Prepare the RETURNING clause
+                var shouldGetBack = withGet || IsTracked();
+                if (shouldGetBack)
+                {
+                    sql.Append(" returning ");
+                    var needComma = false;
+                    foreach (var column in metadata.DataColumns)
+                    {
+                        if (needComma)
+                        {
+                            sql.Append(", ");
+                        }
+                        sql.Append(EscapeSqlIdentifier(column.Name));
+                        needComma = true;
+                    }
+                }
+
                 await OpenSharedConnectionAsync(token);
                 try
                 {
                     // --- Execute the command
                     using (var cmd = CreateCommand(Connection, sql.ToString(), rawValues.ToArray()))
                     {
-                        var rows = await cmd.ExecuteNonQueryAsync(token);
-                        OnExecutedCommand(cmd);
-                        return new Tuple<bool, T>(rows > 0, default(T));
+                        if (!shouldGetBack)
+                        {
+                            var rows = await cmd.ExecuteNonQueryAsync(token);
+                            OnExecutedCommand(cmd);
+                            return new Tuple<bool, T>(rows > 0, default(T));
+                        }
+                        else
+                        {
+                            IDataReader r = await cmd.ExecuteReaderAsync(token);
+                            OnExecutedCommand(cmd);
+                            using (r)
+                            {
+                                var tempRecord = Activator.CreateInstance<T>();
+                                var recordFactory = DataReaderMappingManager.GetMapperFor(r, tempRecord);
+                                if (r.Read())
+                                {
+                                    var prevRecord = Activator.CreateInstance<T>();
+                                    recordFactory(r, prevRecord);
+                                    TrackDelete(prevRecord);
+                                    return new Tuple<bool, T>(true, prevRecord);
+                                }
+                                else
+                                {
+                                    return new Tuple<bool, T>(false, default(T));
+                                }
+                            }
+                        }
                     }
                 }
                 finally
@@ -2491,9 +2652,10 @@ namespace Seemplest.FbSql.DataAccess
         /// </summary>
         /// <typeparam name="T">Record type</typeparam>
         /// <param name="record">Record instance</param>
+        /// <param name="withGet">Should get the previous record?</param>
         /// <param name="token">Optional cancellation token</param>
         /// <remarks>The record must have a primary key</remarks>
-        private async Task<Tuple<bool, T>> DeleteInternalAsync<T>(T record,
+        private async Task<Tuple<bool, T>> DeleteInternalAsync<T>(T record, bool withGet,
             CancellationToken token = default(CancellationToken))
         {
             // ReSharper disable CompareNonConstrainedGenericWithNull
@@ -2502,7 +2664,7 @@ namespace Seemplest.FbSql.DataAccess
             {
                 throw new ArgumentNullException(nameof(record));
             }
-            return await DeleteInternalAsync<T>(GetPrimaryKeyValue(record), token);
+            return await DeleteInternalAsync<T>(GetPrimaryKeyValue(record), withGet, token);
         }
 
         #endregion
@@ -2537,6 +2699,74 @@ namespace Seemplest.FbSql.DataAccess
         {
             var metadata = RecordMetadataManager.GetMetadata<T>();
             return EscapeSqlTableName(metadata.TableName);
+        }
+
+        #endregion
+
+        #region Change tracking
+
+        /// <summary>
+        /// Gets the flag indicating if this database is tracked for modifications
+        /// </summary>
+        /// <returns></returns>
+        public bool IsTracked()
+        {
+            return (int)OperationMode >= (int)SqlOperationMode.Tracked;
+        }
+
+        /// <summary>
+        /// Attaches the specified record to the tracking context
+        /// </summary>
+        /// <typeparam name="T">Record type</typeparam>
+        /// <param name="record">Data record instance</param>
+        public void AttachToTrackingContext<T>(T record)
+        {
+            TrackRecord(record, ChangedRecordState.Attached);
+        }
+
+        /// <summary>
+        /// Tracks the insertion of the specified record
+        /// </summary>
+        /// <typeparam name="T">Record type</typeparam>
+        /// <param name="record">Data record instance</param>
+        public void TrackInsert<T>(T record)
+        {
+            TrackRecord(record, ChangedRecordState.Inserted);
+        }
+
+        /// <summary>
+        /// Tracks the modification of the specified record
+        /// </summary>
+        /// <typeparam name="T">Record type</typeparam>
+        /// <param name="record">Data record instance</param>
+        public void TrackUpdate<T>(T record)
+        {
+            TrackRecord(record, ChangedRecordState.Updated);
+        }
+
+        /// <summary>
+        /// Tracks the deletion of the specified record
+        /// </summary>
+        /// <typeparam name="T">Record type</typeparam>
+        /// <param name="record">Data record instance</param>
+        public void TrackDelete<T>(T record)
+        {
+            TrackRecord(record, ChangedRecordState.Deleted);
+        }
+
+        /// <summary>
+        /// Tracks the specified record with the given state type
+        /// </summary>
+        /// <typeparam name="T">Record type</typeparam>
+        /// <param name="record">Data record instance</param>
+        /// <param name="state">State type</param>
+        private void TrackRecord<T>(T record, ChangedRecordState state)
+        {
+            if (!IsTracked()) return;
+            var dataRecord = record as IDataRecord;
+            // ReSharper disable PossibleNullReferenceException
+            _changes.Add(new Tuple<IDataRecord, ChangedRecordState>(dataRecord.Clone(), state));
+            // ReSharper restore PossibleNullReferenceException
         }
 
         #endregion
@@ -2584,19 +2814,120 @@ namespace Seemplest.FbSql.DataAccess
         /// <summary>
         /// Prepares the specified SQL command for insert operation
         /// </summary>
+        /// <param name="metadata">Record metadata</param>
         /// <param name="cmd">SQL command instance</param>
+        /// <param name="useOutput">Should the output of the INSERT statement used?</param>
         /// <param name="tableName">Name of the table to insert into</param>
         /// <param name="columnNames">Column names</param>
         /// <param name="columnValues">Column parameter names</param>
         /// <param name="rawValues">Column values</param>
-        private void PrepareInsertCommand(FbCommand cmd, string tableName, List<string> columnNames, List<string> columnValues, List<object> rawValues)
+        private void PrepareInsertCommand(DataRecordDescriptor metadata, FbCommand cmd,
+            bool useOutput, string tableName, List<string> columnNames, List<string> columnValues, List<object> rawValues)
         {
             var sql = new StringBuilder();
             sql.Append(columnNames.Count > 0
                 ? $"insert into {tableName} ({string.Join(", ", columnNames.ToArray())}) values ({string.Join(", ", columnValues.ToArray())})"
                 : $"insert into {tableName} default values");
+
+            // --- Retrieve output if required
+            if (useOutput)
+            {
+                // --- Create block prefix 
+                var prefix = new StringBuilder(
+                    "execute block returns (");
+                var needComma = false;
+                foreach (var column in metadata.DataColumns)
+                {
+                    if (needComma)
+                    {
+                        prefix.Append(", ");
+                    }
+                    prefix.AppendFormat("{0} {1}", EscapeSqlIdentifier(column.Name), ClrToFbTypeName(column.ClrType));
+                    needComma = true;
+                }
+                prefix.Append(") as begin ");
+
+                sql.Append(" returning ");
+                needComma = false;
+                foreach (var column in metadata.DataColumns)
+                {
+                    if (needComma)
+                    {
+                        sql.Append(", ");
+                    }
+                    sql.Append(EscapeSqlIdentifier(column.Name));
+                    needComma = true;
+                }
+                sql.Append(" into ");
+                needComma = false;
+                foreach (var column in metadata.DataColumns)
+                {
+                    if (needComma)
+                    {
+                        sql.Append(", ");
+                    }
+                    sql.AppendFormat(":{0}", EscapeSqlIdentifier(column.Name));
+                    needComma = true;
+                }
+
+                sql = new StringBuilder(prefix + sql.ToString());
+                sql.Append("; suspend; end");
+            }
+
             cmd.CommandText = sql.ToString();
             rawValues.ForEach(par => AddParam(cmd, par));
+        }
+
+        /// <summary>
+        /// Converts CLR types to Firebird data type names
+        /// </summary>
+        /// <param name="clrType"></param>
+        /// <returns></returns>
+        private static string ClrToFbTypeName(Type clrType)
+        {
+            if (clrType == typeof (bool)
+                || clrType == typeof (byte)
+                || clrType == typeof (sbyte)
+                || clrType == typeof (short)
+                || clrType == typeof (ushort)
+                || clrType == typeof (int)
+                )
+            {
+                return "int";
+            }
+            if (clrType == typeof(uint)
+                || clrType == typeof(long)
+                || clrType == typeof(ulong)
+                )
+            {
+                return "bigint";
+            }
+
+            if (clrType == typeof(decimal))
+            {
+                return "decimal(18, 18)";
+            }
+
+            if (clrType == typeof(float)
+                || clrType == typeof(double)
+                )
+            {
+                return "double precision";
+            }
+
+            if (clrType == typeof(char))
+            {
+                return "char(1)";
+            }
+
+            if (clrType == typeof(DateTime)
+                || clrType == typeof(DateTimeOffset)
+                )
+            {
+                return "timestamp";
+            }
+
+            return "varchar(10900)";
         }
 
         /// <summary>
@@ -2684,7 +3015,6 @@ namespace Seemplest.FbSql.DataAccess
             LastArgs = (from FbParameter parameter in command.Parameters select parameter.Value).ToArray();
         }
 
-        // TODO: Check wether this method is required with Firebird
         /// <summary>
         /// Fixes an SQL DateTime value to the acceptable minimum value
         /// </summary>
@@ -2725,12 +3055,17 @@ namespace Seemplest.FbSql.DataAccess
             {
                 throw new InvalidOperationException("Unable to parse SQL statement for paged query");
             }
-            sqlSelectRemoved = s_RxOrderBy.Replace(sqlSelectRemoved, "");
 
             // --- Build the SQL for the actual final result
+            sqlSelectRemoved = s_RxOrderBy.Replace(sqlSelectRemoved, "");
+            if (s_RxDistinct.IsMatch(sqlSelectRemoved))
+            {
+                sqlSelectRemoved = "paging_inner.* from (select " + sqlSelectRemoved + ") paging_inner";
+            }
             sqlPage =
-                $"select first @{args.Length} skip @{args.Length + 1} {sqlSelectRemoved}";
-            args = args.Concat(new object[] { take, skip }).ToArray();
+                $"select * from (select row_number() over ({sqlOrderBy ?? "order by (select null)"}) row_number, {sqlSelectRemoved}) " +
+                $"paged_select where row_number>@{args.Length} AND row_number<=@{args.Length + 1}";
+            args = args.Concat(new object[] { skip, skip + take }).ToArray();
         }
 
         /// <summary>
@@ -2781,7 +3116,7 @@ namespace Seemplest.FbSql.DataAccess
             if (s_RxSelect.IsMatch(sql)) return sql;
             var pd = RecordMetadataManager.GetMetadata<T>();
             var tableName = EscapeSqlTableName(pd.TableName);
-            var cols = string.Join(", ", pd.DataColumns.Select(dc => EscapeSqlIdentifier(dc.ColumnName)).ToArray());
+            var cols = string.Join(", ", pd.DataColumns.Select(dc => dc.ColumnName).ToArray());
             sql = !s_RxFrom.IsMatch(sql)
                 ? $"select {cols} from {tableName} {sql}"
                 : $"select {cols} {sql}";

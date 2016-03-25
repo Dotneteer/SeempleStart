@@ -439,9 +439,9 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
             var row1 = db.FirstOrDefault<SampleRecord>(@"order by ""Id""");
             var row2 = db.FirstOrDefault<SampleRecord>(SqlExpression.CreateFrom(
                 @"select * from ""sample"" order by ""Id"""));
-            var row3 = db.FirstOrDefault<SampleRecord>(@"where ""Id"" = 3");
+            var row3 = db.FirstOrDefault<SampleRecord>(@"where ""Id"" = @0", 3);
             var row4 = db.FirstOrDefault<SampleRecord>(SqlExpression.CreateFrom(
-                @"select * from ""sample"" where ""Id"" = 3"));
+                @"select * from ""sample"" where ""Id"" = @0", 3));
 
             // --- Assert
             row1.Id.ShouldEqual(1);
