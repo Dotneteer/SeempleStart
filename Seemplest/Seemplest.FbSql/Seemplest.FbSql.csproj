@@ -61,6 +61,7 @@
     <Compile Include="DataAccess\DatabaseExceptionHelper.cs" />
     <Compile Include="DataAccess\DefaultSqlParameterMapper.cs" />
     <Compile Include="DataAccess\FbCommandEventArgs.cs" />
+    <Compile Include="DataAccess\FbDataAccessOperationBase.cs" />
     <Compile Include="DataAccess\FbDatabase.cs" />
     <Compile Include="DataAccess\ISqlParameterMapper.cs" />
     <Compile Include="DataAccess\SqlExpression.cs" />

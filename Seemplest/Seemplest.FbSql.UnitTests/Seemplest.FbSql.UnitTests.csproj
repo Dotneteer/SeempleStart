@@ -66,6 +66,9 @@
     <Compile Include="DataAccess\DefaultSqlParameterMapperTest.cs" />
     <Compile Include="DataAccess\DeleteAsyncTest.cs" />
     <Compile Include="DataAccess\DeleteTest.cs" />
+    <Compile Include="DataAccess\FbDataAccessOperationBaseAsyncTest.cs" />
+    <Compile Include="DataAccess\FbDataAccessOperationBaseTest.cs" />
+    <Compile Include="DataAccess\FbDatabaseTest.cs" />
     <Compile Include="DataAccess\FetchAsyncTest.cs" />
     <Compile Include="DataAccess\FetchTest.cs" />
     <Compile Include="DataAccess\InsertAsyncTest.cs" />
@@ -77,6 +80,7 @@
     <Compile Include="DataAccess\SqlHelperTest.cs" />
     <Compile Include="DataAccess\SingleFetchAsyncTest.cs" />
     <Compile Include="DataAccess\TargetConverterTest.cs" />
+    <Compile Include="DataAccess\UpdateAsyncTest.cs" />
     <Compile Include="DataAccess\UpdateTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
