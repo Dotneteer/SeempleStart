@@ -105,7 +105,7 @@ namespace SeemplestBlocks.UnitTests.AppConfig
         public void ConfigurationIsRefreshedAfterRetention()
         {
             // --- Arrange
-            MsSqlConfigurationHandler.Reset(TimeSpan.FromMilliseconds(100));
+            MsSqlConfigurationHandler.Reset(TimeSpan.FromMilliseconds(200));
             var handler = new MsSqlConfigurationHandler();
 
             // --- Act
@@ -116,10 +116,10 @@ namespace SeemplestBlocks.UnitTests.AppConfig
             handler.SetConfigurationValue("Category1", "Key1", "New");
             handler.GetConfigurationValue("Category1", "Key1", out value2);
             var refreshTime2 = MsSqlConfigurationHandler.LastRefreshTime;
-            Thread.Sleep(100);
+            Thread.Sleep(200);
             string value3;
             handler.GetConfigurationValue("Category1", "Key1", out value3);
-            Thread.Sleep(100);
+            Thread.Sleep(200);
             handler.GetConfigurationValue("Category1", "Key1", out value3);
             var refreshTime3 = MsSqlConfigurationHandler.LastRefreshTime;
 
