@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using Seemplest.Core.Exceptions;
 
 namespace Seemplest.Core.DataAccess.DataRecords
@@ -84,7 +85,7 @@ namespace Seemplest.Core.DataAccess.DataRecords
         /// <param name="value">New column value</param>
         /// <param name="columnName">Modified column's name</param>
         /// <returns></returns>
-        protected T Modify<T>(T value, string columnName)
+        protected T Modify<T>(T value, [CallerMemberName] string columnName = null)
         {
             if (_isLoaded)
             {

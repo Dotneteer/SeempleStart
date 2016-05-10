@@ -155,22 +155,18 @@ namespace Seemplest.MsSql.DataAccess
             if (TransactionDepth > 0)
             {
                 _transactionCancelled = true;
-                var task = CleanupTransactionAsync();
-                task.WaitAndUnwrapException();
+                CleanupTransaction();
             }
 
             // --- Dispose the connection object
-            if (Connection != null) Connection.Dispose();
+            Connection?.Dispose();
             if (!IsTracked()) return;
 
             // --- Manage tracking event
             var trackingEvent = new TrackingInfoEventArgs(CollectTrackingInfo());
             _transactionLogIndexes.Clear();
             _changes.Clear();
-            if (TrackingCompleted != null)
-            {
-                TrackingCompleted(this, trackingEvent);
-            }
+            TrackingCompleted?.Invoke(this, trackingEvent);
             if (trackingEvent.TrackingException != null)
             {
                 throw new TrackingAbortedException(trackingEvent.TrackingException);
@@ -3236,6 +3232,25 @@ namespace Seemplest.MsSql.DataAccess
             Transaction.Dispose();
             Transaction = null;
             await CloseSharedConnectionAsync(token);
+        }
+
+        /// <summary>
+        /// Internal helper to cleanup transaction stuff -- async
+        /// </summary>
+        void CleanupTransaction()
+        {
+            OnEndTransaction();
+            if (_transactionCancelled)
+            {
+                Transaction.Rollback();
+            }
+            else
+            {
+                Transaction.Commit();
+            }
+            Transaction.Dispose();
+            Transaction = null;
+            CloseSharedConnection();
         }
 
         /// <summary>
