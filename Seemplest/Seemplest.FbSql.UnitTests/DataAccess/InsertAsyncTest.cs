@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Seemplest.Core.DataAccess;
 using Seemplest.Core.DataAccess.Attributes;
@@ -133,6 +134,95 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
             await db.InsertAsync(new SampleRecord { Id = 1, Name = "First" });
         }
 
+        [TestMethod]
+        public async Task InsertAsyncWorksWithDefaultWideRecord()
+        {
+            // --- Arrange
+            var db = new FbDatabase(DB_CONN);
+            await db.BeginTransactionAsync();
+            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name1"" varchar(50), ""Name2"" varchar(50), 
+                         ""Name3"" varchar(50), ""Name4"" varchar(50), ""Name5"" varchar(50),
+                         ""Name6"" varchar(50), ""Name7"" varchar(50))");
+            await db.CompleteTransactionAsync();
+            await db.InsertAsync(new WideSampleRecord { Id = 1, Name1 = "1", Name2 = "2" });
+
+            // --- Act
+            var rows = await db.FetchAsync<WideSampleRecord>();
+
+            // --- Assert
+            rows.ShouldHaveCountOf(1);
+            rows[0].Id.ShouldEqual(1);
+            rows[0].Name1.ShouldEqual("1");
+            rows[0].Name2.ShouldEqual("2");
+        }
+
+        [TestMethod]
+        public async Task InsertAsyncWorksWithWideRecord()
+        {
+            // --- Arrange
+            var db = new FbDatabase(DB_CONN);
+            await db.BeginTransactionAsync();
+            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name1"" varchar(50), ""Name2"" varchar(50), 
+                         ""Name3"" varchar(50), ""Name4"" varchar(50), ""Name5"" varchar(50),
+                         ""Name6"" varchar(50), ""Name7"" varchar(50))");
+            await db.CompleteTransactionAsync();
+            await db.InsertAsync(new WideSampleRecord { Id = 1, Name1 = "1", Name2 = "2" });
+
+            // --- Act
+            var rows = await db.FetchAsync<WideSampleRecord>();
+
+            // --- Assert
+            rows.ShouldHaveCountOf(1);
+            rows[0].Id.ShouldEqual(1);
+            rows[0].Name1.ShouldEqual("1");
+            rows[0].Name2.ShouldEqual("2");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FbException))]
+        public async Task InsertAsyncFailsWithWideBlobRecord()
+        {
+            // --- Arrange
+            var db = new FbDatabase(DB_CONN);
+            await db.BeginTransactionAsync();
+            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name1"" varchar(50), ""Name2"" varchar(50), 
+                         ""Name3"" varchar(50), ""Name4"" varchar(50), ""Name5"" varchar(50),
+                         ""Name6"" varchar(50), ""Name7"" varchar(50))");
+            await db.CompleteTransactionAsync();
+            await db.InsertAsync(new WideBlobSampleRecord { Id = 1, Name1 = "1", Name2 = "2" });
+
+            // --- Act
+            var rows = await db.FetchAsync<WideBlobSampleRecord>();
+
+            // --- Assert
+            rows.ShouldHaveCountOf(1);
+            rows[0].Id.ShouldEqual(1);
+            rows[0].Name1.ShouldEqual("1");
+            rows[0].Name2.ShouldEqual("2");
+        }
+
+        [TestMethod]
+        public async Task InsertAsyncWorksWithControlledWideRecord()
+        {
+            // --- Arrange
+            var db = new FbDatabase(DB_CONN);
+            await db.BeginTransactionAsync();
+            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int not null, ""Name1"" varchar(50), ""Name2"" varchar(50), 
+                         ""Name3"" varchar(50), ""Name4"" varchar(50), ""Name5"" varchar(50),
+                         ""Name6"" varchar(50), ""Name7"" varchar(50))");
+            await db.CompleteTransactionAsync();
+            await db.InsertAsync(new WideControlledSampleRecord() { Id = 1, Name1 = "1", Name2 = "2" });
+
+            // --- Act
+            var rows = await db.FetchAsync<WideControlledSampleRecord>();
+
+            // --- Assert
+            rows.ShouldHaveCountOf(1);
+            rows[0].Id.ShouldEqual(1);
+            rows[0].Name1.ShouldEqual("1");
+            rows[0].Name2.ShouldEqual("2");
+        }
+
         [TableName("sample")]
         class SampleRecord : DataRecord<SampleRecord>
         {
@@ -190,6 +280,58 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
             public int Id { get; set; }
             // ReSharper restore UnusedAutoPropertyAccessor.Local
             public DateTime Date { get; set; }
+        }
+
+        [TableName("sample")]
+        class WideSampleRecord : DataRecord<WideSampleRecord>
+        {
+            [PrimaryKey]
+            public int Id { get; set; }
+            public string Name1 { get; set; }
+            public string Name2 { get; set; }
+            public string Name3 { get; set; }
+            public string Name4 { get; set; }
+            public string Name5 { get; set; }
+            public string Name6 { get; set; }
+            public string Name7 { get; set; }
+        }
+
+        [TableName("sample")]
+        class WideBlobSampleRecord : DataRecord<WideBlobSampleRecord>
+        {
+            [PrimaryKey]
+            public int Id { get; set; }
+            [Blob]
+            public string Name1 { get; set; }
+            [Blob]
+            public string Name2 { get; set; }
+            [Blob]
+            public string Name3 { get; set; }
+            [Blob]
+            public string Name4 { get; set; }
+            [Blob]
+            public string Name5 { get; set; }
+            [Blob]
+            public string Name6 { get; set; }
+            [Blob]
+            public string Name7 { get; set; }
+        }
+
+        [TableName("sample")]
+        class WideControlledSampleRecord : DataRecord<WideControlledSampleRecord>
+        {
+            [PrimaryKey]
+            public int Id { get; set; }
+            [Blob]
+            public string Name1 { get; set; }
+            [MaxTextLength(2000)]
+            public string Name2 { get; set; }
+            [MaxTextLength(2000)]
+            public string Name3 { get; set; }
+            public string Name4 { get; set; }
+            public string Name5 { get; set; }
+            public string Name6 { get; set; }
+            public string Name7 { get; set; }
         }
     }
 }
