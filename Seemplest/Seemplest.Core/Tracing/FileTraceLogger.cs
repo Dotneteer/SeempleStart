@@ -17,10 +17,8 @@ namespace Seemplest.Core.Tracing
 
         private readonly ConcurrentQueue<TraceLogItem> _entryQueue = 
             new ConcurrentQueue<TraceLogItem>();
-        private readonly object _locker = new object();
         private bool _isDisposing;
-        private bool _isSimpleScenario;
-        private string _simpleFileName;
+        private bool _isFlushing;
 
         /// <summary>
         /// Creates the specified file tracer object
@@ -46,7 +44,7 @@ namespace Seemplest.Core.Tracing
             FileNameSuffixPattern = fileNameSuffixPattern ?? "";
             TimestampFormat = timestampFormat ?? "yyyy.MM.dd hh:mm:ss.fff";
             FlushAfter = flushAfter;
-            Init();
+            _isFlushing = false;
         }
 
         /// <summary>
@@ -85,27 +83,6 @@ namespace Seemplest.Core.Tracing
         public int FlushAfter { get; private set; }
 
         /// <summary>
-        /// Determines whether simple or complex logging scenario is used,
-        /// and prepares the appropriate scenario.
-        /// </summary>
-        private void Init()
-        {
-            // --- Check whether the currently set scenario is the simple scenario
-            _isSimpleScenario = string.IsNullOrWhiteSpace(FolderPattern) &&
-                                string.IsNullOrWhiteSpace(FileNamePrefixPattern) &&
-                                string.IsNullOrWhiteSpace(FileNameSuffixPattern);
-            if (!_isSimpleScenario) return;
-
-            // --- Prepare for simple logging scenario
-            _simpleFileName = Path.Combine(RootFolder, FileName);
-            var dirName = Path.GetDirectoryName(_simpleFileName);
-            if (dirName != null && !Directory.Exists(dirName))
-            {
-                Directory.CreateDirectory(dirName);
-            }
-        }
-
-        /// <summary>
         /// Override to specify how the trace entry should be logged.
         /// </summary>
         /// <param name="item">Trace entry</param>
@@ -133,39 +110,20 @@ namespace Seemplest.Core.Tracing
         /// </summary>
         private void Flush()
         {
+            if (_isFlushing) return;
             try
             {
-                if (_isSimpleScenario)
-                {
-                    SimpleFlush();
-                }
-                else
-                {
-                    ComplexFlush();
-                }
+                _isFlushing = true;
+                ComplexFlush();
             }
-            // ReSharper disable once EmptyGeneralCatchClause
+                // ReSharper disable once EmptyGeneralCatchClause
             catch (Exception)
             {
                 // --- This exception is intentionally drained
             }
-        }
-
-        /// <summary>
-        /// Manages the simple logging scenario
-        /// </summary>
-        private void SimpleFlush()
-        {
-            using (var writer = File.AppendText(_simpleFileName))
+            finally
             {
-                var count = _entryQueue.Count;
-                for (var i = 0; i < count; i++)
-                {
-                    TraceLogItem item;
-                    if (!_entryQueue.TryDequeue(out item)) continue;
-                    LogSingleItem(writer, item);
-                }
-                writer.Close();
+                _isFlushing = false;
             }
         }
 

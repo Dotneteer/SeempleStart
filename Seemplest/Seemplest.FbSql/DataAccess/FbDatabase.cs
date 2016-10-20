@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using FirebirdSql.Data.FirebirdClient;
 using Nito.AsyncEx.Synchronous;
 using Seemplest.Core.Common;
 using Seemplest.Core.DataAccess;
@@ -19,13 +20,13 @@ using Seemplest.Core.Exceptions;
 using IDataRecord = Seemplest.Core.DataAccess.DataRecords.IDataRecord;
 using IsolationLevel = System.Data.IsolationLevel;
 
-namespace Seemplest.MsSql.DataAccess
+namespace Seemplest.FbSql.DataAccess
 {
     /// <summary>
     /// This class is responsible for providing the connection to a SQL Server and executing 
     /// database commands.
     /// </summary>
-    public class SqlDatabase: IDisposable
+    public class FbDatabase : IDisposable
     {
         private const string PARAM_PREFIX = "@";
 
@@ -39,17 +40,20 @@ namespace Seemplest.MsSql.DataAccess
         private readonly Stack<int> _transactionLogIndexes = new Stack<int>();
 
         // --- Regex for recognizing SELECT-like SQL statements
-        private static readonly Regex s_RxSelect = new Regex(@"\A\s*(SELECT|EXECUTE|EXEC)\s",
+        private static readonly Regex s_RxSelect = new Regex(@"\A\s*(SELECT|EXECUTE)\s",
             RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Multiline);
-        
+
         // --- Regex for recognizing FROM
         static readonly Regex s_RxFrom = new Regex(@"\A\s*FROM\s",
             RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
         // --- Regex for recognizing ORDER BY
         static readonly Regex s_RxOrderBy =
-            new Regex(@"\bORDER\s+BY\s+(?!.*?(?:\)|\s+)AS\s)(?:\((?>\((?<depth>)|\)(?<-depth>)|.?)*(?(depth)(?!))\)|[\w\(\)\.])+(?:\s+(?:ASC|DESC))?(?:\s*,\s*(?:\((?>\((?<depth>)|\)(?<-depth>)|.?)*(?(depth)(?!))\)|[\w\(\)\.])+(?:\s+(?:ASC|DESC))?)*",
+            new Regex(@"order\s+by\s+""*\w+""*(\s+asc|\s+desc)?([\s,]*""*\w+""*(\s+asc|\s+desc)?)*$",
               RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Singleline | RegexOptions.Compiled);
+        //static readonly Regex s_RxOrderBy =
+        //    new Regex(@"\bORDER\s+BY\s+(?!.*?(?:\)|\s+)AS\s)(?:\((?>\((?<depth>)|\)(?<-depth>)|.?)*(?(depth)(?!))\)|[\w\(\)\.])+(?:\s+(?:ASC|DESC))?(?:\s*,\s*(?:\((?>\((?<depth>)|\)(?<-depth>)|.?)*(?(depth)(?!))\)|[\w\(\)\.])+(?:\s+(?:ASC|DESC))?)*",
+        //      RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Singleline | RegexOptions.Compiled);
 
         // --- Regex for recognizing DISTINCT
         static readonly Regex s_RxDistinct = new Regex(@"\ADISTINCT\s",
@@ -63,38 +67,38 @@ namespace Seemplest.MsSql.DataAccess
         /// <summary>
         /// Gets the operation mode of this instance
         /// </summary>
-        public SqlOperationMode OperationMode { get; private set; }
+        public SqlOperationMode OperationMode { get; }
 
         /// <summary>
         /// Gets the direct Execute mode of this instance
         /// </summary>
-        public SqlDirectExecuteMode DirectExecuteMode { get; private set; }
+        public SqlDirectExecuteMode DirectExecuteMode { get; }
 
         /// <summary>
         /// Gets the handling mode of rowversion columns
         /// </summary>
-        public SqlRowVersionHandling RowVersionHandling { get; private set; }
+        public SqlRowVersionHandling RowVersionHandling { get; }
 
         /// <summary>
         /// Gets the connection name used to obtain the connection string to
         /// the SQL server database
         /// </summary>
         public string ConnectionOrName { get; private set; }
-        
+
         /// <summary>
         /// Gets the connection string to the SQL Server database
         /// </summary>
-        public string ConnectionString { get; private set; }
+        public string ConnectionString { get; }
 
         /// <summary>
         /// Stores the current connection information
         /// </summary>
-        public SqlConnection Connection { get; private set; }
+        public FbConnection Connection { get; private set; }
 
         /// <summary>
         /// Gets the transaction object belongign to this database.
         /// </summary>
-        public SqlTransaction Transaction { get; private set; }
+        public FbTransaction Transaction { get; private set; }
 
         /// <summary>
         /// Gets the current depth of shared connections
@@ -112,7 +116,7 @@ namespace Seemplest.MsSql.DataAccess
         /// Initializes this instance to use the specified connection information.
         /// </summary>
         /// <param name="connectionOrName"></param>
-        public SqlDatabase(string connectionOrName)
+        public FbDatabase(string connectionOrName)
         {
             ConnectionOrName = connectionOrName;
             ConnectionString = SqlHelper.GetConnectionString(connectionOrName);
@@ -129,8 +133,8 @@ namespace Seemplest.MsSql.DataAccess
         /// <param name="operationMode"></param>
         /// <param name="executeMode"></param>
         /// <param name="rowVersionHandling"></param>
-        public SqlDatabase(string connectionOrName, 
-            SqlOperationMode operationMode = SqlOperationMode.ReadWrite, 
+        public FbDatabase(string connectionOrName,
+            SqlOperationMode operationMode = SqlOperationMode.ReadWrite,
             SqlDirectExecuteMode executeMode = SqlDirectExecuteMode.Enable,
             SqlRowVersionHandling rowVersionHandling = SqlRowVersionHandling.RaiseException)
         {
@@ -142,11 +146,6 @@ namespace Seemplest.MsSql.DataAccess
         }
 
         /// <summary>
-        /// This event is raised when the tracking info is collected at the instance disposal.
-        /// </summary>
-        public event EventHandler<TrackingInfoEventArgs> TrackingCompleted;
-
-        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
@@ -155,232 +154,12 @@ namespace Seemplest.MsSql.DataAccess
             if (TransactionDepth > 0)
             {
                 _transactionCancelled = true;
-                CleanupTransaction();
+                var task = CleanupTransactionAsync();
+                task.WaitAndUnwrapException();
             }
 
             // --- Dispose the connection object
             Connection?.Dispose();
-            if (!IsTracked()) return;
-
-            // --- Manage tracking event
-            var trackingEvent = new TrackingInfoEventArgs(CollectTrackingInfo());
-            _transactionLogIndexes.Clear();
-            _changes.Clear();
-            TrackingCompleted?.Invoke(this, trackingEvent);
-            if (trackingEvent.TrackingException != null)
-            {
-                throw new TrackingAbortedException(trackingEvent.TrackingException);
-            }
-        }
-
-        /// <summary>
-        /// Collects the accumulated change set from individual changes
-        /// </summary>
-        /// <returns></returns>
-        private SqlDatabaseChangeSet CollectTrackingInfo()
-        {
-            var changeSet = new SqlDatabaseChangeSet();
-
-            // --- Iterate through all individual changes
-            foreach (var change in _changes)
-            {
-                var record = change.Item1;
-                var changeType = change.Item2;
-                
-                // --- Obtain the table of the record
-                var metadata = RecordMetadataManager.GetMetadata(record.GetRecordType());
-                var tableKey = EscapeSqlTableName(metadata.SchemaName, metadata.TableName);
-                SqlTableChangeSet tableChangeSet;
-                if (!changeSet.TryGetValue(tableKey, out tableChangeSet))
-                {
-                    tableChangeSet = new SqlTableChangeSet();
-                    changeSet.ChangeSet.Add(tableKey, tableChangeSet);
-                }
-
-                // --- Prepare the records primary key
-                var pk = new PrimaryKeyValue(record, metadata);
-                SqlRecordChangeSet recordChangeSet;
-                tableChangeSet.TryGetValue(pk, out recordChangeSet);
-
-                // --- Set the state of the data record according to the change
-                switch (changeType)
-                {
-                    case ChangedRecordState.Attached:
-                        if (recordChangeSet == null)
-                        {
-                            tableChangeSet.ChangeSet.Add(pk, CreateChangeSetForAttach(record, metadata));
-                        }
-                        else if (recordChangeSet.State == ChangedRecordState.Attached)
-                        {
-                            tableChangeSet.ChangeSet[pk] = CreateChangeSetForAttach(record, metadata);
-                        }
-                        else
-                        {
-                            recordChangeSet.InternalIssueList.Add(CreateIssue(
-                                string.Format("This record has already been attached to this tracking context with {0} state", 
-                                recordChangeSet.State), record));
-                        }
-                        break;
-
-                    case ChangedRecordState.Inserted:
-                        if (recordChangeSet == null)
-                        {
-                            tableChangeSet.ChangeSet.Add(pk, CreateChangeSetForInsert(record, metadata));
-                        }
-                        else
-                        {
-                            recordChangeSet.InternalIssueList.Add(CreateIssue(
-                                string.Format("This record has already been attached to this tracking context with {0} state", 
-                                recordChangeSet.State), record));
-                        }
-                        break;
-
-                    case ChangedRecordState.Updated:
-                        if (recordChangeSet != null)
-                        {
-                            if (recordChangeSet.State == ChangedRecordState.Deleted)
-                            {
-                                recordChangeSet.InternalIssueList.Add(CreateIssue(
-                                    "This record has already been deleted from this tracking context", record));
-                            }
-                            else
-                            {
-                                var oldState = recordChangeSet.State;
-                                recordChangeSet = CreateChangeSetForUpdate(record, metadata, recordChangeSet);
-                                if (oldState == ChangedRecordState.Inserted)
-                                {
-                                    recordChangeSet.State = ChangedRecordState.Inserted;
-                                }
-                                tableChangeSet.ChangeSet[pk] = recordChangeSet;
-                            }
-                        }
-                        else
-                        {
-                            recordChangeSet = CreateChangeSetForInsert(record, metadata);
-                            recordChangeSet.State = ChangedRecordState.Updated;
-                            tableChangeSet.ChangeSet[pk] = recordChangeSet;
-                            recordChangeSet.InternalIssueList.Add(CreateIssue(
-                                "This record has not been attached to this tracking context", record));
-                        }
-                        break;
-
-                    case ChangedRecordState.Deleted:
-                        if (recordChangeSet != null)
-                        {
-                            if (recordChangeSet.State == ChangedRecordState.Inserted)
-                            {
-                                tableChangeSet.ChangeSet.Remove(pk);
-                            }
-                            else
-                            {
-                                tableChangeSet.ChangeSet[pk] = CreateChangeSetForDelete(record, metadata);
-                            }
-                        }
-                        else
-                        {
-                            recordChangeSet = CreateChangeSetForDelete(record, metadata);
-                            tableChangeSet.ChangeSet[pk] = recordChangeSet;
-                            recordChangeSet.InternalIssueList.Add(CreateIssue(
-                                "This record has not been attached to this tracking context", record));
-                        }
-                        break;
-                }
-            }
-
-            // --- Eliminate unchanged fields, records and tables
-            foreach (var table in changeSet.Values)
-            {
-                foreach (var record in table.Values)
-                {
-                    record.EliminateNonChangedFields();
-                }
-            }
-            changeSet.EliminateUnchangedTables();
-            // --- Retrieve the collected changes
-            return changeSet;
-        }
-
-        /// <summary>
-        /// Creates a tracking issue for the specified data record
-        /// </summary>
-        /// <param name="issue">Issue description</param>
-        /// <param name="record">Record with issue</param>
-        /// <returns></returns>
-        private static TrackingIssue CreateIssue(string issue, IDataRecord record)
-        {
-            return new TrackingIssue(record.Clone(), issue);
-        }
-
-        /// <summary>
-        /// Creates a record change set for the specified record and metadata in attached state
-        /// </summary>
-        /// <param name="record">Record instance</param>
-        /// <param name="metadata">Metadata instance</param>
-        /// <returns>Newly created record change set</returns>
-        private static SqlRecordChangeSet CreateChangeSetForAttach(IDataRecord record, DataRecordDescriptor metadata)
-        {
-            var recordChangeSet = new SqlRecordChangeSet { State = ChangedRecordState.Attached };
-            foreach (var dataColumn in metadata.DataColumns)
-            {
-                var value = dataColumn.PropertyInfo.GetValue(record);
-                recordChangeSet.ChangeSet.Add(dataColumn.ColumnName, 
-                    new SqlFieldChange(value, value));
-            }
-            return recordChangeSet;
-        }
-
-        /// <summary>
-        /// Creates a record change set for the specified record and metadata in insertd state
-        /// </summary>
-        /// <param name="record">Record instance</param>
-        /// <param name="metadata">Metadata instance</param>
-        /// <returns>Newly created record change set</returns>
-        private static SqlRecordChangeSet CreateChangeSetForInsert(IDataRecord record, DataRecordDescriptor metadata)
-        {
-            var recordChangeSet = new SqlRecordChangeSet { State = ChangedRecordState.Inserted };
-            foreach (var dataColumn in metadata.DataColumns)
-            {
-                recordChangeSet.ChangeSet.Add(dataColumn.ColumnName,
-                    new SqlFieldChange(null, dataColumn.PropertyInfo.GetValue(record)));
-            }
-            return recordChangeSet;
-        }
-
-        /// <summary>
-        /// Creates a record change set for the specified record and metadata in updated state
-        /// </summary>
-        /// <param name="record">Record instance</param>
-        /// <param name="metadata">Metadata instance</param>
-        /// <param name="recordChangeSet">Previous record change set</param>
-        /// <returns>Newly created record change set</returns>
-        private static SqlRecordChangeSet CreateChangeSetForUpdate(IDataRecord record, DataRecordDescriptor metadata, 
-            IReadOnlyDictionary<string, SqlFieldChange> recordChangeSet)
-        {
-            var newChangeSet = new SqlRecordChangeSet { State = ChangedRecordState.Updated };
-            foreach (var dataColumn in metadata.DataColumns)
-            {
-                var oldField = recordChangeSet[dataColumn.ColumnName];
-                newChangeSet.ChangeSet.Add(dataColumn.ColumnName,
-                    new SqlFieldChange(oldField.PreviousValue, dataColumn.PropertyInfo.GetValue(record)));
-            }
-            return newChangeSet;
-        }
-
-        /// <summary>
-        /// Creates a record change set for the specified record and metadata in deleted state
-        /// </summary>
-        /// <param name="record">Record instance</param>
-        /// <param name="metadata">Metadata instance</param>
-        /// <returns>Newly created record change set</returns>
-        private static SqlRecordChangeSet CreateChangeSetForDelete(IDataRecord record, DataRecordDescriptor metadata)
-        {
-            var recordChangeSet = new SqlRecordChangeSet { State = ChangedRecordState.Deleted };
-            foreach (var dataColumn in metadata.DataColumns)
-            {
-                recordChangeSet.ChangeSet.Add(dataColumn.ColumnName,
-                    new SqlFieldChange(dataColumn.PropertyInfo.GetValue(record), null));
-            }
-            return recordChangeSet;
         }
 
         #endregion
@@ -405,7 +184,7 @@ namespace Seemplest.MsSql.DataAccess
             if (SharedConnectionDepth == 0)
             {
                 // --- There is no open connection
-                Connection = new SqlConnection(ConnectionString);
+                Connection = new FbConnection(ConnectionString);
                 CloseBrokenConnection(Connection);
                 if (Connection.State == ConnectionState.Closed)
                 {
@@ -557,17 +336,14 @@ namespace Seemplest.MsSql.DataAccess
         /// The last SQL arguments used in a command
         /// </summary>
         public object[] LastArgs { get; private set; }
-        
+
         /// <summary>
         /// The last command executed
         /// </summary>
-        public string LastCommand
-        {
-            get { return FormatCommand(LastSql, LastArgs); }
-        }
+        public string LastCommand => FormatCommand(LastSql, LastArgs);
 
         /// <summary>
-        /// Gets or sets the object used to map CLR instances to <see cref="SqlParameter"/> instances.
+        /// Gets or sets the object used to map CLR instances to <see cref="FbParameter"/> instances.
         /// </summary>
         public ISqlParameterMapper ParameterMapper { get; set; }
 
@@ -623,7 +399,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <param name="sqlExpr">SQL statement</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns>Number of rows affected</returns>
-        public async Task<int> ExecuteAsync(SqlExpression sqlExpr, CancellationToken token = default (CancellationToken))
+        public async Task<int> ExecuteAsync(SqlExpression sqlExpr, CancellationToken token = default(CancellationToken))
         {
             // --- Check if direct execution is enabled or not
             if (DirectExecuteMode != SqlDirectExecuteMode.Enable)
@@ -769,7 +545,7 @@ namespace Seemplest.MsSql.DataAccess
         /// </summary>
         /// <param name="cmd">Command to format</param>
         /// <returns>Formatted SQL command</returns>
-        public string FormatCommand(SqlCommand cmd)
+        public string FormatCommand(FbCommand cmd)
         {
             return FormatCommand(cmd.CommandText,
                 (from IDataParameter parameter in cmd.Parameters
@@ -785,7 +561,7 @@ namespace Seemplest.MsSql.DataAccess
         public string FormatCommand(string sql, object[] args)
         {
             var sb = new StringBuilder();
-            if (sql == null) return String.Empty;
+            if (sql == null) return string.Empty;
             sb.Append(sql);
             if (args != null && args.Length > 0)
             {
@@ -804,22 +580,22 @@ namespace Seemplest.MsSql.DataAccess
         #region Event methods
 
         /// <summary>
-        /// This method is called when a new <see cref="SqlConnection"/> instance is 
+        /// This method is called when a new <see cref="FbConnection"/> instance is 
         /// about to be open.
         /// </summary>
         /// <param name="conn">Connection instance</param>
         /// <returns>Connection instance to open</returns>
-        public virtual SqlConnection OnConnectionOpened(SqlConnection conn)
+        public virtual FbConnection OnConnectionOpened(FbConnection conn)
         {
             return conn;
         }
 
         /// <summary>
-        /// This method is called when a <see cref="SqlConnection"/> instance is about to
+        /// This method is called when a <see cref="FbConnection"/> instance is about to
         /// be closed.
         /// </summary>
         /// <param name="conn">Connection instance</param>
-        public virtual void OnConnectionClosing(SqlConnection conn)
+        public virtual void OnConnectionClosing(FbConnection conn)
         {
         }
 
@@ -838,18 +614,18 @@ namespace Seemplest.MsSql.DataAccess
         }
 
         /// <summary>
-        /// This method is called when a <see cref="SqlCommand"/> is about to be executed.
+        /// This method is called when a <see cref="FbCommand"/> is about to be executed.
         /// </summary>
         /// <param name="command">Command to execute</param>
-        public virtual void OnExecutingCommand(SqlCommand command)
+        public virtual void OnExecutingCommand(FbCommand command)
         {
         }
 
         /// <summary>
-        /// This method is called when a <see cref="SqlCommand"/> has been executed.
+        /// This method is called when a <see cref="FbCommand"/> has been executed.
         /// </summary>
         /// <param name="command">Command that has been executed</param>
-        public virtual void OnExecutedCommand(SqlCommand command)
+        public virtual void OnExecutedCommand(FbCommand command)
         {
         }
 
@@ -1510,8 +1286,7 @@ namespace Seemplest.MsSql.DataAccess
             if (metadata.PrimaryKeyColumns.Count != values.Count)
             {
                 throw new InvalidOperationException(
-                    string.Format("Type {0} has primary key item count {1}, but the number of provided item is {2}.",
-                    typeof(T).FullName, metadata.PrimaryKeyColumns.Count, values.Count));
+                    $"Type {typeof (T).FullName} has primary key item count {metadata.PrimaryKeyColumns.Count}, but the number of provided item is {values.Count}.");
             }
 
             // --- Prepare the expression to execute
@@ -1521,11 +1296,10 @@ namespace Seemplest.MsSql.DataAccess
                 if (values[i] == null)
                 {
                     throw new InvalidOperationException(
-                        string.Format("Value of primary key element {0} cannot be null",
-                        metadata.PrimaryKeyColumns[i].ColumnName));
+                        $"Value of primary key element {metadata.PrimaryKeyColumns[i].ColumnName} cannot be null");
                 }
                 sqlExpr.Where(
-                    string.Format("{0}=@0", EscapeSqlIdentifier(metadata.PrimaryKeyColumns[i].ColumnName)),
+                    $"{EscapeSqlIdentifier(metadata.PrimaryKeyColumns[i].ColumnName)}=@0",
                     values[i]);
             }
             return FetchAsync<T>(sqlExpr, token);
@@ -1613,7 +1387,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <returns>The list of pocos fetched from the database.</returns>
         public async Task<List<T>> FetchAsync<T>(CancellationToken token = default(CancellationToken))
         {
-            return (await FetchAsync<T>(token,""));
+            return (await FetchAsync<T>(token, ""));
         }
 
         /// <summary>
@@ -1688,9 +1462,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <returns>The tuple that holds lists of data records fetched from the database.</returns>
         public Tuple<List<T1>, List<T2>> FetchMultiple<T1, T2>(string sql, params object[] args)
         {
-            var task = FetchMultipleAsync<T1, T2>(sql, args);
-            task.WaitAndUnwrapException();
-            return task.Result;
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
         /// <summary>
@@ -1703,7 +1475,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <returns>The tuple that holds lists of data records fetched from the database.</returns>
         public Task<Tuple<List<T1>, List<T2>>> FetchMultipleAsync<T1, T2>(string sql, params object[] args)
         {
-            return FetchMultipleAsync<T1, T2>(default(CancellationToken), sql, args);
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
         /// <summary>
@@ -1717,10 +1489,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <returns>The tuple that holds lists of data records fetched from the database.</returns>
         public Task<Tuple<List<T1>, List<T2>>> FetchMultipleAsync<T1, T2>(CancellationToken token, string sql, params object[] args)
         {
-            return FetchMultipleAsync<T1, T2, IDoNotMap, IDoNotMap, Tuple<List<T1>, List<T2>>>(
-                new Func<List<T1>, List<T2>, Tuple<List<T1>, List<T2>>>(
-                    (t1, t2) => new Tuple<List<T1>, List<T2>>(t1, t2)),
-                new SqlExpression(sql, args), token);
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
         /// <summary>
@@ -1734,9 +1503,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <returns>The tuple that holds lists of dat records fetched from the database.</returns>
         public Tuple<List<T1>, List<T2>, List<T3>> FetchMultiple<T1, T2, T3>(string sql, params object[] args)
         {
-            var task = FetchMultipleAsync<T1, T2, T3>(sql, args);
-            task.WaitAndUnwrapException();
-            return task.Result;
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
         /// <summary>
@@ -1750,7 +1517,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <returns>The tuple that holds lists of dat records fetched from the database.</returns>
         public Task<Tuple<List<T1>, List<T2>, List<T3>>> FetchMultipleAsync<T1, T2, T3>(string sql, params object[] args)
         {
-            return FetchMultipleAsync<T1, T2, T3>(default(CancellationToken), sql, args);
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
         /// <summary>
@@ -1766,10 +1533,7 @@ namespace Seemplest.MsSql.DataAccess
         public Task<Tuple<List<T1>, List<T2>, List<T3>>> FetchMultipleAsync<T1, T2, T3>(
             CancellationToken token, string sql, params object[] args)
         {
-            return FetchMultipleAsync<T1, T2, T3, IDoNotMap, Tuple<List<T1>, List<T2>, List<T3>>>(
-                new Func<List<T1>, List<T2>, List<T3>, Tuple<List<T1>, List<T2>, List<T3>>>(
-                    (t1, t2, t3) => new Tuple<List<T1>, List<T2>, List<T3>>(t1, t2, t3)),
-                new SqlExpression(sql, args), token);
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
         /// <summary>
@@ -1784,9 +1548,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <returns>The tuple that holds lists of dat records fetched from the database.</returns>
         public Tuple<List<T1>, List<T2>, List<T3>, List<T4>> FetchMultiple<T1, T2, T3, T4>(string sql, params object[] args)
         {
-            var task = FetchMultipleAsync<T1, T2, T3, T4>(sql, args);
-            task.WaitAndUnwrapException();
-            return task.Result;
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
         /// <summary>
@@ -1801,7 +1563,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <returns>The tuple that holds lists of dat records fetched from the database.</returns>
         public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>>> FetchMultipleAsync<T1, T2, T3, T4>(string sql, params object[] args)
         {
-            return FetchMultipleAsync<T1, T2, T3, T4>(default(CancellationToken), sql, args);
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
         /// <summary>
@@ -1818,10 +1580,7 @@ namespace Seemplest.MsSql.DataAccess
         public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>>> FetchMultipleAsync<T1, T2, T3, T4>(
             CancellationToken token, string sql, params object[] args)
         {
-            return FetchMultipleAsync<T1, T2, T3, T4, Tuple<List<T1>, List<T2>, List<T3>, List<T4>>>(
-                new Func<List<T1>, List<T2>, List<T3>, List<T4>, Tuple<List<T1>, List<T2>, List<T3>, List<T4>>>(
-                    (t1, t2, t3, t4) => new Tuple<List<T1>, List<T2>, List<T3>, List<T4>>(t1, t2, t3, t4)),
-                new SqlExpression(sql, args), token);
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
         /// <summary>
@@ -1833,9 +1592,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <returns>The tuple that holds lists of data records fetched from the database.</returns>
         public Tuple<List<T1>, List<T2>> FetchMultiple<T1, T2>(SqlExpression sqlExpr)
         {
-            var task = FetchMultipleAsync<T1, T2>(sqlExpr);
-            task.WaitAndUnwrapException();
-            return task.Result;
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
         /// <summary>
@@ -1846,13 +1603,10 @@ namespace Seemplest.MsSql.DataAccess
         /// <param name="sqlExpr">SQL Expression that defines the query</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns>The tuple that holds lists of data records fetched from the database.</returns>
-        public Task<Tuple<List<T1>, List<T2>>> FetchMultipleAsync<T1, T2>(SqlExpression sqlExpr, 
+        public Task<Tuple<List<T1>, List<T2>>> FetchMultipleAsync<T1, T2>(SqlExpression sqlExpr,
             CancellationToken token = default(CancellationToken))
         {
-            return FetchMultipleAsync<T1, T2, IDoNotMap, IDoNotMap, Tuple<List<T1>, List<T2>>>(
-                new Func<List<T1>, List<T2>, Tuple<List<T1>, List<T2>>>(
-                    (t1, t2) => new Tuple<List<T1>, List<T2>>(t1, t2)),
-                sqlExpr, token);
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
         /// <summary>
@@ -1865,9 +1619,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <returns>The tuple that holds lists of dat records fetched from the database.</returns>
         public Tuple<List<T1>, List<T2>, List<T3>> FetchMultiple<T1, T2, T3>(SqlExpression sqlExpr)
         {
-            var task = FetchMultipleAsync<T1, T2, T3>(sqlExpr);
-            task.WaitAndUnwrapException();
-            return task.Result;
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
         /// <summary>
@@ -1882,10 +1634,7 @@ namespace Seemplest.MsSql.DataAccess
         public Task<Tuple<List<T1>, List<T2>, List<T3>>> FetchMultipleAsync<T1, T2, T3>(
             SqlExpression sqlExpr, CancellationToken token = default(CancellationToken))
         {
-            return FetchMultipleAsync<T1, T2, T3, IDoNotMap, Tuple<List<T1>, List<T2>, List<T3>>>(
-                new Func<List<T1>, List<T2>, List<T3>, Tuple<List<T1>, List<T2>, List<T3>>>(
-                    (t1, t2, t3) => new Tuple<List<T1>, List<T2>, List<T3>>(t1, t2, t3)),
-                sqlExpr, token);
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
 
@@ -1900,9 +1649,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <returns>The tuple that holds lists of dat records fetched from the database.</returns>
         public Tuple<List<T1>, List<T2>, List<T3>, List<T4>> FetchMultiple<T1, T2, T3, T4>(SqlExpression sqlExpr)
         {
-            var task = FetchMultipleAsync<T1, T2, T3, T4>(sqlExpr);
-            task.WaitAndUnwrapException();
-            return task.Result;
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
         /// <summary>
@@ -1918,10 +1665,7 @@ namespace Seemplest.MsSql.DataAccess
         public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>>> FetchMultipleAsync<T1, T2, T3, T4>(
             SqlExpression sqlExpr, CancellationToken token = default(CancellationToken))
         {
-            return FetchMultipleAsync<T1, T2, T3, T4, Tuple<List<T1>, List<T2>, List<T3>, List<T4>>>(
-                new Func<List<T1>, List<T2>, List<T3>, List<T4>, Tuple<List<T1>, List<T2>, List<T3>, List<T4>>>(
-                    (t1, t2, t3, t4) => new Tuple<List<T1>, List<T2>, List<T3>, List<T4>>(t1, t2, t3, t4)),
-                sqlExpr, token);
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
         /// <summary>
@@ -1933,12 +1677,10 @@ namespace Seemplest.MsSql.DataAccess
         /// <param name="sqlExpr">SQL Expression that defines the query</param>
         /// <param name="correlator">Function that correlates the result sets</param>
         /// <returns>The tuple that holds lists of data records fetched from the database.</returns>
-        public TRet FetchMultiple<T1, T2, TRet>(SqlExpression sqlExpr, 
+        public TRet FetchMultiple<T1, T2, TRet>(SqlExpression sqlExpr,
             Func<List<T1>, List<T2>, TRet> correlator)
         {
-            var task = FetchMultipleAsync(sqlExpr, correlator);
-            task.WaitAndUnwrapException();
-            return task.Result;
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
         /// <summary>
@@ -1952,10 +1694,10 @@ namespace Seemplest.MsSql.DataAccess
         /// <param name="token">Optional cancellation token</param>
         /// <returns>The tuple that holds lists of data records fetched from the database.</returns>
         public Task<TRet> FetchMultipleAsync<T1, T2, TRet>(SqlExpression sqlExpr,
-            Func<List<T1>, List<T2>, TRet> correlator, 
+            Func<List<T1>, List<T2>, TRet> correlator,
             CancellationToken token = default(CancellationToken))
         {
-            return FetchMultipleAsync<T1, T2, IDoNotMap, IDoNotMap, TRet>(correlator, sqlExpr, token);
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
         /// <summary>
@@ -1968,12 +1710,10 @@ namespace Seemplest.MsSql.DataAccess
         /// <param name="sqlExpr">SQL Expression that defines the query</param>
         /// <param name="correlator">Function that correlates the result sets</param>
         /// <returns>The tuple that holds lists of data records fetched from the database.</returns>
-        public TRet FetchMultiple<T1, T2, T3, TRet>(SqlExpression sqlExpr, 
+        public TRet FetchMultiple<T1, T2, T3, TRet>(SqlExpression sqlExpr,
             Func<List<T1>, List<T2>, List<T3>, TRet> correlator)
         {
-            var task = FetchMultipleAsync(sqlExpr, correlator);
-            task.WaitAndUnwrapException();
-            return task.Result;
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
         /// <summary>
@@ -1991,7 +1731,7 @@ namespace Seemplest.MsSql.DataAccess
             Func<List<T1>, List<T2>, List<T3>, TRet> correlator,
             CancellationToken token = default(CancellationToken))
         {
-            return FetchMultipleAsync<T1, T2, T3, IDoNotMap, TRet>(correlator, sqlExpr, token);
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
         /// <summary>
@@ -2005,12 +1745,10 @@ namespace Seemplest.MsSql.DataAccess
         /// <param name="sqlExpr">SQL Expression that defines the query</param>
         /// <param name="correlator">Function that correlates the result sets</param>
         /// <returns>The tuple that holds lists of data records fetched from the database.</returns>
-        public TRet FetchMultiple<T1, T2, T3, T4, TRet>(SqlExpression sqlExpr, 
+        public TRet FetchMultiple<T1, T2, T3, T4, TRet>(SqlExpression sqlExpr,
             Func<List<T1>, List<T2>, List<T3>, List<T4>, TRet> correlator)
         {
-            var task = FetchMultipleAsync(sqlExpr, correlator);
-            task.WaitAndUnwrapException();
-            return task.Result;
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
         /// <summary>
@@ -2029,7 +1767,7 @@ namespace Seemplest.MsSql.DataAccess
             Func<List<T1>, List<T2>, List<T3>, List<T4>, TRet> correlator,
             CancellationToken token = default(CancellationToken))
         {
-            return FetchMultipleAsync<T1, T2, T3, T4, TRet>(correlator, sqlExpr, token);
+            throw new NotSupportedException("Firebird does not support multipleresult sets.");
         }
 
         /// <summary>
@@ -2041,7 +1779,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <param name="token">Optional cancellation token</param>
         /// <param name="firstOnly">Query only the first record, if found</param>
         /// <returns>Query resultset</returns>
-        private async Task<IEnumerable<T>> DoQueryAsync<T>(SqlExpression sqlExpr, T instance = default(T), 
+        private async Task<IEnumerable<T>> DoQueryAsync<T>(SqlExpression sqlExpr, T instance = default(T),
             CancellationToken token = default(CancellationToken), bool firstOnly = false)
         {
             sqlExpr = sqlExpr.CompleteSelect<T>();
@@ -2082,109 +1820,10 @@ namespace Seemplest.MsSql.DataAccess
                                 OnException(x);
                                 throw;
                             }
-                            AttachToTrackingContext(dataRecord);
                             records.Add(dataRecord);
                             if (firstOnly) break;
                         }
                         return records;
-                    }
-                }
-            }
-            finally
-            {
-                CloseSharedConnection();
-            }
-        }
-
-        /// <summary>
-        /// Fetches a correlated set of entities using a query returning multiple
-        /// result sets.
-        /// </summary>
-        /// <typeparam name="T1">First type</typeparam>
-        /// <typeparam name="T2">Second type</typeparam>
-        /// <typeparam name="T3">Third type</typeparam>
-        /// <typeparam name="T4">Fourth type</typeparam>
-        /// <typeparam name="TRet">Correlated return type</typeparam>
-        /// <param name="correlator">Function that correlates the result sets</param>
-        /// <param name="sqlExpr">SQL expression defyning the query</param>
-        /// <param name="token">Optional cancellation token</param>
-        /// <returns>Correlated result set</returns>
-        private async Task<TRet> FetchMultipleAsync<T1, T2, T3, T4, TRet>(object correlator, SqlExpression sqlExpr,
-            CancellationToken token = default(CancellationToken))
-        {
-            var sql = sqlExpr.SqlText;
-            var args = sqlExpr.Arguments;
-
-            var factories = new Func<IDataReader, Delegate>[]
-                {
-                    r => DataReaderMappingManager.GetMapperFor<T1>(r),
-                    r => DataReaderMappingManager.GetMapperFor<T2>(r),
-                    r => DataReaderMappingManager.GetMapperFor<T3>(r),
-                    r => DataReaderMappingManager.GetMapperFor<T4>(r)
-                };
-            var setCount = typeof(T3) == typeof(IDoNotMap)
-                ? 2
-                : (typeof(T4) == typeof(IDoNotMap) ? 3 : 4);
-
-            await OpenSharedConnectionAsync(token);
-            try
-            {
-                using (var cmd = CreateCommand(Connection, sql, args))
-                {
-                    IDataReader r;
-                    try
-                    {
-                        r = await cmd.ExecuteReaderAsync(token);
-                        OnExecutedCommand(cmd);
-                    }
-                    catch (Exception x)
-                    {
-                        OnException(x);
-                        throw;
-                    }
-
-                    using (r)
-                    {
-                        var typeIndex = 0;
-                        var list1 = new List<T1>();
-                        var list2 = new List<T2>();
-                        var list3 = new List<T3>();
-                        var list4 = new List<T4>();
-                        do
-                        {
-                            if (typeIndex >= setCount) break;
-                            var recordFactory = factories[typeIndex](r);
-                            while (true)
-                            {
-                                try
-                                {
-                                    if (!r.Read()) break;
-                                    switch (typeIndex)
-                                    {
-                                        case 0: list1.Add(((Func<IDataReader, T1, T1>)recordFactory)(r, default(T1))); break;
-                                        case 1: list2.Add(((Func<IDataReader, T2, T2>)recordFactory)(r, default(T2))); break;
-                                        case 2: list3.Add(((Func<IDataReader, T3, T3>)recordFactory)(r, default(T3))); break;
-                                        case 3: list4.Add(((Func<IDataReader, T4, T4>)recordFactory)(r, default(T4))); break;
-                                    }
-                                }
-                                catch (Exception x)
-                                {
-                                    OnException(x);
-                                    throw;
-                                }
-                            }
-                            typeIndex++;
-                        } while (r.NextResult());
-
-                        switch (setCount)
-                        {
-                            case 2:
-                                return ((Func<List<T1>, List<T2>, TRet>)correlator)(list1, list2);
-                            case 3:
-                                return ((Func<List<T1>, List<T2>, List<T3>, TRet>)correlator)(list1, list2, list3);
-                            default:
-                                return ((Func<List<T1>, List<T2>, List<T3>, List<T4>, TRet>)correlator)(list1, list2, list3, list4);
-                        }
                     }
                 }
             }
@@ -2220,8 +1859,8 @@ namespace Seemplest.MsSql.DataAccess
         /// <param name="sql">SQL fragment</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns>The paged result of the query.</returns>
-        public async Task<Page<T>> PageAsync<T>(long pageIndex, long pageLength, SqlExpression sql, 
-            CancellationToken token = default(CancellationToken) )
+        public async Task<Page<T>> PageAsync<T>(long pageIndex, long pageLength, SqlExpression sql,
+            CancellationToken token = default(CancellationToken))
         {
             return await PageAsync<T>(token, pageIndex, pageLength, sql.SqlText, sql.Arguments);
         }
@@ -2312,7 +1951,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <param name="sql">SQL fragment</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns>The paged result of the query.</returns>
-        public async Task<List<T>> SkipTakeAsync<T>(long skip, long take, SqlExpression sql, 
+        public async Task<List<T>> SkipTakeAsync<T>(long skip, long take, SqlExpression sql,
             CancellationToken token = default(CancellationToken))
         {
             return await SkipTakeAsync<T>(token, skip, take, sql.SqlText, sql.Arguments);
@@ -2393,7 +2032,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <param name="withGet">True indicates that the newly inserted record should be read back</param>
         /// <param name="token">Optional cancellation token</param>
         /// <remarks>The insert and get operations are atomic.</remarks>
-        public async Task InsertAsync<T>(T record, bool insertIdentity = false, bool withGet = true, 
+        public async Task InsertAsync<T>(T record, bool insertIdentity = false, bool withGet = true,
             CancellationToken token = default(CancellationToken))
         {
             // --- Read-only mode prevents this operation to run
@@ -2407,7 +2046,7 @@ namespace Seemplest.MsSql.DataAccess
             try
             {
                 // ReSharper disable CompareNonConstrainedGenericWithNull
-                if (record == null) throw new ArgumentNullException("record");
+                if (record == null) throw new ArgumentNullException(nameof(record));
                 // ReSharper restore CompareNonConstrainedGenericWithNull
 
                 // --- Prepare the SQL expression to execute
@@ -2415,23 +2054,21 @@ namespace Seemplest.MsSql.DataAccess
                 List<string> columnNames;
                 List<string> columnValues;
                 List<object> rawValues;
-                string identityFieldName;
-                PrepareInsertData(record, insertIdentity, out identityFieldName,
-                    out columnNames, out columnValues, out rawValues);
+                PrepareInsertData(record, out columnNames, out columnValues, out rawValues);
 
                 // --- Start executing it
                 await OpenSharedConnectionAsync(token);
                 try
                 {
                     // --- Create and excute the insert command
-                    var shouldGetBack = withGet || IsTracked();
+                    var shouldGetBack = withGet;
                     using (var cmd = CreateCommand(Connection, ""))
                     {
-                        var tableName = EscapeSqlTableName(metadata.SchemaName, metadata.TableName);
-                        PrepareInsertCommand(cmd, identityFieldName, insertIdentity, shouldGetBack, tableName,
+                        var tableName = EscapeSqlTableName(metadata.TableName);
+                        PrepareInsertCommand(metadata, cmd, shouldGetBack, tableName,
                             columnNames, columnValues, rawValues);
 
-                        // --- Read back the inserted record with the OUTPUT clause
+                        // --- Read back the inserted record with the RETURNING clause
                         if (shouldGetBack)
                         {
                             IDataReader r = await cmd.ExecuteReaderAsync(token);
@@ -2448,9 +2085,6 @@ namespace Seemplest.MsSql.DataAccess
                             await cmd.ExecuteNonQueryAsync(token);
                             OnExecutedCommand(cmd);
                         }
-
-                        // --- Track insertion
-                        TrackInsert(record);
                     }
                 }
                 finally
@@ -2473,7 +2107,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <remarks>The record must have a primary key</remarks>
         public void Update<T>(T record)
         {
-            var task = UpdateInternalAsync(record, IsTracked() ? UpdateMode.GetCurrent : UpdateMode.Simple);
+            var task = UpdateInternalAsync(record);
             task.WaitAndUnwrapException();
         }
 
@@ -2486,63 +2120,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <remarks>The record must have a primary key</remarks>
         public async Task UpdateAsync<T>(T record, CancellationToken token = default(CancellationToken))
         {
-            await UpdateInternalAsync(record, IsTracked() ? UpdateMode.GetCurrent : UpdateMode.Simple, token);
-        }
-
-        /// <summary>
-        /// Updates the specified record in the database and retrieves the record
-        /// before the modification
-        /// </summary>
-        /// <typeparam name="T">Record type</typeparam>
-        /// <param name="record">Record instance</param>
-        /// <remarks>The recors must have a primary key</remarks>
-        public T UpdateAndGetPrevious<T>(T record)
-        {
-            var task = UpdateInternalAsync(record, UpdateMode.GetPrevious);
-            task.WaitAndUnwrapException();
-            return task.Result;
-        }
-
-        /// <summary>
-        /// Updates the specified record in the database and retrieves the record -- async
-        /// before the modification
-        /// </summary>
-        /// <typeparam name="T">Record type</typeparam>
-        /// <param name="record">Record instance</param>
-        /// <param name="token">Optional cancellation token</param>
-        /// <remarks>The recors must have a primary key</remarks>
-        public async Task<T> UpdateAndGetPreviousAsync<T>(T record, CancellationToken token = default(CancellationToken))
-        {
-            var outRecord = await UpdateInternalAsync(record, UpdateMode.GetPrevious, token);
-            return outRecord;
-        }
-
-        /// <summary>
-        /// Updates the specified record in the database and retrieves the record
-        /// after the modification
-        /// </summary>
-        /// <typeparam name="T">Record type</typeparam>
-        /// <param name="record">Record instance</param>
-        /// <remarks>The recors must have a primary key</remarks>
-        public T UpdateAndGetCurrent<T>(T record)
-        {
-            var task = UpdateInternalAsync(record, UpdateMode.GetCurrent);
-            task.WaitAndUnwrapException();
-            return task.Result;
-        }
-
-        /// <summary>
-        /// Updates the specified record in the database and retrieves the record -- async
-        /// after the modification
-        /// </summary>
-        /// <typeparam name="T">Record type</typeparam>
-        /// <param name="record">Record instance</param>
-        /// <param name="token">Optional cancellation token</param>
-        /// <remarks>The recors must have a primary key</remarks>
-        public async Task<T> UpdateAndGetCurrentAsync<T>(T record, CancellationToken token = default(CancellationToken))
-        {
-            var outRecord = await UpdateInternalAsync(record, UpdateMode.GetCurrent, token);
-            return outRecord;
+            await UpdateInternalAsync(record, token);
         }
 
         /// <summary>
@@ -2550,10 +2128,9 @@ namespace Seemplest.MsSql.DataAccess
         /// </summary>
         /// <typeparam name="T">Record type</typeparam>
         /// <param name="record">Record instance</param>
-        /// <param name="mode">Update mode to apply</param>
         /// <param name="token">Optional cancellation token</param>
         /// <remarks>The record must have a primary key</remarks>
-        private async Task<T> UpdateInternalAsync<T>(T record, UpdateMode mode, CancellationToken token = default(CancellationToken))
+        private async Task<T> UpdateInternalAsync<T>(T record, CancellationToken token = default(CancellationToken))
         {
             // --- Read-only mode prevents this operation to run
             if (OperationMode == SqlOperationMode.ReadOnly)
@@ -2567,7 +2144,7 @@ namespace Seemplest.MsSql.DataAccess
             try
             {
                 // ReSharper disable CompareNonConstrainedGenericWithNull
-                if (record == null) throw new ArgumentNullException("record");
+                if (record == null) throw new ArgumentNullException(nameof(record));
                 // ReSharper restore CompareNonConstrainedGenericWithNull
 
                 // --- Prepare the SQL expression to execute
@@ -2577,14 +2154,14 @@ namespace Seemplest.MsSql.DataAccess
                 if (metadata.IsSimplePoco)
                 {
                     throw new InvalidOperationException(
-                        string.Format("Type {0} is not a data record type, it cannot be used in Update<> operation.", typeof(T)));
+                        $"Type {typeof (T)} is not a data record type, it cannot be used in Update<> operation.");
                 }
 
                 // --- Check for primary key existence
                 if (metadata.PrimaryKeyColumns.Count == 0)
                 {
                     throw new InvalidOperationException(
-                        string.Format("No primary key values found for {0}, so it can be used in UPDATE.", typeof(T)));
+                        $"No primary key values found for {typeof (T)}, so it can be used in UPDATE.");
                 }
 
                 // --- Check for update column specification
@@ -2595,7 +2172,7 @@ namespace Seemplest.MsSql.DataAccess
 
                 // --- Prepare UPDATE
                 var sql = new StringBuilder();
-                var tableName = EscapeSqlTableName(metadata.SchemaName, metadata.TableName);
+                var tableName = EscapeSqlTableName(metadata.TableName);
                 sql.AppendFormat("update {0} set ", tableName);
 
                 // --- Prepare SET columns
@@ -2618,17 +2195,6 @@ namespace Seemplest.MsSql.DataAccess
                     if (columnIndex > 0) sql.Append(", ");
                     rawValues.Add(value);
                     sql.AppendFormat("{0} = @{1}", EscapeSqlIdentifier(dataColumn.ColumnName), columnIndex++);
-                }
-
-                // --- Prepare the OUTPUT clause
-                switch (mode)
-                {
-                    case UpdateMode.GetPrevious:
-                        sql.Append(" output deleted.* ");
-                        break;
-                    case UpdateMode.GetCurrent:
-                        sql.Append(" output inserted.* ");
-                        break;
                 }
 
                 // --- Prepare the WHERE clause
@@ -2654,48 +2220,22 @@ namespace Seemplest.MsSql.DataAccess
                 await OpenSharedConnectionAsync(token);
                 try
                 {
-                    var resultCount = 0;
+                    int resultCount;
 
                     // --- Execute the command
-                    var toTrack = record;
                     using (var cmd = CreateCommand(Connection, sql.ToString(), rawValues.ToArray()))
                     {
-                        if (mode == UpdateMode.Simple)
-                        {
-                            resultCount = cmd.ExecuteNonQuery();
-                            OnExecutedCommand(cmd);
-                        }
-                        else
-                        {
-                            IDataReader r = await cmd.ExecuteReaderAsync(token);
-                            OnExecutedCommand(cmd);
-                            using (r)
-                            {
-                                var recordFactory = DataReaderMappingManager.GetMapperFor(r, record);
-                                if (r.Read())
-                                {
-                                    resultCount = 1;
-                                    outRecord = Activator.CreateInstance<T>();
-                                    recordFactory(r, outRecord);
-                                    if (mode == UpdateMode.GetCurrent) toTrack = outRecord;
-                                }
-                            }
-                        }
+                        resultCount = cmd.ExecuteNonQuery();
+                        OnExecutedCommand(cmd);
                     }
 
                     // --- Check for concurrency issues
                     if (resultCount == 0 && versionColumn != null && RowVersionHandling == SqlRowVersionHandling.RaiseException)
                     {
                         throw new DBConcurrencyException(
-                            string.Format("A Concurrency update occurred in table '{0}' for primary key " +
-                                "value(s) = '{1}' and version = '{2}'",
-                                tableName,
-                                string.Join(", ", metadata.PrimaryKeyColumns.Select(col => col.PropertyInfo.GetValue(record)).ToArray()),
-                                TypeConversionHelper.ByteArrayToString((byte[])versionColumn.PropertyInfo.GetValue(record))));
+                            $"A Concurrency update occurred in table '{tableName}' for primary key " +
+                            $"value(s) = '{string.Join(", ", metadata.PrimaryKeyColumns.Select(col => col.PropertyInfo.GetValue(record)).ToArray())}' and version = '{TypeConversionHelper.ByteArrayToString((byte[]) versionColumn.PropertyInfo.GetValue(record))}'");
                     }
-
-                    // --- Track the record update
-                    TrackUpdate(toTrack);
                 }
                 finally
                 {
@@ -2717,7 +2257,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <param name="record">Record to delete</param>
         public bool Delete<T>(T record)
         {
-            var task = DeleteInternalAsync(record, IsTracked());
+            var task = DeleteInternalAsync(record);
             task.WaitAndUnwrapException();
             return task.Result.Item1;
         }
@@ -2730,7 +2270,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <param name="token">Optional cancellation token</param>
         public async Task<bool> DeleteAsync<T>(T record, CancellationToken token = default(CancellationToken))
         {
-            return (await DeleteInternalAsync(record, IsTracked(), token)).Item1;
+            return (await DeleteInternalAsync(record, token)).Item1;
         }
 
         /// <summary>
@@ -2741,7 +2281,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <param name="record">Record to delete</param>
         public T DeleteAndGetPrevious<T>(T record)
         {
-            var task = DeleteInternalAsync(record, true);
+            var task = DeleteInternalAsync(record);
             task.WaitAndUnwrapException();
             return task.Result.Item2;
         }
@@ -2755,7 +2295,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <param name="token">Optional cancellation token</param>
         public async Task<T> DeleteAndGetPreviousAsync<T>(T record, CancellationToken token = default(CancellationToken))
         {
-            var result = await DeleteInternalAsync(record, true, token);
+            var result = await DeleteInternalAsync(record, token);
             return result.Item2;
         }
 
@@ -2819,75 +2359,10 @@ namespace Seemplest.MsSql.DataAccess
         /// <typeparam name="T">Reocrd type</typeparam>
         /// <param name="pkValues">Collection of primary key values</param>
         /// <param name="token">Optional cancellation token</param>
-        public async Task<bool> DeleteByIdAsync<T>(IEnumerable<object> pkValues, 
+        public async Task<bool> DeleteByIdAsync<T>(IEnumerable<object> pkValues,
             CancellationToken token = default(CancellationToken))
         {
-            return (await DeleteInternalAsync<T>(pkValues, IsTracked(), token)).Item1;
-        }
-
-        /// <summary>
-        /// Deletes the specified record from the database
-        /// </summary>
-        /// <typeparam name="T">Reocrd type</typeparam>
-        /// <param name="pkFirst">First element of the primary key</param>
-        /// <param name="pkOthers">Other elements of the primary key</param>
-        public T DeleteByIdAndGetPrevious<T>(object pkFirst, params object[] pkOthers)
-        {
-            var pkValues = new object[pkOthers.Length + 1];
-            pkValues[0] = pkFirst;
-            for (var i = 0; i < pkOthers.Length; i++) pkValues[i + 1] = pkOthers[i];
-            return DeleteByIdAndGetPrevious<T>(pkValues);
-        }
-
-        /// <summary>
-        /// Deletes the specified record from the database -- async
-        /// </summary>
-        /// <typeparam name="T">Reocrd type</typeparam>
-        /// <param name="pkFirst">First element of the primary key</param>
-        /// <param name="pkOthers">Other elements of the primary key</param>
-        public async Task<T> DeleteByIdAndGetPreviousAsync<T>(object pkFirst, params object[] pkOthers)
-        {
-            return await DeleteByIdAndGetPreviousAsync<T>(default(CancellationToken), pkFirst, pkOthers);
-        }
-
-        /// <summary>
-        /// Deletes the specified record from the database -- async
-        /// </summary>
-        /// <typeparam name="T">Reocrd type</typeparam>
-        /// <param name="token">Cancellation token</param>
-        /// <param name="pkFirst">First element of the primary key</param>
-        /// <param name="pkOthers">Other elements of the primary key</param>
-        public async Task<T> DeleteByIdAndGetPreviousAsync<T>(CancellationToken token, object pkFirst, params object[] pkOthers)
-        {
-            var pkValues = new object[pkOthers.Length + 1];
-            pkValues[0] = pkFirst;
-            for (var i = 0; i < pkOthers.Length; i++) pkValues[i + 1] = pkOthers[i];
-            return await DeleteByIdAndGetPreviousAsync<T>(pkValues, token);
-        }
-
-        /// <summary>
-        /// Deletes a record from the database using its primary key values
-        /// </summary>
-        /// <typeparam name="T">Reocrd type</typeparam>
-        /// <param name="pkValues">Collection of primary key values</param>
-        public T DeleteByIdAndGetPrevious<T>(IEnumerable<object> pkValues)
-        {
-            var task = DeleteByIdAndGetPreviousAsync<T>(pkValues);
-            task.WaitAndUnwrapException();
-            return task.Result;
-        }
-
-        /// <summary>
-        /// Deletes a record from the database using its primary key values
-        /// </summary>
-        /// <typeparam name="T">Reocrd type</typeparam>
-        /// <param name="pkValues">Collection of primary key values</param>
-        /// <param name="token">Optional cancellation token</param>
-        public async Task<T> DeleteByIdAndGetPreviousAsync<T>(IEnumerable<object> pkValues, 
-            CancellationToken token = default(CancellationToken))
-        {
-            var result = await DeleteInternalAsync<T>(pkValues, true, token);
-            return result.Item2;
+            return (await DeleteInternalAsync<T>(pkValues, token)).Item1;
         }
 
         /// <summary>
@@ -2895,10 +2370,9 @@ namespace Seemplest.MsSql.DataAccess
         /// </summary>
         /// <typeparam name="T">Record type</typeparam>
         /// <param name="pkValues">Collection of primary key values</param>
-        /// <param name="withGet">Should get the previous record?</param>
         /// <param name="token">Optional cancellation token</param>
         /// <remarks>The record must have a primary key</remarks>
-        private async Task<Tuple<bool, T>> DeleteInternalAsync<T>(IEnumerable<object> pkValues, bool withGet, 
+        private async Task<Tuple<bool, T>> DeleteInternalAsync<T>(IEnumerable<object> pkValues,
             CancellationToken token = default(CancellationToken))
         {
             // --- Read-only mode prevents this operation to run
@@ -2909,7 +2383,7 @@ namespace Seemplest.MsSql.DataAccess
             }
 
             // --- Do the operation
-            if (pkValues == null) throw new ArgumentNullException("pkValues");
+            if (pkValues == null) throw new ArgumentNullException(nameof(pkValues));
             var values = pkValues.ToList();
             try
             {
@@ -2920,27 +2394,20 @@ namespace Seemplest.MsSql.DataAccess
                 if (metadata.IsSimplePoco)
                 {
                     throw new InvalidOperationException(
-                        string.Format("Type {0} is not a data record type, it cannot be used in a Delete<> operation.", typeof(T)));
+                        $"Type {typeof (T)} is not a data record type, it cannot be used in a Delete<> operation.");
                 }
 
                 // --- Check for primary key existence
                 if (metadata.PrimaryKeyColumns.Count == 0)
                 {
                     throw new InvalidOperationException(
-                        string.Format("No primary key values found for {0}, so it can be used in DELETE.", typeof(T)));
+                        $"No primary key values found for {typeof (T)}, so it can be used in DELETE.");
                 }
 
                 // --- Prepare DELETE
                 var sql = new StringBuilder();
-                var tableName = EscapeSqlTableName(metadata.SchemaName, metadata.TableName);
+                var tableName = EscapeSqlTableName(metadata.TableName);
                 sql.AppendFormat("delete from {0}", tableName);
-
-                // --- Prepare the OUTPUT clause
-                var shouldGetBack = withGet || IsTracked();
-                if (shouldGetBack)
-                {
-                    sql.Append(" output deleted.*");
-                }
 
                 // --- Prepare the WHERE clause
                 var columnIndex = 0;
@@ -2962,33 +2429,9 @@ namespace Seemplest.MsSql.DataAccess
                     // --- Execute the command
                     using (var cmd = CreateCommand(Connection, sql.ToString(), rawValues.ToArray()))
                     {
-                        if (!shouldGetBack)
-                        {
-                            var rows = await cmd.ExecuteNonQueryAsync(token);
-                            OnExecutedCommand(cmd);
-                            return new Tuple<bool, T>(rows > 0, default(T));
-                        }
-                        else
-                        {
-                            IDataReader r = await cmd.ExecuteReaderAsync(token);
-                            OnExecutedCommand(cmd);
-                            using (r)
-                            {
-                                var tempRecord = Activator.CreateInstance<T>();
-                                var recordFactory = DataReaderMappingManager.GetMapperFor(r, tempRecord);
-                                if (r.Read())
-                                {
-                                    var prevRecord = Activator.CreateInstance<T>();
-                                    recordFactory(r, prevRecord);
-                                    TrackDelete(prevRecord);
-                                    return new Tuple<bool, T>(true, prevRecord);
-                                }
-                                else
-                                {
-                                    return new Tuple<bool, T>(false, default(T));
-                                }
-                            }
-                        }
+                        var rows = await cmd.ExecuteNonQueryAsync(token);
+                        OnExecutedCommand(cmd);
+                        return new Tuple<bool, T>(rows > 0, default(T));
                     }
                 }
                 finally
@@ -3008,19 +2451,18 @@ namespace Seemplest.MsSql.DataAccess
         /// </summary>
         /// <typeparam name="T">Record type</typeparam>
         /// <param name="record">Record instance</param>
-        /// <param name="withGet">Should get the previous record?</param>
         /// <param name="token">Optional cancellation token</param>
         /// <remarks>The record must have a primary key</remarks>
-        private async Task<Tuple<bool, T>> DeleteInternalAsync<T>(T record, bool withGet, 
+        private async Task<Tuple<bool, T>> DeleteInternalAsync<T>(T record,
             CancellationToken token = default(CancellationToken))
         {
             // ReSharper disable CompareNonConstrainedGenericWithNull
             if (record == null)
             // ReSharper restore CompareNonConstrainedGenericWithNull
             {
-                throw new ArgumentNullException("record");
+                throw new ArgumentNullException(nameof(record));
             }
-            return await DeleteInternalAsync<T>(GetPrimaryKeyValue(record), withGet, token);
+            return await DeleteInternalAsync<T>(GetPrimaryKeyValue(record), token);
         }
 
         #endregion
@@ -3034,18 +2476,17 @@ namespace Seemplest.MsSql.DataAccess
         /// <returns>Escaped name</returns>
         public static string EscapeSqlIdentifier(string identifier)
         {
-            return string.Format("[{0}]", identifier);
+            return $"\"{identifier}\"";
         }
 
         /// <summary>
         /// Gets the escaped SQL name of the specified table
         /// </summary>
-        /// <param name="schemaName">SQL schema name</param>
         /// <param name="tableName">SQL table name</param>
         /// <returns>Escaped table name</returns>
-        public static string EscapeSqlTableName(string schemaName, string tableName)
+        public static string EscapeSqlTableName(string tableName)
         {
-            return string.Format("[{0}].[{1}]", schemaName ?? "dbo", tableName);
+            return $"\"{tableName}\"";
         }
 
         /// <summary>
@@ -3055,75 +2496,7 @@ namespace Seemplest.MsSql.DataAccess
         public static string EscapeSqlTableName<T>()
         {
             var metadata = RecordMetadataManager.GetMetadata<T>();
-            return EscapeSqlTableName(metadata.SchemaName, metadata.TableName);
-        }
-
-        #endregion
-
-        #region Change tracking
-
-        /// <summary>
-        /// Gets the flag indicating if this database is tracked for modifications
-        /// </summary>
-        /// <returns></returns>
-        public bool IsTracked()
-        {
-            return (int) OperationMode >= (int) SqlOperationMode.Tracked;
-        }
-
-        /// <summary>
-        /// Attaches the specified record to the tracking context
-        /// </summary>
-        /// <typeparam name="T">Record type</typeparam>
-        /// <param name="record">Data record instance</param>
-        public void AttachToTrackingContext<T>(T record)
-        {
-            TrackRecord(record, ChangedRecordState.Attached);
-        }
-
-        /// <summary>
-        /// Tracks the insertion of the specified record
-        /// </summary>
-        /// <typeparam name="T">Record type</typeparam>
-        /// <param name="record">Data record instance</param>
-        public void TrackInsert<T>(T record)
-        {
-            TrackRecord(record, ChangedRecordState.Inserted);
-        }
-
-        /// <summary>
-        /// Tracks the modification of the specified record
-        /// </summary>
-        /// <typeparam name="T">Record type</typeparam>
-        /// <param name="record">Data record instance</param>
-        public void TrackUpdate<T>(T record)
-        {
-            TrackRecord(record, ChangedRecordState.Updated);
-        }
-
-        /// <summary>
-        /// Tracks the deletion of the specified record
-        /// </summary>
-        /// <typeparam name="T">Record type</typeparam>
-        /// <param name="record">Data record instance</param>
-        public void TrackDelete<T>(T record)
-        {
-            TrackRecord(record, ChangedRecordState.Deleted);
-        }
-
-        /// <summary>
-        /// Tracks the specified record with the given state type
-        /// </summary>
-        /// <typeparam name="T">Record type</typeparam>
-        /// <param name="record">Data record instance</param>
-        /// <param name="state">State type</param>
-        private void TrackRecord<T>(T record, ChangedRecordState state)
-        {
-            if (!IsTracked()) return;
-            var dataRecord = record as IDataRecord;
-            // ReSharper disable PossibleNullReferenceException
-            _changes.Add(new Tuple<IDataRecord, ChangedRecordState>(dataRecord.Clone(), state));
-            // ReSharper restore PossibleNullReferenceException
+            return EscapeSqlTableName(metadata.TableName);
         }
 
         #endregion
@@ -3135,31 +2508,21 @@ namespace Seemplest.MsSql.DataAccess
         /// </summary>
         /// <typeparam name="T">Record type</typeparam>
         /// <param name="record">Record instance</param>
-        /// <param name="insertIdentity">Should use identity insertion?</param>
-        /// <param name="identityFieldName">Name of the identity field</param>
         /// <param name="columnNames">Column names list</param>
         /// <param name="columnValues">Column parameters list</param>
         /// <param name="rawValues">Raw column values</param>
-        private static void PrepareInsertData<T>(T record, bool insertIdentity, out string identityFieldName,
+        private static void PrepareInsertData<T>(T record,
             out List<string> columnNames, out List<string> columnValues, out List<object> rawValues)
         {
             var metadata = RecordMetadataManager.GetMetadata<T>();
             columnNames = new List<string>();
             columnValues = new List<string>();
             rawValues = new List<object>();
-            identityFieldName = null;
             var columnIndex = 0;
             foreach (var column in metadata.DataColumns)
             {
                 // --- Don't insert calculated columns and version columns
                 if (column.IsCalculated || column.IsVersionColumn) continue;
-
-                // --- Check for identity field
-                if (column.IsAutoGenerated)
-                {
-                    identityFieldName = column.ColumnName;
-                    if (!insertIdentity) continue;
-                }
 
                 // --- Obtain column value
                 var val = column.PropertyInfo.GetValue(record);
@@ -3173,7 +2536,7 @@ namespace Seemplest.MsSql.DataAccess
 
                 // --- Add column info
                 columnNames.Add(EscapeSqlIdentifier(column.ColumnName));
-                columnValues.Add(string.Format("{0}{1}", PARAM_PREFIX, columnIndex++));
+                columnValues.Add($"{PARAM_PREFIX}{columnIndex++}");
                 rawValues.Add(val);
             }
         }
@@ -3181,37 +2544,185 @@ namespace Seemplest.MsSql.DataAccess
         /// <summary>
         /// Prepares the specified SQL command for insert operation
         /// </summary>
+        /// <param name="metadata">Record metadata</param>
         /// <param name="cmd">SQL command instance</param>
-        /// <param name="identityFieldName">Name of the identity field</param>
-        /// <param name="insertIdentity">Should the identity value explicitly inserted?</param>
         /// <param name="useOutput">Should the output of the INSERT statement used?</param>
         /// <param name="tableName">Name of the table to insert into</param>
         /// <param name="columnNames">Column names</param>
         /// <param name="columnValues">Column parameter names</param>
         /// <param name="rawValues">Column values</param>
-        private void PrepareInsertCommand(SqlCommand cmd, string identityFieldName, bool insertIdentity, 
-            bool useOutput, string tableName, List<string> columnNames, List<string> columnValues, List<object> rawValues)
+        private void PrepareInsertCommand(DataRecordDescriptor metadata, FbCommand cmd,
+            bool useOutput, string tableName, List<string> columnNames, List<string> columnValues,
+            List<object> rawValues)
         {
+            // --- Create the insert statement with paramters
             var sql = new StringBuilder();
-            if (identityFieldName != null && insertIdentity)
-            {
-                sql.AppendFormat("set identity_insert {0} on\n", tableName);
-            }
             sql.Append(columnNames.Count > 0
-                           ? string.Format("insert into {0} ({1}){2} values ({3})",
-                                           tableName,
-                                           string.Join(", ", columnNames.ToArray()),
-                                           useOutput ? " output inserted.*" : "",
-                                           string.Join(", ", columnValues.ToArray()))
-                           : string.Format("insert into {0} default values",
-                                           tableName));
-            if (identityFieldName != null)
+                ? $"insert into {tableName} ({string.Join(", ", columnNames.ToArray())}) values ({string.Join(", ", columnValues.ToArray())})"
+                : $"insert into {tableName} default values");
+            if (!useOutput)
             {
-                if (insertIdentity) sql.AppendFormat("set identity_insert {0} off\n", tableName);
-                if (!useOutput) sql.Append("\nselect scope_identity() as NewID");
+                cmd.CommandText = sql.ToString();
+                rawValues.ForEach(par => AddParam(cmd, par));
+                return;
             }
+
+            // --- Create a block with INSERT..RETURNING statement
+            sql = new StringBuilder("execute block returns (");
+            var needComma = false;
+            foreach (var column in metadata.DataColumns.Where(c => !c.IsCalculated))
+            {
+                if (needComma)
+                {
+                    sql.Append(", ");
+                }
+                sql.AppendFormat("{0} {1}", EscapeSqlIdentifier(column.Name), ClrToFbTypeName(column.ClrType));
+                needComma = true;
+            }
+
+            // --- INSERT
+            sql.Append($") as begin insert into {tableName} ");
+            if (columnNames.Count > 0)
+            {
+                sql.Append($"({string.Join(", ", columnNames.ToArray())}) values(");
+                needComma = false;
+                foreach (var value in rawValues)
+                {
+                    if (needComma)
+                    {
+                        sql.Append(", ");
+                    }
+                    sql.Append(ToFbLiteral(value));
+                    needComma = true;
+                }
+                sql.Append(")");
+            }
+            else
+            {
+                sql.Append("default values");
+            }
+
+            // --- RETURNING..INTO
+            sql.Append(" returning ");
+            needComma = false;
+            foreach (var column in metadata.DataColumns.Where(c => !c.IsCalculated))
+            {
+                if (needComma)
+                {
+                    sql.Append(", ");
+                }
+                sql.Append(EscapeSqlIdentifier(column.Name));
+                needComma = true;
+            }
+            sql.Append(" into ");
+            needComma = false;
+            foreach (var column in metadata.DataColumns.Where(c => !c.IsCalculated))
+            {
+                if (needComma)
+                {
+                    sql.Append(", ");
+                }
+                sql.AppendFormat(":{0}", EscapeSqlIdentifier(column.Name));
+                needComma = true;
+            }
+            sql.Append("; suspend; end");
             cmd.CommandText = sql.ToString();
-            rawValues.ForEach(par => AddParam(cmd, par));
+        }
+
+        /// <summary>
+        /// Converts CLR types to Firebird data type names
+        /// </summary>
+        /// <param name="clrType">CLR type</param>
+        /// <returns>Firebird data type name</returns>
+        private static string ClrToFbTypeName(Type clrType)
+        {
+            if (clrType == typeof (bool)
+                || clrType == typeof (byte)
+                || clrType == typeof (sbyte)
+                || clrType == typeof (short)
+                || clrType == typeof (ushort)
+                || clrType == typeof (int)
+                )
+            {
+                return "int";
+            }
+            if (clrType == typeof(uint)
+                || clrType == typeof(long)
+                || clrType == typeof(ulong)
+                )
+            {
+                return "bigint";
+            }
+
+            if (clrType == typeof(decimal))
+            {
+                return "decimal(18, 18)";
+            }
+
+            if (clrType == typeof(float)
+                || clrType == typeof(double)
+                )
+            {
+                return "double precision";
+            }
+
+            if (clrType == typeof(char))
+            {
+                return "char(1)";
+            }
+
+            if (clrType == typeof(DateTime)
+                || clrType == typeof(DateTimeOffset)
+                )
+            {
+                return "timestamp";
+            }
+
+            return "varchar(10900)";
+        }
+
+        /// <summary>
+        /// Converts an object to a Firebase value literal
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private static string ToFbLiteral(object value)
+        {
+            if (value == null)
+            {
+                return "null";
+            }
+            var clrType = value.GetType();
+            if (clrType == typeof(bool)
+                || clrType == typeof(byte)
+                || clrType == typeof(sbyte)
+                || clrType == typeof(short)
+                || clrType == typeof(ushort)
+                || clrType == typeof(int)
+                || clrType == typeof(uint)
+                || clrType == typeof(long)
+                || clrType == typeof(ulong)
+                || clrType == typeof(decimal)
+                || clrType == typeof(float)
+                || clrType == typeof(double)
+                )
+            {
+                return value.ToString();
+            }
+            if (clrType == typeof(char)
+                || clrType == typeof(string))
+            {
+                return $"'{value}'";
+            }
+            if (clrType == typeof(DateTime))
+            {
+                return $"'{((DateTime) value).ToString("MM/dd/yyyy hh:mm:ss.fff", CultureInfo.InvariantCulture)}'";
+            }
+            if (clrType == typeof(DateTimeOffset))
+            {
+                return $"'{((DateTimeOffset)value).ToString("MM/dd/yyyy hh:mm:ss.fff", CultureInfo.InvariantCulture)}'";
+            }
+            return ""; 
         }
 
         /// <summary>
@@ -3235,32 +2746,13 @@ namespace Seemplest.MsSql.DataAccess
         }
 
         /// <summary>
-        /// Internal helper to cleanup transaction stuff -- async
-        /// </summary>
-        void CleanupTransaction()
-        {
-            OnEndTransaction();
-            if (_transactionCancelled)
-            {
-                Transaction.Rollback();
-            }
-            else
-            {
-                Transaction.Commit();
-            }
-            Transaction.Dispose();
-            Transaction = null;
-            CloseSharedConnection();
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="SqlCommand"/> instance
+        /// Creates a new <see cref="FbCommand"/> instance
         /// </summary>
         /// <param name="connection">Connection to use</param>
         /// <param name="sql">SQL command text</param>
         /// <param name="args">SQL command arguments</param>
         /// <returns></returns>
-        private SqlCommand CreateCommand(SqlConnection connection, string sql, params object[] args)
+        private FbCommand CreateCommand(FbConnection connection, string sql, params object[] args)
         {
             // --- Perform parameter prefix replacements
             sql = sql.Replace("@@", "@");
@@ -3271,7 +2763,7 @@ namespace Seemplest.MsSql.DataAccess
             command.CommandText = sql;
             command.Transaction = Transaction;
             foreach (var item in args) AddParam(command, item);
-            if (!String.IsNullOrEmpty(sql)) DoPreExecute(command);
+            if (!string.IsNullOrEmpty(sql)) DoPreExecute(command);
             return command;
         }
 
@@ -3280,16 +2772,15 @@ namespace Seemplest.MsSql.DataAccess
         /// </summary>
         /// <param name="cmd">Command to add the parameter for</param>
         /// <param name="item">Parameter object</param>
-        private void AddParam(SqlCommand cmd, object item)
+        private void AddParam(FbCommand cmd, object item)
         {
             var mapper = ParameterMapper ?? new DefaultSqlParameterMapper();
-            var parameterName = string.Format("{0}{1}", PARAM_PREFIX, cmd.Parameters.Count);
+            var parameterName = $"{PARAM_PREFIX}{cmd.Parameters.Count}";
             var parameter = mapper.MapParameterValue(parameterName, item);
             if (parameter == null)
             {
                 throw new InvalidOperationException(
-                    string.Format("The specified item with type '{0}' cannot be mapped to an SqlParameter",
-                    item.GetType().FullName));
+                    $"The specified item with type '{item.GetType().FullName}' cannot be mapped to an SqlParameter");
             }
             cmd.Parameters.Add(parameter);
         }
@@ -3298,7 +2789,7 @@ namespace Seemplest.MsSql.DataAccess
         /// Prepares a command to execute
         /// </summary>
         /// <param name="command">Command to execute</param>
-        private void DoPreExecute(SqlCommand command)
+        private void DoPreExecute(FbCommand command)
         {
             // --- Setup command timeout
             if (OneTimeCommandTimeout != 0)
@@ -3316,7 +2807,7 @@ namespace Seemplest.MsSql.DataAccess
 
             // --- Save it
             LastSql = command.CommandText;
-            LastArgs = (from SqlParameter parameter in command.Parameters select parameter.Value).ToArray();
+            LastArgs = (from FbParameter parameter in command.Parameters select parameter.Value).ToArray();
         }
 
         /// <summary>
@@ -3362,17 +2853,9 @@ namespace Seemplest.MsSql.DataAccess
 
             // --- Build the SQL for the actual final result
             sqlSelectRemoved = s_RxOrderBy.Replace(sqlSelectRemoved, "");
-            if (s_RxDistinct.IsMatch(sqlSelectRemoved))
-            {
-                sqlSelectRemoved = "paging_inner.* from (select " + sqlSelectRemoved + ") paging_inner";
-            }
             sqlPage =
-                string.Format(
-                    "select * from (select row_number() over ({0}) row_number, {1}) " +
-                    "paged_select where row_number>@{2} AND row_number<=@{3}",
-                    sqlOrderBy ?? "order by (select null)",
-                    sqlSelectRemoved, args.Length, args.Length + 1);
-            args = args.Concat(new object[] { skip, skip + take }).ToArray();
+                $"select first @{args.Length} skip @{args.Length + 1} {sqlSelectRemoved}";
+            args = args.Concat(new object[] { take, skip }).ToArray();
         }
 
         /// <summary>
@@ -3422,11 +2905,11 @@ namespace Seemplest.MsSql.DataAccess
         {
             if (s_RxSelect.IsMatch(sql)) return sql;
             var pd = RecordMetadataManager.GetMetadata<T>();
-            var tableName = EscapeSqlTableName(pd.SchemaName, pd.TableName);
-            var cols = string.Join(", ", pd.DataColumns.Select(dc => dc.ColumnName).ToArray());
+            var tableName = EscapeSqlTableName(pd.TableName);
+            var cols = string.Join(", ", pd.DataColumns.Select(dc => EscapeSqlIdentifier(dc.ColumnName)).ToArray());
             sql = !s_RxFrom.IsMatch(sql)
-                ? string.Format("select {0} from {1} {2}", cols, tableName, sql)
-                : string.Format("select {0} {1}", cols, sql);
+                ? $"select {cols} from {tableName} {sql}"
+                : $"select {cols} {sql}";
             return sql;
         }
 
@@ -3442,29 +2925,11 @@ namespace Seemplest.MsSql.DataAccess
                 .GetMetadata<T>()
                 .PrimaryKeyColumns.Select(c => c.PropertyInfo.GetValue(record));
         }
-            
+
         [ExcludeFromCodeCoverage]
         private static void CloseBrokenConnection(IDbConnection connection)
         {
             if (connection.State == ConnectionState.Broken) connection.Close();
-        }
-
-        /// <summary>
-        /// This markup interface is used in multiple fetch operations to sign that a certain
-        /// type is not mapped.
-        /// </summary>
-        private interface IDoNotMap
-        {
-        }
-
-        /// <summary>
-        /// This enum defines the modes the update operation should work internally
-        /// </summary>
-        private enum UpdateMode
-        {
-            Simple = 0,
-            GetPrevious,
-            GetCurrent
         }
 
         #endregion

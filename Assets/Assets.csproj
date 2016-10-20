@@ -182,6 +182,8 @@
     <Content Include="bootstrap-3.2.0\less\extensions\Content\font-awesome.css" />
     <Content Include="bootstrap-3.2.0\less\extensions\Content\font-awesome.min.css" />
     <Content Include="bootstrap-3.2.0\test-infra\requirements.txt" />
+    <Content Include="Libs\Firebird\FirebirdSql.Data.FirebirdClient.dll" />
+    <Content Include="Libs\Firebird\FirebirdSql.Data.FirebirdClient.pdb" />
     <Content Include="Libs\Unicopy\MSBuild.Unicopy.dll" />
     <Content Include="Libs\Unicopy\MSBuild.Unicopy.pdb" />
   </ItemGroup>
