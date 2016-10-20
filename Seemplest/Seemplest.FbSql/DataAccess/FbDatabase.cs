@@ -29,6 +29,8 @@ namespace Seemplest.FbSql.DataAccess
     public class FbDatabase : IDisposable
     {
         private const string PARAM_PREFIX = "@";
+        private const int DEFAULT_VARCHAR_LENGTH = 255;
+        private const int BLOB_LENGTH = 10900;
 
         private bool _transactionCancelled;
 
@@ -2576,7 +2578,7 @@ namespace Seemplest.FbSql.DataAccess
                 {
                     sql.Append(", ");
                 }
-                sql.AppendFormat("{0} {1}", EscapeSqlIdentifier(column.Name), ClrToFbTypeName(column.ClrType));
+                sql.Append($"{EscapeSqlIdentifier(column.Name)} {GetFbTypeNameForColumn(column)}");
                 needComma = true;
             }
 
@@ -2632,10 +2634,11 @@ namespace Seemplest.FbSql.DataAccess
         /// <summary>
         /// Converts CLR types to Firebird data type names
         /// </summary>
-        /// <param name="clrType">CLR type</param>
+        /// <param name="column">Data column descriptor</param>
         /// <returns>Firebird data type name</returns>
-        private static string ClrToFbTypeName(Type clrType)
+        private static string GetFbTypeNameForColumn(DataColumnDescriptor column)
         {
+            var clrType = column.ClrType;
             if (clrType == typeof (bool)
                 || clrType == typeof (byte)
                 || clrType == typeof (sbyte)
@@ -2678,7 +2681,13 @@ namespace Seemplest.FbSql.DataAccess
                 return "timestamp";
             }
 
-            return "varchar(10900)";
+            if (column.MaxLength != null)
+            {
+                return $"varchar ({column.MaxLength})";
+            }
+            return column.IsBlob 
+                ? $"varchar ({BLOB_LENGTH})" 
+                : $"varchar({DEFAULT_VARCHAR_LENGTH})";
         }
 
         /// <summary>

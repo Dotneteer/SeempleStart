@@ -57,13 +57,8 @@ namespace Seemplest.Core.DataAccess.DataRecords
         /// Gets the collection of data columns
         /// </summary>
         /// <remarks>Cache the value of this property when using it!</remarks>
-        public IReadOnlyList<DataColumnDescriptor> DataColumns
-        {
-            get
-            {
-                return new ReadOnlyCollection<DataColumnDescriptor>(_dataColumns);
-            }
-        }
+        public IReadOnlyList<DataColumnDescriptor> DataColumns => 
+            new ReadOnlyCollection<DataColumnDescriptor>(_dataColumns);
 
         /// <summary>
         /// Creates a new instance of this class with the specified attributes.
@@ -100,20 +95,15 @@ namespace Seemplest.Core.DataAccess.DataRecords
         /// </summary>
         /// <param name="index">Data column index</param>
         /// <returns>Data column descriptor</returns>
-        public DataColumnDescriptor this[int index]
-        {
-            get { return _dataColumns[index]; }
-        }
+        public DataColumnDescriptor this[int index] => _dataColumns[index];
 
         /// <summary>
         /// Gets the data column with the specified name.
         /// </summary>
         /// <param name="name">Data column name</param>
         /// <returns>Data column descriptor</returns>
-        public DataColumnDescriptor this[string name]
-        {
-            get { return _dataColumns.Contains(name) ? _dataColumns[name] : null; }
-        }
+        public DataColumnDescriptor this[string name] => 
+            _dataColumns.Contains(name) ? _dataColumns[name] : null;
 
         /// <summary>
         /// A collection for data column to retrieve them by index and by column name.

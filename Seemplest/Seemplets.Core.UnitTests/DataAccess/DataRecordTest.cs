@@ -144,25 +144,25 @@ namespace Seemplest.Core.UnitTests.DataAccess
             public int IntField
             {
                 get { return _intField; }
-                set { _intField = Modify(value, "IntField"); }
+                set { _intField = Modify(value); }
             }
 
             public string StringField
             {
                 get { return _stringField; }
-                set { _stringField = Modify(value, "StringField"); }
+                set { _stringField = Modify(value); }
             }
 
             public DateTime? DateTimeField
             {
                 get { return _dateTimeField; }
-                set { _dateTimeField = Modify(value, "DateTimeField"); }
+                set { _dateTimeField = Modify(value); }
             }
 
             public bool BoolField
             {
                 get { return _boolField; }
-                set { _boolField = Modify(value, "BoolField"); }
+                set { _boolField = Modify(value); }
             }
         }
     }
