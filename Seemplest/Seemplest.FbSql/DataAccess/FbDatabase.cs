@@ -2639,6 +2639,12 @@ namespace Seemplest.FbSql.DataAccess
         private static string GetFbTypeNameForColumn(DataColumnDescriptor column)
         {
             var clrType = column.ClrType;
+            var underlying = Nullable.GetUnderlyingType(clrType);
+            if (underlying != null)
+            {
+                clrType = underlying;
+            }
+
             if (clrType == typeof (bool)
                 || clrType == typeof (byte)
                 || clrType == typeof (sbyte)

@@ -223,6 +223,29 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
             rows[0].Name2.ShouldEqual("2");
         }
 
+        [TestMethod]
+        public async Task InsertAsyncWorksWithSimpleRecordAndNullId()
+        {
+            // --- Arrange
+            var db = new FbDatabase(DB_CONN);
+            await db.BeginTransactionAsync();
+            await db.ExecuteAsync(@"create table ""sample"" (""Id"" int, ""Name"" varchar(50))");
+            await db.CompleteTransactionAsync();
+            await db.InsertAsync(new SampleWithNullIdRecord() { Id = 1, Name = "First" });
+            await db.InsertAsync(new SampleWithNullIdRecord() { Id = 2, Name = "Second" });
+
+            // --- Act
+            var rows = await db.FetchAsync<SampleWithNullIdRecord>(@"order by ""Id""");
+
+            // --- Assert
+            rows.ShouldHaveCountOf(2);
+            rows[0].Id.ShouldEqual(1);
+            rows[0].Name.ShouldEqual("First");
+            rows[1].Id.ShouldEqual(2);
+            rows[1].Name.ShouldEqual("Second");
+        }
+
+
         [TableName("sample")]
         class SampleRecord : DataRecord<SampleRecord>
         {
@@ -333,5 +356,27 @@ namespace Seemplest.FbSql.UnitTests.DataAccess
             public string Name6 { get; set; }
             public string Name7 { get; set; }
         }
+
+        [TableName("sample")]
+        class SampleWithNullIdRecord : DataRecord<SampleWithNullIdRecord>
+        {
+            private int? _id;
+            private string _name;
+
+            [PrimaryKey]
+            public int? Id
+            {
+                get { return _id; }
+                set { _id = Modify(value, "Id"); }
+            }
+
+            public string Name
+            {
+                get { return _name; }
+                set { _name = Modify(value, "Name"); }
+            }
+        }
+
+
     }
 }
