@@ -63,17 +63,17 @@ namespace Seemplest.MsSql.DataAccess
         /// <summary>
         /// Gets the operation mode of this instance
         /// </summary>
-        public SqlOperationMode OperationMode { get; private set; }
+        public SqlOperationMode OperationMode { get; }
 
         /// <summary>
         /// Gets the direct Execute mode of this instance
         /// </summary>
-        public SqlDirectExecuteMode DirectExecuteMode { get; private set; }
+        public SqlDirectExecuteMode DirectExecuteMode { get; }
 
         /// <summary>
         /// Gets the handling mode of rowversion columns
         /// </summary>
-        public SqlRowVersionHandling RowVersionHandling { get; private set; }
+        public SqlRowVersionHandling RowVersionHandling { get; }
 
         /// <summary>
         /// Gets the connection name used to obtain the connection string to
@@ -84,7 +84,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <summary>
         /// Gets the connection string to the SQL Server database
         /// </summary>
-        public string ConnectionString { get; private set; }
+        public string ConnectionString { get; }
 
         /// <summary>
         /// Stores the current connection information
@@ -217,8 +217,7 @@ namespace Seemplest.MsSql.DataAccess
                         else
                         {
                             recordChangeSet.InternalIssueList.Add(CreateIssue(
-                                string.Format("This record has already been attached to this tracking context with {0} state", 
-                                recordChangeSet.State), record));
+                                $"This record has already been attached to this tracking context with {recordChangeSet.State} state", record));
                         }
                         break;
 
@@ -230,8 +229,7 @@ namespace Seemplest.MsSql.DataAccess
                         else
                         {
                             recordChangeSet.InternalIssueList.Add(CreateIssue(
-                                string.Format("This record has already been attached to this tracking context with {0} state", 
-                                recordChangeSet.State), record));
+                                $"This record has already been attached to this tracking context with {recordChangeSet.State} state", record));
                         }
                         break;
 
@@ -561,10 +559,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <summary>
         /// The last command executed
         /// </summary>
-        public string LastCommand
-        {
-            get { return FormatCommand(LastSql, LastArgs); }
-        }
+        public string LastCommand => FormatCommand(LastSql, LastArgs);
 
         /// <summary>
         /// Gets or sets the object used to map CLR instances to <see cref="SqlParameter"/> instances.
@@ -583,6 +578,33 @@ namespace Seemplest.MsSql.DataAccess
         }
 
         /// <summary>
+        /// Executes the specified SQL batch with the provided parameters and retrieves
+        /// the result set.
+        /// </summary>
+        /// <typeparam name="T">Type of poco to retrieve.</typeparam>
+        /// <param name="sql">SQL string</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <returns>Number of rows affected</returns>
+        public List<T> Execute<T>(string sql, params object[] args)
+        {
+            return Execute<T>(new SqlExpression(sql, args));
+        }
+
+        /// <summary>
+        /// Executes the specified SQL batch with the provided parameters and retrieves
+        /// the result set.
+        /// </summary>
+        /// <typeparam name="T">Type of poco to retrieve.</typeparam>
+        /// <param name="sqlExpr">SQL statement</param>
+        /// <returns>Number of rows affected</returns>
+        public List<T> Execute<T>(SqlExpression sqlExpr)
+        {
+            var task = ExecuteAsync<T>(sqlExpr);
+            task.WaitAndUnwrapException();
+            return task.Result;
+        }
+
+        /// <summary>
         /// Executes the specified SQL batch with the provided parameters -- async
         /// </summary>
         /// <param name="sql">SQL string</param>
@@ -591,6 +613,19 @@ namespace Seemplest.MsSql.DataAccess
         public Task<int> ExecuteAsync(string sql, params object[] args)
         {
             return ExecuteAsync(new SqlExpression(sql, args));
+        }
+
+        /// <summary>
+        /// Executes the specified SQL batch with the provided parameters and retrieves -- async
+        /// the result set.
+        /// </summary>
+        /// <typeparam name="T">Type of poco to retrieve.</typeparam>
+        /// <param name="sql">SQL string</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <returns>Number of rows affected</returns>
+        public Task<List<T>> ExecuteAsync<T>(string sql, params object[] args)
+        {
+            return ExecuteAsync<T>(new SqlExpression(sql, args));
         }
 
         /// <summary>
@@ -657,6 +692,25 @@ namespace Seemplest.MsSql.DataAccess
                 OnException(ex);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Executes the specified SQL batch -- async
+        /// </summary>
+        /// <param name="sqlExpr">SQL statement</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Number of rows affected</returns>
+        public async Task<List<T>> ExecuteAsync<T>(SqlExpression sqlExpr, CancellationToken token = default(CancellationToken))
+        {
+            // --- Check if direct execution is enabled or not
+            if (DirectExecuteMode != SqlDirectExecuteMode.Enable)
+            {
+                throw new InvalidOperationException(
+                    "Using the Execute family of operation is not allowed.");
+            }
+
+            // --- Prepare and execute the command
+            return (await DoQueryAsync<T>(sqlExpr, token: token, skipCompleteSelect: true)).ToList();
         }
 
         /// <summary>
@@ -1510,8 +1564,7 @@ namespace Seemplest.MsSql.DataAccess
             if (metadata.PrimaryKeyColumns.Count != values.Count)
             {
                 throw new InvalidOperationException(
-                    string.Format("Type {0} has primary key item count {1}, but the number of provided item is {2}.",
-                    typeof(T).FullName, metadata.PrimaryKeyColumns.Count, values.Count));
+                    $"Type {typeof(T).FullName} has primary key item count {metadata.PrimaryKeyColumns.Count}, but the number of provided item is {values.Count}.");
             }
 
             // --- Prepare the expression to execute
@@ -1521,11 +1574,10 @@ namespace Seemplest.MsSql.DataAccess
                 if (values[i] == null)
                 {
                     throw new InvalidOperationException(
-                        string.Format("Value of primary key element {0} cannot be null",
-                        metadata.PrimaryKeyColumns[i].ColumnName));
+                        $"Value of primary key element {metadata.PrimaryKeyColumns[i].ColumnName} cannot be null");
                 }
                 sqlExpr.Where(
-                    string.Format("{0}=@0", EscapeSqlIdentifier(metadata.PrimaryKeyColumns[i].ColumnName)),
+                    $"{EscapeSqlIdentifier(metadata.PrimaryKeyColumns[i].ColumnName)}=@0",
                     values[i]);
             }
             return FetchAsync<T>(sqlExpr, token);
@@ -2040,11 +2092,15 @@ namespace Seemplest.MsSql.DataAccess
         /// <param name="instance">Instance to fill with the data</param>
         /// <param name="token">Optional cancellation token</param>
         /// <param name="firstOnly">Query only the first record, if found</param>
+        /// <param name="skipCompleteSelect">Set this flag to true to skip SELECT statement completion</param>
         /// <returns>Query resultset</returns>
         private async Task<IEnumerable<T>> DoQueryAsync<T>(SqlExpression sqlExpr, T instance = default(T), 
-            CancellationToken token = default(CancellationToken), bool firstOnly = false)
+            CancellationToken token = default(CancellationToken), bool firstOnly = false, bool skipCompleteSelect = false)
         {
-            sqlExpr = sqlExpr.CompleteSelect<T>();
+            if (!skipCompleteSelect)
+            {
+                sqlExpr = sqlExpr.CompleteSelect<T>();
+            }
             var sql = sqlExpr.SqlText;
             var args = sqlExpr.Arguments;
 
@@ -2392,6 +2448,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <param name="insertIdentity">True shows that identity value is inserted explicitly</param>
         /// <param name="withGet">True indicates that the newly inserted record should be read back</param>
         /// <param name="token">Optional cancellation token</param>
+        /// <exception cref="ArgumentNullException"></exception>
         /// <remarks>The insert and get operations are atomic.</remarks>
         public async Task InsertAsync<T>(T record, bool insertIdentity = false, bool withGet = true, 
             CancellationToken token = default(CancellationToken))
@@ -2407,7 +2464,7 @@ namespace Seemplest.MsSql.DataAccess
             try
             {
                 // ReSharper disable CompareNonConstrainedGenericWithNull
-                if (record == null) throw new ArgumentNullException("record");
+                if (record == null) throw new ArgumentNullException(nameof(record));
                 // ReSharper restore CompareNonConstrainedGenericWithNull
 
                 // --- Prepare the SQL expression to execute
@@ -2567,7 +2624,7 @@ namespace Seemplest.MsSql.DataAccess
             try
             {
                 // ReSharper disable CompareNonConstrainedGenericWithNull
-                if (record == null) throw new ArgumentNullException("record");
+                if (record == null) throw new ArgumentNullException(nameof(record));
                 // ReSharper restore CompareNonConstrainedGenericWithNull
 
                 // --- Prepare the SQL expression to execute
@@ -2577,14 +2634,14 @@ namespace Seemplest.MsSql.DataAccess
                 if (metadata.IsSimplePoco)
                 {
                     throw new InvalidOperationException(
-                        string.Format("Type {0} is not a data record type, it cannot be used in Update<> operation.", typeof(T)));
+                        $"Type {typeof(T)} is not a data record type, it cannot be used in Update<> operation.");
                 }
 
                 // --- Check for primary key existence
                 if (metadata.PrimaryKeyColumns.Count == 0)
                 {
                     throw new InvalidOperationException(
-                        string.Format("No primary key values found for {0}, so it can be used in UPDATE.", typeof(T)));
+                        $"No primary key values found for {typeof(T)}, so it can be used in UPDATE.");
                 }
 
                 // --- Check for update column specification
@@ -2687,11 +2744,8 @@ namespace Seemplest.MsSql.DataAccess
                     if (resultCount == 0 && versionColumn != null && RowVersionHandling == SqlRowVersionHandling.RaiseException)
                     {
                         throw new DBConcurrencyException(
-                            string.Format("A Concurrency update occurred in table '{0}' for primary key " +
-                                "value(s) = '{1}' and version = '{2}'",
-                                tableName,
-                                string.Join(", ", metadata.PrimaryKeyColumns.Select(col => col.PropertyInfo.GetValue(record)).ToArray()),
-                                TypeConversionHelper.ByteArrayToString((byte[])versionColumn.PropertyInfo.GetValue(record))));
+                            $"A Concurrency update occurred in table '{tableName}' for primary key " +
+                            $"value(s) = '{string.Join(", ", metadata.PrimaryKeyColumns.Select(col => col.PropertyInfo.GetValue(record)).ToArray())}' and version = '{TypeConversionHelper.ByteArrayToString((byte[]) versionColumn.PropertyInfo.GetValue(record))}'");
                     }
 
                     // --- Track the record update
@@ -2909,7 +2963,7 @@ namespace Seemplest.MsSql.DataAccess
             }
 
             // --- Do the operation
-            if (pkValues == null) throw new ArgumentNullException("pkValues");
+            if (pkValues == null) throw new ArgumentNullException(nameof(pkValues));
             var values = pkValues.ToList();
             try
             {
@@ -2920,14 +2974,14 @@ namespace Seemplest.MsSql.DataAccess
                 if (metadata.IsSimplePoco)
                 {
                     throw new InvalidOperationException(
-                        string.Format("Type {0} is not a data record type, it cannot be used in a Delete<> operation.", typeof(T)));
+                        $"Type {typeof(T)} is not a data record type, it cannot be used in a Delete<> operation.");
                 }
 
                 // --- Check for primary key existence
                 if (metadata.PrimaryKeyColumns.Count == 0)
                 {
                     throw new InvalidOperationException(
-                        string.Format("No primary key values found for {0}, so it can be used in DELETE.", typeof(T)));
+                        $"No primary key values found for {typeof(T)}, so it can be used in DELETE.");
                 }
 
                 // --- Prepare DELETE
@@ -3018,7 +3072,7 @@ namespace Seemplest.MsSql.DataAccess
             if (record == null)
             // ReSharper restore CompareNonConstrainedGenericWithNull
             {
-                throw new ArgumentNullException("record");
+                throw new ArgumentNullException(nameof(record));
             }
             return await DeleteInternalAsync<T>(GetPrimaryKeyValue(record), withGet, token);
         }
@@ -3034,7 +3088,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <returns>Escaped name</returns>
         public static string EscapeSqlIdentifier(string identifier)
         {
-            return string.Format("[{0}]", identifier);
+            return $"[{identifier}]";
         }
 
         /// <summary>
@@ -3045,7 +3099,7 @@ namespace Seemplest.MsSql.DataAccess
         /// <returns>Escaped table name</returns>
         public static string EscapeSqlTableName(string schemaName, string tableName)
         {
-            return string.Format("[{0}].[{1}]", schemaName ?? "dbo", tableName);
+            return $"[{schemaName ?? "dbo"}].[{tableName}]";
         }
 
         /// <summary>
@@ -3173,7 +3227,7 @@ namespace Seemplest.MsSql.DataAccess
 
                 // --- Add column info
                 columnNames.Add(EscapeSqlIdentifier(column.ColumnName));
-                columnValues.Add(string.Format("{0}{1}", PARAM_PREFIX, columnIndex++));
+                columnValues.Add($"{PARAM_PREFIX}{columnIndex++}");
                 rawValues.Add(val);
             }
         }
@@ -3198,13 +3252,8 @@ namespace Seemplest.MsSql.DataAccess
                 sql.AppendFormat("set identity_insert {0} on\n", tableName);
             }
             sql.Append(columnNames.Count > 0
-                           ? string.Format("insert into {0} ({1}){2} values ({3})",
-                                           tableName,
-                                           string.Join(", ", columnNames.ToArray()),
-                                           useOutput ? " output inserted.*" : "",
-                                           string.Join(", ", columnValues.ToArray()))
-                           : string.Format("insert into {0} default values",
-                                           tableName));
+                ? $"insert into {tableName} ({string.Join(", ", columnNames.ToArray())}){(useOutput ? " output inserted.*" : "")} values ({string.Join(", ", columnValues.ToArray())})"
+                : $"insert into {tableName} default values");
             if (identityFieldName != null)
             {
                 if (insertIdentity) sql.AppendFormat("set identity_insert {0} off\n", tableName);
@@ -3271,7 +3320,7 @@ namespace Seemplest.MsSql.DataAccess
             command.CommandText = sql;
             command.Transaction = Transaction;
             foreach (var item in args) AddParam(command, item);
-            if (!String.IsNullOrEmpty(sql)) DoPreExecute(command);
+            if (!string.IsNullOrEmpty(sql)) DoPreExecute(command);
             return command;
         }
 
@@ -3283,13 +3332,12 @@ namespace Seemplest.MsSql.DataAccess
         private void AddParam(SqlCommand cmd, object item)
         {
             var mapper = ParameterMapper ?? new DefaultSqlParameterMapper();
-            var parameterName = string.Format("{0}{1}", PARAM_PREFIX, cmd.Parameters.Count);
+            var parameterName = $"{PARAM_PREFIX}{cmd.Parameters.Count}";
             var parameter = mapper.MapParameterValue(parameterName, item);
             if (parameter == null)
             {
                 throw new InvalidOperationException(
-                    string.Format("The specified item with type '{0}' cannot be mapped to an SqlParameter",
-                    item.GetType().FullName));
+                    $"The specified item with type '{item.GetType().FullName}' cannot be mapped to an SqlParameter");
             }
             cmd.Parameters.Add(parameter);
         }
@@ -3367,11 +3415,8 @@ namespace Seemplest.MsSql.DataAccess
                 sqlSelectRemoved = "paging_inner.* from (select " + sqlSelectRemoved + ") paging_inner";
             }
             sqlPage =
-                string.Format(
-                    "select * from (select row_number() over ({0}) row_number, {1}) " +
-                    "paged_select where row_number>@{2} AND row_number<=@{3}",
-                    sqlOrderBy ?? "order by (select null)",
-                    sqlSelectRemoved, args.Length, args.Length + 1);
+                $"select * from (select row_number() over ({sqlOrderBy ?? "order by (select null)"}) row_number, {sqlSelectRemoved}) " +
+                $"paged_select where row_number>@{args.Length} AND row_number<=@{args.Length + 1}";
             args = args.Concat(new object[] { skip, skip + take }).ToArray();
         }
 
@@ -3418,15 +3463,15 @@ namespace Seemplest.MsSql.DataAccess
         /// <typeparam name="T">Type representing the result of a query</typeparam>
         /// <param name="sql">SQL string</param>
         /// <returns></returns>
-        static string AddSelectClause<T>(string sql)
+        private static string AddSelectClause<T>(string sql)
         {
             if (s_RxSelect.IsMatch(sql)) return sql;
             var pd = RecordMetadataManager.GetMetadata<T>();
             var tableName = EscapeSqlTableName(pd.SchemaName, pd.TableName);
             var cols = string.Join(", ", pd.DataColumns.Select(dc => dc.ColumnName).ToArray());
             sql = !s_RxFrom.IsMatch(sql)
-                ? string.Format("select {0} from {1} {2}", cols, tableName, sql)
-                : string.Format("select {0} {1}", cols, sql);
+                ? $"select {cols} from {tableName} {sql}"
+                : $"select {cols} {sql}";
             return sql;
         }
 

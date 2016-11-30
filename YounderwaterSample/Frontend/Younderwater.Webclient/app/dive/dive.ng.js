@@ -90,9 +90,9 @@ var Dive;
             };
             $scope.refreshData();
         }
-        MyDivesCtrl.$inject = ['$scope', '$modal', 'ywapi'];
         return MyDivesCtrl;
     }());
+    MyDivesCtrl.$inject = ['$scope', '$modal', 'ywapi'];
     Dive.MyDivesCtrl = MyDivesCtrl;
     /*
      * This controller manages the dive log entry popup
@@ -128,9 +128,9 @@ var Dive;
                 $modalInstance.dismiss('cancel');
             };
         }
-        EditDiveCtrl.$inject = ['$scope', '$modalInstance', 'dive', 'isEdit', 'ywapi'];
         return EditDiveCtrl;
     }());
+    EditDiveCtrl.$inject = ['$scope', '$modalInstance', 'dive', 'isEdit', 'ywapi'];
 })(Dive || (Dive = {}));
 Dive.initAccountComponents();
 //# sourceMappingURL=dive.ng.js.map

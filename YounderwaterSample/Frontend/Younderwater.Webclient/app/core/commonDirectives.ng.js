@@ -40,21 +40,21 @@ var Core;
                 return angular.isUndefined(value) || value === '' || value === null || value !== value;
             };
         }
-        /*
-         * Obtains the controller from a parameter array
-         */
-        BaseDirective.getControllerFromParameterArray = function (controller) {
-            var currentController;
-            if (angular.isArray(controller) && controller.length > 0) {
-                currentController = controller[0];
-            }
-            else {
-                currentController = controller;
-            }
-            return currentController;
-        };
         return BaseDirective;
     }());
+    /*
+     * Obtains the controller from a parameter array
+     */
+    BaseDirective.getControllerFromParameterArray = function (controller) {
+        var currentController;
+        if (angular.isArray(controller) && controller.length > 0) {
+            currentController = controller[0];
+        }
+        else {
+            currentController = controller;
+        }
+        return currentController;
+    };
     Core.BaseDirective = BaseDirective;
     /*
      * Apply this directive to an element to disable the click event
@@ -62,13 +62,14 @@ var Core;
     var NoClickDirective = (function (_super) {
         __extends(NoClickDirective, _super);
         function NoClickDirective() {
-            _super.call(this);
-            this.restrict = 'A';
-            this.link = function (scope, element) {
+            var _this = _super.call(this) || this;
+            _this.restrict = 'A';
+            _this.link = function (scope, element) {
                 element.click(function (eventObject) {
                     eventObject.preventDefault();
                 });
             };
+            return _this;
         }
         return NoClickDirective;
     }(BaseDirective));
@@ -79,12 +80,12 @@ var Core;
     var PaginationDirective = (function (_super) {
         __extends(PaginationDirective, _super);
         function PaginationDirective() {
-            _super.call(this);
-            var that = this;
+            var _this = _super.call(this) || this;
+            var that = _this;
             that.currentPage = 0;
-            this.restrict = 'A';
+            _this.restrict = 'A';
             that.currentlyShownPages = [];
-            this.link = function (scope, instanceElement, instanceAttributes) {
+            _this.link = function (scope, instanceElement, instanceAttributes) {
                 instanceElement.addClass('pagination');
                 var searchFunc;
                 if (instanceAttributes.$attr['gotoPageFunction']) {
@@ -210,6 +211,7 @@ var Core;
                 scope.$on('pageLoadCompleted', function () { refresh(false); });
                 scope.$on('searchCompleted', function () { refresh(true); });
             };
+            return _this;
         }
         PaginationDirective.createButton = function (label, clickEvent) {
             var button = angular.element('<li><a href=#>' + label + '</a></li>');
@@ -225,11 +227,10 @@ var Core;
     var RequiredDirective = (function (_super) {
         __extends(RequiredDirective, _super);
         function RequiredDirective() {
-            var _this = this;
-            _super.call(this);
-            this.restrict = 'A';
-            this.require = ['?ngModel'];
-            this.link = function (scope, element, attributes, controller) {
+            var _this = _super.call(this) || this;
+            _this.restrict = 'A';
+            _this.require = ['?ngModel'];
+            _this.link = function (scope, element, attributes, controller) {
                 var currentController = BaseDirective.getControllerFromParameterArray(controller);
                 if (!currentController)
                     return;
@@ -246,6 +247,7 @@ var Core;
                 currentController.$formatters.push(validator);
                 currentController.$parsers.unshift(validator);
             };
+            return _this;
         }
         return RequiredDirective;
     }(BaseDirective));
@@ -256,11 +258,10 @@ var Core;
     var MaxLengthDirective = (function (_super) {
         __extends(MaxLengthDirective, _super);
         function MaxLengthDirective() {
-            var _this = this;
-            _super.call(this);
-            this.restrict = 'A';
-            this.require = ['?ngModel'];
-            this.link = function (scope, element, attributes, controller) {
+            var _this = _super.call(this) || this;
+            _this.restrict = 'A';
+            _this.require = ['?ngModel'];
+            _this.link = function (scope, element, attributes, controller) {
                 var maxLength = parseInt(element.attr(attributes.$attr['maxlen']));
                 var currentController = BaseDirective.getControllerFromParameterArray(controller);
                 if (!currentController)
@@ -278,6 +279,7 @@ var Core;
                 currentController.$formatters.push(validator);
                 currentController.$parsers.unshift(validator);
             };
+            return _this;
         }
         return MaxLengthDirective;
     }(BaseDirective));
@@ -288,11 +290,10 @@ var Core;
     var MinLengthDirective = (function (_super) {
         __extends(MinLengthDirective, _super);
         function MinLengthDirective() {
-            var _this = this;
-            _super.call(this);
-            this.restrict = 'A';
-            this.require = ['?ngModel'];
-            this.link = function (scope, element, attributes, controller) {
+            var _this = _super.call(this) || this;
+            _this.restrict = 'A';
+            _this.require = ['?ngModel'];
+            _this.link = function (scope, element, attributes, controller) {
                 var minLength = parseInt(element.attr(attributes.$attr['minlen']));
                 var currentController = BaseDirective.getControllerFromParameterArray(controller);
                 if (!currentController)
@@ -310,6 +311,7 @@ var Core;
                 currentController.$formatters.push(validator);
                 currentController.$parsers.unshift(validator);
             };
+            return _this;
         }
         return MinLengthDirective;
     }(BaseDirective));
@@ -320,11 +322,10 @@ var Core;
     var LengthRangeDirective = (function (_super) {
         __extends(LengthRangeDirective, _super);
         function LengthRangeDirective() {
-            var _this = this;
-            _super.call(this);
-            this.restrict = 'A';
-            this.require = ['?ngModel'];
-            this.link = function (scope, element, attributes, controller) {
+            var _this = _super.call(this) || this;
+            _this.restrict = 'A';
+            _this.require = ['?ngModel'];
+            _this.link = function (scope, element, attributes, controller) {
                 var minLength = parseInt(element.attr(attributes.$attr['minlen']));
                 var maxLength = parseInt(element.attr(attributes.$attr['maxlen']));
                 var currentController = BaseDirective.getControllerFromParameterArray(controller);
@@ -347,6 +348,7 @@ var Core;
                 currentController.$formatters.push(validator);
                 currentController.$parsers.unshift(validator);
             };
+            return _this;
         }
         return LengthRangeDirective;
     }(BaseDirective));
@@ -357,10 +359,10 @@ var Core;
     var MatchesWidthDirective = (function (_super) {
         __extends(MatchesWidthDirective, _super);
         function MatchesWidthDirective() {
-            _super.call(this);
-            this.restrict = 'A';
-            this.require = ['?ngModel'];
-            this.link = function (scope, element, attributes, controller) {
+            var _this = _super.call(this) || this;
+            _this.restrict = 'A';
+            _this.require = ['?ngModel'];
+            _this.link = function (scope, element, attributes, controller) {
                 var currentController = BaseDirective.getControllerFromParameterArray(controller);
                 if (!currentController)
                     return;
@@ -383,6 +385,7 @@ var Core;
                 currentController.$parsers.unshift(validator);
                 attributes.$observe('matches', function (comparisonModel) { return validator(controller.$viewValue); });
             };
+            return _this;
         }
         return MatchesWidthDirective;
     }(BaseDirective));

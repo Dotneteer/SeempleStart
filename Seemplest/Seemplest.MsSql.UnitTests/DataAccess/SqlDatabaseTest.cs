@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Seemplest.Core.DataAccess;
 using Seemplest.Core.DataAccess.Attributes;
@@ -297,6 +298,46 @@ namespace Seemplest.MsSql.UnitTests.DataAccess
             // --- Act
             db.Execute(@"select @0", new SqlCommand("hello"));
 
+        }
+
+        [TestMethod]
+        public void ExecuteWorksWithResultSet()
+        {
+            // --- Arrange
+            var db = new SqlDatabase(DB_CONN);
+            db.Execute(@"create table sample(Id int not null, Name varchar(50) null)");
+            db.Execute("insert into sample values(1, 'First')");
+            db.Execute("insert into sample values(2, 'Second')");
+
+            // --- Act
+            var rows = db.Execute<SampleRecord>(@"
+                    declare @@var table(Id int not null);
+                    insert into @@var select distinct Id from sample where Id > 1;
+                    select * from sample s inner join @@var va on va.Id = s.Id;
+                ");
+
+            // --- Assert
+            rows.ShouldHaveCountOf(1);
+        }
+
+        [TestMethod]
+        public async Task ExecuteAsyncWorksWithResultSet()
+        {
+            // --- Arrange
+            var db = new SqlDatabase(DB_CONN);
+            await db.ExecuteAsync(@"create table sample(Id int not null, Name varchar(50) null)");
+            await db.ExecuteAsync("insert into sample values(1, 'First')");
+            await db.ExecuteAsync("insert into sample values(2, 'Second')");
+
+            // --- Act
+            var rows = await db.ExecuteAsync<SampleRecord>(@"
+                    declare @@var table(Id int not null);
+                    insert into @@var select distinct Id from sample where Id > 1;
+                    select * from sample s inner join @@var va on va.Id = s.Id;
+                ");
+
+            // --- Assert
+            rows.ShouldHaveCountOf(1);
         }
 
         [TestMethod]

@@ -40,9 +40,9 @@ var Main;
                 return currentSpot.getCurrentTitle();
             };
         }
-        CurrentSpotController.$inject = ['$scope', 'currentSpot'];
         return CurrentSpotController;
     }());
+    CurrentSpotController.$inject = ['$scope', 'currentSpot'];
     Main.CurrentSpotController = CurrentSpotController;
     /*
      * The directive that defines how the current spot should be displayed
@@ -79,9 +79,9 @@ var Main;
                 return currentSpot.getActiveMenu() == menu;
             };
         }
-        MainViewCtrl.$inject = ['$scope', 'currentSpot'];
         return MainViewCtrl;
     }());
+    MainViewCtrl.$inject = ['$scope', 'currentSpot'];
     Main.MainViewCtrl = MainViewCtrl;
 })(Main || (Main = {}));
 Main.initAngularApp();

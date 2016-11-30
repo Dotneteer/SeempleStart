@@ -90,8 +90,9 @@ var YwApi;
     var UserManagementApi = (function (_super) {
         __extends(UserManagementApi, _super);
         function UserManagementApi(req, prefix) {
-            _super.call(this, prefix);
-            this.req = req;
+            var _this = _super.call(this, prefix) || this;
+            _this.req = req;
+            return _this;
         }
         UserManagementApi.prototype.getAccountInfo = function () {
             return this.req('GET', this.url(''));
@@ -102,8 +103,9 @@ var YwApi;
     var DiveLogApi = (function (_super) {
         __extends(DiveLogApi, _super);
         function DiveLogApi(req, prefix) {
-            _super.call(this, prefix);
-            this.req = req;
+            var _this = _super.call(this, prefix) || this;
+            _this.req = req;
+            return _this;
         }
         DiveLogApi.prototype.getAllDivesOfUser = function () {
             return this.req('GET', this.url(''));

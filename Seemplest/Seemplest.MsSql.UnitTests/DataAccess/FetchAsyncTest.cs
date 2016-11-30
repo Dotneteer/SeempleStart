@@ -492,6 +492,28 @@ namespace Seemplest.MsSql.UnitTests.DataAccess
             row2.Name.ShouldEqual("First");
         }
 
+        [TestMethod]
+        public async Task FetchAsyncFailsInBatch()
+        {
+            // --- Arrange
+            var db = new SqlDatabase(DB_CONN);
+            await db.ExecuteAsync(@"create table sample(Id int not null, Name varchar(50) null)");
+            await db.ExecuteAsync("insert into sample values(1, 'First')");
+            await db.ExecuteAsync("insert into sample values(2, 'Second')");
+
+            // --- Act
+            var rows = await db.FetchAsync<SampleRecord>(@"
+                    declare @@var table(Id int not null);
+                    insert into @@var select distinct Id from sample where Id > 1;
+                    select * from sample s inner join @@var va on va.Id = s.Id;
+                ");
+
+            // --- Assert
+            rows.ShouldHaveCountOf(2); // The real result should contain only a single record
+        }
+
+
+
         class SampleListConverter : DualConverterBase<string, List<string>>
         {
             public override List<string> ConvertFromDataType(string dataType)
