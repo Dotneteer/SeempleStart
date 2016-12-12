@@ -19,7 +19,7 @@ namespace Seemplest.Core.DataAccess.Tracking
         /// <summary>
         /// Gets the dictionary behind this change set -- for internal use
         /// </summary>
-        internal IDictionary<string, SqlFieldChange> ChangeSet;
+        public IDictionary<string, SqlFieldChange> ChangeSet;
 
         /// <summary>
         /// Gets the list of issues related to the tracking of the record instance
@@ -32,7 +32,7 @@ namespace Seemplest.Core.DataAccess.Tracking
         /// <summary>
         /// Gets the state of this record in the current context
         /// </summary>
-        public ChangedRecordState State { get; internal set; }
+        public ChangedRecordState State { get; set; }
 
         /// <summary>
         /// Gets the timestamp of the change
@@ -53,7 +53,7 @@ namespace Seemplest.Core.DataAccess.Tracking
         /// <summary>
         /// Eliminates all fields that are non-changed
         /// </summary>
-        internal void EliminateNonChangedFields()
+        public void EliminateNonChangedFields()
         {
             var anyChange = false;
             var newDictionary = new Dictionary<string, SqlFieldChange>();

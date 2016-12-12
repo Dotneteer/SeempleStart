@@ -11,7 +11,7 @@ namespace Seemplest.Core.DataAccess.Tracking
         /// <summary>
         /// Gets the dictionary behind this change set -- for internal use
         /// </summary>
-        internal readonly IDictionary<string, SqlTableChangeSet> ChangeSet;
+        public readonly IDictionary<string, SqlTableChangeSet> ChangeSet;
 
         /// <summary>
         /// Initializes an instance using the specified dictionary
@@ -24,7 +24,7 @@ namespace Seemplest.Core.DataAccess.Tracking
         /// <summary>
         /// Eliminates all tables that are non-changed
         /// </summary>
-        internal void EliminateUnchangedTables()
+        public void EliminateUnchangedTables()
         {
             var anyChange = false;
             var newDictionary = new Dictionary<string, SqlTableChangeSet>();

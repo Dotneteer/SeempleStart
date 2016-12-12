@@ -11,7 +11,7 @@ namespace Seemplest.Core.DataAccess.Tracking
         /// <summary>
         /// Gets the dictionary behind this change set -- for internal use
         /// </summary>
-        internal readonly IDictionary<PrimaryKeyValue, SqlRecordChangeSet> ChangeSet;
+        public readonly IDictionary<PrimaryKeyValue, SqlRecordChangeSet> ChangeSet;
 
         /// <summary>
         /// Initializes an instance using the specified dictionary
