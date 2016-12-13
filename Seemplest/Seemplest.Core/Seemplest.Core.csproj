@@ -57,6 +57,7 @@
     <Compile Include="Common\AttributeSet.cs" />
     <Compile Include="Common\ConfigurationHelper.cs" />
     <Compile Include="Common\ExpressionHelper.cs" />
+    <Compile Include="Common\TaskExtensions.cs" />
     <Compile Include="Configuration\AppConfigProvider.cs" />
     <Compile Include="Configuration\AppConfigurationManager.cs" />
     <Compile Include="Configuration\AppConfigurationSettings.cs" />
