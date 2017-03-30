@@ -127,6 +127,34 @@ namespace Seemplest.MsSql.UnitTests.DataAccess
         }
 
         [TestMethod]
+        public async Task SimpleUpdateAsyncWorksWithTouchAllFields()
+        {
+            // --- Arrange
+            var db = new SqlDatabase(DB_CONN);
+            await db.ExecuteAsync(@"create table sample(Id int not null, Name varchar(50) null)");
+            var record = new SampleRecordWithAutoProps() { Id = 1, Name = "First" };
+            await db.InsertAsync(record);
+
+            // --- Act
+            record.TouchAllFields();
+            await db.UpdateAsync(record);
+        }
+
+        [TestMethod]
+        public async Task SimpleUpdateAsyncWorksWithTouchAllFlag()
+        {
+            // --- Arrange
+            var db = new SqlDatabase(DB_CONN);
+            await db.ExecuteAsync(@"create table sample(Id int not null, Name varchar(50) null)");
+            var record = new SampleRecordWithAutoProps() { Id = 1, Name = "First" };
+            await db.InsertAsync(record);
+
+            // --- Act
+            record.TouchAllFields();
+            await db.UpdateAsync(record, true);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(DBConcurrencyException))]
         public async Task SimpleUpdateAsyncWorksWithModifiedVersion1()
         {
@@ -300,6 +328,15 @@ namespace Seemplest.MsSql.UnitTests.DataAccess
                 get { return _name; }
                 set { _name = Modify(value, "Name"); }
             }
+        }
+
+        [TableName("sample")]
+        class SampleRecordWithAutoProps : DataRecord<SampleRecordWithAutoProps>
+        {
+            [PrimaryKey]
+            public int Id { get; set; }
+
+            public string Name { get; set; }
         }
 
         [TableName("sample")]

@@ -2538,10 +2538,16 @@ namespace Seemplest.MsSql.DataAccess
         /// </summary>
         /// <typeparam name="T">Record type</typeparam>
         /// <param name="record">Record instance</param>
+        /// <param name="withTouchAll">Mimic that all fields has been modified</param>
         /// <param name="token">Optional cancellation token</param>
         /// <remarks>The record must have a primary key</remarks>
-        public async Task UpdateAsync<T>(T record, CancellationToken token = default(CancellationToken))
+        public async Task UpdateAsync<T>(T record, bool withTouchAll = false, CancellationToken token = default(CancellationToken))
         {
+            var dataRecord = record as IDataRecord;
+            if (dataRecord != null && withTouchAll)
+            {
+                dataRecord.TouchAllFields();
+            }
             await UpdateInternalAsync(record, IsTracked() ? UpdateMode.GetCurrent : UpdateMode.Simple, token);
         }
 
@@ -3201,7 +3207,7 @@ namespace Seemplest.MsSql.DataAccess
             columnValues = new List<string>();
             rawValues = new List<object>();
             identityFieldName = null;
-            var columnIndex = 0;
+            var columnIndex = 1;
             foreach (var column in metadata.DataColumns)
             {
                 // --- Don't insert calculated columns and version columns
@@ -3310,6 +3316,29 @@ namespace Seemplest.MsSql.DataAccess
         /// <returns></returns>
         private SqlCommand CreateCommand(SqlConnection connection, string sql, params object[] args)
         {
+            //// --- Perform parameter prefix replacements
+            //sql = sql.Replace("@@", "@");
+
+            //// --- Create the command and add parameters
+            //var command = connection.CreateCommand();
+            //command.Connection = connection;
+            //command.CommandText = sql;
+            //command.Transaction = Transaction;
+            //foreach (var item in args) AddParam(command, item);
+            //if (!string.IsNullOrEmpty(sql)) DoPreExecute(command);
+            //return command;
+            return CreateCommand<int>(connection, sql, args);
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="SqlCommand"/> instance
+        /// </summary>
+        /// <param name="connection">Connection to use</param>
+        /// <param name="sql">SQL command text</param>
+        /// <param name="args">SQL command arguments</param>
+        /// <returns></returns>
+        private SqlCommand CreateCommand<TRet>(SqlConnection connection, string sql, params object[] args)
+        {
             // --- Perform parameter prefix replacements
             sql = sql.Replace("@@", "@");
 
@@ -3319,6 +3348,18 @@ namespace Seemplest.MsSql.DataAccess
             command.CommandText = sql;
             command.Transaction = Transaction;
             foreach (var item in args) AddParam(command, item);
+
+            // --- Map return parameter
+            var mapper = ParameterMapper ?? new DefaultSqlParameterMapper();
+            var parameter = mapper.MapParameterType("RETURN_VALUE", typeof(TRet));
+            if (parameter == null)
+            {
+                throw new InvalidOperationException(
+                    $"The specified item with type '{typeof(TRet)}' cannot be mapped to an SqlParameter");
+            }
+            parameter.Direction = ParameterDirection.ReturnValue;
+            command.Parameters.Add(parameter);
+
             if (!string.IsNullOrEmpty(sql)) DoPreExecute(command);
             return command;
         }

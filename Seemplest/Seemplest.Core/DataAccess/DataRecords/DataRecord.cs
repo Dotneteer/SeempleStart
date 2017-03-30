@@ -171,5 +171,19 @@ namespace Seemplest.Core.DataAccess.DataRecords
                 }
             }
         }
+
+        /// <summary>
+        /// Touches all data fields as if those had been modified.
+        /// </summary>
+        public void TouchAllFields()
+        {
+            // --- Let's assume this record has already been loaded
+            _isLoaded = true;
+            var metadata = RecordMetadataManager.GetMetadata<TRecord>();
+            foreach (var dataColumn in metadata.DataColumns)
+            {
+                _modifiedColumns.Add(dataColumn.ColumnName);
+            }
+        }
     }
 }
