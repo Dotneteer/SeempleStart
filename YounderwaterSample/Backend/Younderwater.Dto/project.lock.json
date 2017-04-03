@@ -1,5 +1,4 @@
 {
-  "locked": false,
   "version": 2,
   "targets": {
     ".NETFramework,Version=v4.6": {
@@ -12104,7 +12103,7 @@
     "Microsoft.NETCore.Runtime.CoreCLR-arm/1.0.0": {
       "sha512": "hoJfIl981eXwn9Tz8onO/J1xaYApIfp/YrhjSh9rRhml1U5Wj80LBgyp/6n+KI3VlvcAraThhnHnCTp+M3Uh+w==",
       "type": "package",
-      "path": "Microsoft.NETCore.Runtime.CoreCLR-arm/1.0.0",
+      "path": "microsoft.netcore.runtime.coreclr-arm/1.0.0",
       "files": [
         "Microsoft.NETCore.Runtime.CoreCLR-arm.1.0.0.nupkg.sha512",
         "Microsoft.NETCore.Runtime.CoreCLR-arm.nuspec",
@@ -14565,6 +14564,31 @@
     ],
     ".NETPlatform,Version=v5.0": []
   },
-  "tools": {},
-  "projectFileToolGroups": {}
+  "packageFolders": {
+    "C:\\Users\\dotne\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "restore": {
+      "projectUniqueName": "C:\\Users\\dotne\\Source\\Repos\\SeempleStart\\YounderwaterSample\\Backend\\Younderwater.Dto\\Younderwater.Dto.csproj",
+      "projectName": "Younderwater.Dto",
+      "projectPath": "C:\\Users\\dotne\\Source\\Repos\\SeempleStart\\YounderwaterSample\\Backend\\Younderwater.Dto\\Younderwater.Dto.csproj",
+      "projectJsonPath": "C:\\Users\\dotne\\Source\\Repos\\SeempleStart\\YounderwaterSample\\Backend\\Younderwater.Dto\\project.json",
+      "projectStyle": "ProjectJson"
+    },
+    "dependencies": {
+      "Microsoft.NETCore": "5.0.0",
+      "Microsoft.NETCore.Portable.Compatibility": "1.0.0"
+    },
+    "frameworks": {
+      "dotnet5.0": {
+        "imports": [
+          "portable-net452+win81"
+        ]
+      }
+    },
+    "supports": {
+      "net46.app": {},
+      "uwp.10.0.app": {}
+    }
+  }
 }

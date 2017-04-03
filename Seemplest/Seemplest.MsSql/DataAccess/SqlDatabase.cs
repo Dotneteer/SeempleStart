@@ -1768,7 +1768,8 @@ namespace Seemplest.MsSql.DataAccess
         /// <returns>The tuple that holds lists of data records fetched from the database.</returns>
         public Task<Tuple<List<T1>, List<T2>>> FetchMultipleAsync<T1, T2>(CancellationToken token, string sql, params object[] args)
         {
-            return FetchMultipleAsync<T1, T2, IDoNotMap, IDoNotMap, Tuple<List<T1>, List<T2>>>(
+            return FetchMultipleAsync<T1, T2, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap,
+                Tuple<List<T1>, List<T2>>>(
                 new Func<List<T1>, List<T2>, Tuple<List<T1>, List<T2>>>(
                     (t1, t2) => new Tuple<List<T1>, List<T2>>(t1, t2)),
                 new SqlExpression(sql, args), token);
@@ -1817,7 +1818,8 @@ namespace Seemplest.MsSql.DataAccess
         public Task<Tuple<List<T1>, List<T2>, List<T3>>> FetchMultipleAsync<T1, T2, T3>(
             CancellationToken token, string sql, params object[] args)
         {
-            return FetchMultipleAsync<T1, T2, T3, IDoNotMap, Tuple<List<T1>, List<T2>, List<T3>>>(
+            return FetchMultipleAsync<T1, T2, T3, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap,
+                Tuple<List<T1>, List<T2>, List<T3>>>(
                 new Func<List<T1>, List<T2>, List<T3>, Tuple<List<T1>, List<T2>, List<T3>>>(
                     (t1, t2, t3) => new Tuple<List<T1>, List<T2>, List<T3>>(t1, t2, t3)),
                 new SqlExpression(sql, args), token);
@@ -1869,7 +1871,8 @@ namespace Seemplest.MsSql.DataAccess
         public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>>> FetchMultipleAsync<T1, T2, T3, T4>(
             CancellationToken token, string sql, params object[] args)
         {
-            return FetchMultipleAsync<T1, T2, T3, T4, Tuple<List<T1>, List<T2>, List<T3>, List<T4>>>(
+            return FetchMultipleAsync<T1, T2, T3, T4, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap,
+                Tuple<List<T1>, List<T2>, List<T3>, List<T4>>>(
                 new Func<List<T1>, List<T2>, List<T3>, List<T4>, Tuple<List<T1>, List<T2>, List<T3>, List<T4>>>(
                     (t1, t2, t3, t4) => new Tuple<List<T1>, List<T2>, List<T3>, List<T4>>(t1, t2, t3, t4)),
                 new SqlExpression(sql, args), token);
@@ -1900,7 +1903,8 @@ namespace Seemplest.MsSql.DataAccess
         public Task<Tuple<List<T1>, List<T2>>> FetchMultipleAsync<T1, T2>(SqlExpression sqlExpr, 
             CancellationToken token = default(CancellationToken))
         {
-            return FetchMultipleAsync<T1, T2, IDoNotMap, IDoNotMap, Tuple<List<T1>, List<T2>>>(
+            return FetchMultipleAsync<T1, T2, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap,
+                Tuple<List<T1>, List<T2>>>(
                 new Func<List<T1>, List<T2>, Tuple<List<T1>, List<T2>>>(
                     (t1, t2) => new Tuple<List<T1>, List<T2>>(t1, t2)),
                 sqlExpr, token);
@@ -1933,7 +1937,8 @@ namespace Seemplest.MsSql.DataAccess
         public Task<Tuple<List<T1>, List<T2>, List<T3>>> FetchMultipleAsync<T1, T2, T3>(
             SqlExpression sqlExpr, CancellationToken token = default(CancellationToken))
         {
-            return FetchMultipleAsync<T1, T2, T3, IDoNotMap, Tuple<List<T1>, List<T2>, List<T3>>>(
+            return FetchMultipleAsync<T1, T2, T3, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap,
+                Tuple<List<T1>, List<T2>, List<T3>>>(
                 new Func<List<T1>, List<T2>, List<T3>, Tuple<List<T1>, List<T2>, List<T3>>>(
                     (t1, t2, t3) => new Tuple<List<T1>, List<T2>, List<T3>>(t1, t2, t3)),
                 sqlExpr, token);
@@ -1969,7 +1974,8 @@ namespace Seemplest.MsSql.DataAccess
         public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>>> FetchMultipleAsync<T1, T2, T3, T4>(
             SqlExpression sqlExpr, CancellationToken token = default(CancellationToken))
         {
-            return FetchMultipleAsync<T1, T2, T3, T4, Tuple<List<T1>, List<T2>, List<T3>, List<T4>>>(
+            return FetchMultipleAsync<T1, T2, T3, T4, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap,
+                Tuple<List<T1>, List<T2>, List<T3>, List<T4>>>(
                 new Func<List<T1>, List<T2>, List<T3>, List<T4>, Tuple<List<T1>, List<T2>, List<T3>, List<T4>>>(
                     (t1, t2, t3, t4) => new Tuple<List<T1>, List<T2>, List<T3>, List<T4>>(t1, t2, t3, t4)),
                 sqlExpr, token);
@@ -2006,7 +2012,7 @@ namespace Seemplest.MsSql.DataAccess
             Func<List<T1>, List<T2>, TRet> correlator, 
             CancellationToken token = default(CancellationToken))
         {
-            return FetchMultipleAsync<T1, T2, IDoNotMap, IDoNotMap, TRet>(correlator, sqlExpr, token);
+            return FetchMultipleAsync<T1, T2, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap, TRet>(correlator, sqlExpr, token);
         }
 
         /// <summary>
@@ -2042,7 +2048,7 @@ namespace Seemplest.MsSql.DataAccess
             Func<List<T1>, List<T2>, List<T3>, TRet> correlator,
             CancellationToken token = default(CancellationToken))
         {
-            return FetchMultipleAsync<T1, T2, T3, IDoNotMap, TRet>(correlator, sqlExpr, token);
+            return FetchMultipleAsync<T1, T2, T3, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap, TRet>(correlator, sqlExpr, token);
         }
 
         /// <summary>
@@ -2080,7 +2086,7 @@ namespace Seemplest.MsSql.DataAccess
             Func<List<T1>, List<T2>, List<T3>, List<T4>, TRet> correlator,
             CancellationToken token = default(CancellationToken))
         {
-            return FetchMultipleAsync<T1, T2, T3, T4, TRet>(correlator, sqlExpr, token);
+            return FetchMultipleAsync<T1, T2, T3, T4, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap, TRet>(correlator, sqlExpr, token);
         }
 
         /// <summary>
@@ -2159,12 +2165,16 @@ namespace Seemplest.MsSql.DataAccess
         /// <typeparam name="T2">Second type</typeparam>
         /// <typeparam name="T3">Third type</typeparam>
         /// <typeparam name="T4">Fourth type</typeparam>
+        /// <typeparam name="T5">Fourth type</typeparam>
+        /// <typeparam name="T6">Fourth type</typeparam>
+        /// <typeparam name="T7">Fourth type</typeparam>
+        /// <typeparam name="T8">Fourth type</typeparam>
         /// <typeparam name="TRet">Correlated return type</typeparam>
         /// <param name="correlator">Function that correlates the result sets</param>
         /// <param name="sqlExpr">SQL expression defyning the query</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns>Correlated result set</returns>
-        private async Task<TRet> FetchMultipleAsync<T1, T2, T3, T4, TRet>(object correlator, SqlExpression sqlExpr,
+        private async Task<TRet> FetchMultipleAsync<T1, T2, T3, T4, T5, T6, T7, T8, TRet>(object correlator, SqlExpression sqlExpr,
             CancellationToken token = default(CancellationToken))
         {
             var sql = sqlExpr.SqlText;
@@ -2175,11 +2185,23 @@ namespace Seemplest.MsSql.DataAccess
                     r => DataReaderMappingManager.GetMapperFor<T1>(r),
                     r => DataReaderMappingManager.GetMapperFor<T2>(r),
                     r => DataReaderMappingManager.GetMapperFor<T3>(r),
-                    r => DataReaderMappingManager.GetMapperFor<T4>(r)
+                    r => DataReaderMappingManager.GetMapperFor<T4>(r),
+                    r => DataReaderMappingManager.GetMapperFor<T5>(r),
+                    r => DataReaderMappingManager.GetMapperFor<T6>(r),
+                    r => DataReaderMappingManager.GetMapperFor<T7>(r),
+                    r => DataReaderMappingManager.GetMapperFor<T8>(r),
                 };
-            var setCount = typeof(T3) == typeof(IDoNotMap)
-                ? 2
-                : (typeof(T4) == typeof(IDoNotMap) ? 3 : 4);
+
+            int setCount;
+            if (typeof(T3) == typeof(IDoNotMap)) setCount = 2;
+            else if (typeof(T4) == typeof(IDoNotMap)) setCount = 3;
+            else if (typeof(T5) == typeof(IDoNotMap)) setCount = 4;
+            else if (typeof(T6) == typeof(IDoNotMap)) setCount = 5;
+            else if (typeof(T7) == typeof(IDoNotMap)) setCount = 6;
+            else
+            {
+                setCount = typeof(T8) == typeof(IDoNotMap) ? 7 : 8;
+            }
 
             await OpenSharedConnectionAsync(token);
             try
@@ -2205,6 +2227,10 @@ namespace Seemplest.MsSql.DataAccess
                         var list2 = new List<T2>();
                         var list3 = new List<T3>();
                         var list4 = new List<T4>();
+                        var list5 = new List<T5>();
+                        var list6 = new List<T6>();
+                        var list7 = new List<T7>();
+                        var list8 = new List<T8>();
                         do
                         {
                             if (typeIndex >= setCount) break;
@@ -2220,6 +2246,10 @@ namespace Seemplest.MsSql.DataAccess
                                         case 1: list2.Add(((Func<IDataReader, T2, T2>)recordFactory)(r, default(T2))); break;
                                         case 2: list3.Add(((Func<IDataReader, T3, T3>)recordFactory)(r, default(T3))); break;
                                         case 3: list4.Add(((Func<IDataReader, T4, T4>)recordFactory)(r, default(T4))); break;
+                                        case 4: list5.Add(((Func<IDataReader, T5, T5>)recordFactory)(r, default(T5))); break;
+                                        case 5: list6.Add(((Func<IDataReader, T6, T6>)recordFactory)(r, default(T6))); break;
+                                        case 6: list7.Add(((Func<IDataReader, T7, T7>)recordFactory)(r, default(T7))); break;
+                                        case 7: list8.Add(((Func<IDataReader, T8, T8>)recordFactory)(r, default(T8))); break;
                                     }
                                 }
                                 catch (Exception x)
@@ -2237,8 +2267,16 @@ namespace Seemplest.MsSql.DataAccess
                                 return ((Func<List<T1>, List<T2>, TRet>)correlator)(list1, list2);
                             case 3:
                                 return ((Func<List<T1>, List<T2>, List<T3>, TRet>)correlator)(list1, list2, list3);
-                            default:
+                            case 4:
                                 return ((Func<List<T1>, List<T2>, List<T3>, List<T4>, TRet>)correlator)(list1, list2, list3, list4);
+                            case 5:
+                                return ((Func<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, TRet>)correlator)(list1, list2, list3, list4, list5);
+                            case 6:
+                                return ((Func<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, TRet>)correlator)(list1, list2, list3, list4, list5, list6);
+                            case 7:
+                                return ((Func<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, List<T7>, TRet>)correlator)(list1, list2, list3, list4, list5, list6, list7);
+                            default:
+                                return ((Func<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, List<T7>, List<T8>, TRet>)correlator)(list1, list2, list3, list4, list5, list6, list7, list8);
                         }
                     }
                 }
