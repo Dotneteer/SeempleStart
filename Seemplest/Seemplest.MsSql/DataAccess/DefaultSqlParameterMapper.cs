@@ -32,9 +32,13 @@ namespace Seemplest.MsSql.DataAccess
         public SqlParameter MapParameterValue(string parameterName, object value)
         {
             return DoMapping(parameterName, value) 
-                ?? ( _parentMapper == null 
-                    ? null 
-                    : _parentMapper.MapParameterValue(parameterName, value));
+                ?? _parentMapper?.MapParameterValue(parameterName, value);
+        }
+
+        public SqlParameter MapParameterType(string parameterName, Type type)
+        {
+            return DoMapping(parameterName, type)
+                ?? _parentMapper?.MapParameterType(parameterName, type);
         }
 
         /// <summary>
@@ -46,8 +50,9 @@ namespace Seemplest.MsSql.DataAccess
         /// <returns></returns>
         protected virtual SqlParameter DoMapping(string parameterName, object value)
         {
-            if (value == null) return new SqlParameter(parameterName, DBNull.Value);
-            var parameter = new SqlParameter(parameterName, value);
+            var parameter = new SqlParameter(parameterName, DBNull.Value);
+            if (value == null) return parameter;
+            parameter = new SqlParameter(parameterName, value);
 
             // --- Manage strings
             var stringType = value as string;
@@ -71,31 +76,31 @@ namespace Seemplest.MsSql.DataAccess
             {
                 parameter.SqlDbType = SqlDbType.NChar;
                 parameter.Size = 1;
-                parameter.Value = new String((char)value, 1);
+                parameter.Value = new string((char)value, 1);
                 return parameter;
             }
 
             // --- Handle UInt16 as integer
-            if (value is UInt16)
+            if (value is ushort)
             {
                 parameter.SqlDbType = SqlDbType.Int;
-                parameter.Value = (int) ((UInt16) value);
+                parameter.Value = (int) ((ushort) value);
                 return parameter;
             }
 
             // --- Handle UInt32 as big integer
-            if (value is UInt32)
+            if (value is uint)
             {
                 parameter.SqlDbType = SqlDbType.BigInt;
-                parameter.Value = (long) ((UInt32) value);
+                parameter.Value = (long) ((uint) value);
                 return parameter;
             }
 
             // --- Handle UInt64 as big integer
-            if (value is UInt64)
+            if (value is ulong)
             {
                 parameter.SqlDbType = SqlDbType.BigInt;
-                parameter.Value = (long)((UInt64)value);
+                parameter.Value = (long)((ulong)value);
                 return parameter;
             }
 
@@ -130,6 +135,96 @@ namespace Seemplest.MsSql.DataAccess
                 // --- This line will raise an ArgumentException in case of mapping failure
                 // ReSharper disable UnusedVariable
                 var type = parameter.SqlDbType;
+                // ReSharper restore UnusedVariable
+                return parameter;
+            }
+            catch (ArgumentException)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Override this method in derived classes to provide
+        /// your own mapping.
+        /// </summary>
+        /// <param name="parameterName">Name of the parameter</param>
+        /// <param name="type">The type to map</param>
+        /// <returns></returns>
+        protected virtual SqlParameter DoMapping(string parameterName, Type type)
+        {
+            var parameter = new SqlParameter(parameterName, DBNull.Value);
+
+            // --- Manage strings
+            if (type == typeof(string))
+            {
+                parameter.SqlDbType = SqlDbType.NVarChar;
+                return parameter;
+            }
+
+            // --- Manage byte arrays
+            if (type == typeof(byte[]))
+            {
+                parameter.SqlDbType = SqlDbType.VarBinary;
+                return parameter;
+            }
+
+            // --- Handle char as a single-character string
+            if (type == typeof(char))
+            {
+                parameter.SqlDbType = SqlDbType.NChar;
+                parameter.Size = 1;
+                return parameter;
+            }
+
+            // --- Handle UInt16 as integer
+            if (type == typeof(ushort))
+            {
+                parameter.SqlDbType = SqlDbType.Int;
+                return parameter;
+            }
+
+            // --- Handle UInt32 as big integer
+            if (type == typeof(uint))
+            {
+                parameter.SqlDbType = SqlDbType.BigInt;
+                return parameter;
+            }
+
+            // --- Handle UInt64 as big integer
+            if (type == typeof(ulong))
+            {
+                parameter.SqlDbType = SqlDbType.BigInt;
+                return parameter;
+            }
+
+            // --- Handle SByte as integer
+            if (type == typeof(sbyte))
+            {
+                parameter.SqlDbType = SqlDbType.Int;
+                return parameter;
+            }
+
+            // --- Handle enumerable types
+            if (type.IsEnum)
+            {
+                parameter.SqlDbType = SqlDbType.Int;
+                return parameter;
+            }
+
+            // --- Hanlde XObject types
+            if (type != typeof(XObject))
+            {
+                parameter.SqlDbType = SqlDbType.Xml;
+                return parameter;
+            }
+
+            // --- In case of other types check if SqlDbType is valid or not
+            try
+            {
+                // --- This line will raise an ArgumentException in case of mapping failure
+                // ReSharper disable UnusedVariable
+                var currentType = parameter.SqlDbType;
                 // ReSharper restore UnusedVariable
                 return parameter;
             }

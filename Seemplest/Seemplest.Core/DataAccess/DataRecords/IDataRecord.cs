@@ -42,5 +42,10 @@ namespace Seemplest.Core.DataAccess.DataRecords
         /// </summary>
         /// <returns>Clone of the data record</returns>
         IDataRecord Clone();
+
+        /// <summary>
+        /// Touches all data fields as if those had been modified.
+        /// </summary>
+        void TouchAllFields();
     }
 }

@@ -1,4 +1,5 @@
 {
+  "locked": false,
   "version": 2,
   "targets": {
     ".NETFramework,Version=v4.6": {
@@ -12101,9 +12102,8 @@
       ]
     },
     "Microsoft.NETCore.Runtime.CoreCLR-arm/1.0.0": {
-      "sha512": "hoJfIl981eXwn9Tz8onO/J1xaYApIfp/YrhjSh9rRhml1U5Wj80LBgyp/6n+KI3VlvcAraThhnHnCTp+M3Uh+w==",
+      "sha512": "vUQyaKbHCa7BJAAzdfCP2FfBYOSt0YnDw7VMJLmD1/k68HIJgw1QO7GAfHhqoa39zkkvimC47QBH27wG4C5OGQ==",
       "type": "package",
-      "path": "microsoft.netcore.runtime.coreclr-arm/1.0.0",
       "files": [
         "Microsoft.NETCore.Runtime.CoreCLR-arm.1.0.0.nupkg.sha512",
         "Microsoft.NETCore.Runtime.CoreCLR-arm.nuspec",
@@ -14563,32 +14563,5 @@
       "Microsoft.NETCore.Portable.Compatibility >= 1.0.0"
     ],
     ".NETPlatform,Version=v5.0": []
-  },
-  "packageFolders": {
-    "C:\\Users\\dotne\\.nuget\\packages\\": {}
-  },
-  "project": {
-    "restore": {
-      "projectUniqueName": "C:\\Users\\dotne\\Source\\Repos\\SeempleStart\\SeemplestBlocks\\SeemplestBlocks.Dto\\SeemplestBlocks.Dto.csproj",
-      "projectName": "SeemplestBlocks.Dto",
-      "projectPath": "C:\\Users\\dotne\\Source\\Repos\\SeempleStart\\SeemplestBlocks\\SeemplestBlocks.Dto\\SeemplestBlocks.Dto.csproj",
-      "projectJsonPath": "C:\\Users\\dotne\\Source\\Repos\\SeempleStart\\SeemplestBlocks\\SeemplestBlocks.Dto\\project.json",
-      "projectStyle": "ProjectJson"
-    },
-    "dependencies": {
-      "Microsoft.NETCore": "5.0.0",
-      "Microsoft.NETCore.Portable.Compatibility": "1.0.0"
-    },
-    "frameworks": {
-      "dotnet5.0": {
-        "imports": [
-          "portable-net452+win81"
-        ]
-      }
-    },
-    "supports": {
-      "net46.app": {},
-      "uwp.10.0.app": {}
-    }
   }
 }

@@ -95,6 +95,12 @@ namespace Seemplest.MsSql.UnitTests.DataAccess
                 var command = value as SqlCommand;
                 return command != null ? new SqlParameter(parameterName, command.CommandText) : null;
             }
+
+            public SqlParameter MapParameterType(string parameterName, Type type)
+            {
+                var command = new SqlCommand();
+                return new SqlParameter(parameterName, command.CommandText);
+            }
         }
     }
 }
