@@ -105,6 +105,120 @@ namespace Seemplest.MsSql.UnitTests.DataAccess
         }
 
         [TestMethod]
+        public async Task FetchMultipleAsyncWorksWith5Sets()
+        {
+            // --- Arrange
+            var db = new SqlDatabase(DB_CONN);
+            await db.ExecuteAsync(@"create table sample(Id int not null, Name varchar(50) null)");
+            await db.ExecuteAsync("insert into sample values(1, 'First')");
+            await db.ExecuteAsync("insert into sample values(2, 'Second')");
+            await db.ExecuteAsync("insert into sample values(3, 'Third')");
+            await db.ExecuteAsync("insert into sample values(4, 'Fourth')");
+            await db.ExecuteAsync("insert into sample values(5, 'Fifth')");
+            await db.ExecuteAsync("insert into sample values(6, 'Sixth')");
+            await db.ExecuteAsync("insert into sample values(7, 'Seventh')");
+
+            // --- Act
+            var rows = await db.FetchMultipleAsync<SampleRecord, SampleRecord, SampleRecord, SampleRecord, SampleRecord>(
+                @"select * from sample where Id = 1
+                  select * from sample where Id = 2 or Id = 3
+                  select Name, Id from sample where Id >=4 and Id <= 6
+                  select * from sample where Id > 6
+                  select * from sample where Id = 1");
+            var set1 = rows.Item1;
+            var set2 = rows.Item2;
+            var set3 = rows.Item3;
+            var set4 = rows.Item4;
+            var set5 = rows.Item5;
+
+            // --- Assert
+            set1.ShouldHaveCountOf(1);
+            set2.ShouldHaveCountOf(2);
+            set3.ShouldHaveCountOf(3);
+            set4.ShouldHaveCountOf(1);
+            set5.ShouldHaveCountOf(1);
+        }
+
+        [TestMethod]
+        public async Task FetchMultipleAsyncWorksWith6Sets()
+        {
+            // --- Arrange
+            var db = new SqlDatabase(DB_CONN);
+            await db.ExecuteAsync(@"create table sample(Id int not null, Name varchar(50) null)");
+            await db.ExecuteAsync("insert into sample values(1, 'First')");
+            await db.ExecuteAsync("insert into sample values(2, 'Second')");
+            await db.ExecuteAsync("insert into sample values(3, 'Third')");
+            await db.ExecuteAsync("insert into sample values(4, 'Fourth')");
+            await db.ExecuteAsync("insert into sample values(5, 'Fifth')");
+            await db.ExecuteAsync("insert into sample values(6, 'Sixth')");
+            await db.ExecuteAsync("insert into sample values(7, 'Seventh')");
+
+            // --- Act
+            var rows = await db.FetchMultipleAsync<SampleRecord, SampleRecord, SampleRecord, SampleRecord, SampleRecord, SampleRecord>(
+                @"select * from sample where Id = 1
+                  select * from sample where Id = 2 or Id = 3
+                  select Name, Id from sample where Id >=4 and Id <= 6
+                  select * from sample where Id > 6
+                  select * from sample where Id = 1
+                  select * from sample where Id = 2 or Id = 3");
+            var set1 = rows.Item1;
+            var set2 = rows.Item2;
+            var set3 = rows.Item3;
+            var set4 = rows.Item4;
+            var set5 = rows.Item5;
+            var set6 = rows.Item6;
+
+            // --- Assert
+            set1.ShouldHaveCountOf(1);
+            set2.ShouldHaveCountOf(2);
+            set3.ShouldHaveCountOf(3);
+            set4.ShouldHaveCountOf(1);
+            set5.ShouldHaveCountOf(1);
+            set6.ShouldHaveCountOf(2);
+        }
+
+        [TestMethod]
+        public async Task FetchMultipleAsyncWorksWith7Sets()
+        {
+            // --- Arrange
+            var db = new SqlDatabase(DB_CONN);
+            await db.ExecuteAsync(@"create table sample(Id int not null, Name varchar(50) null)");
+            await db.ExecuteAsync("insert into sample values(1, 'First')");
+            await db.ExecuteAsync("insert into sample values(2, 'Second')");
+            await db.ExecuteAsync("insert into sample values(3, 'Third')");
+            await db.ExecuteAsync("insert into sample values(4, 'Fourth')");
+            await db.ExecuteAsync("insert into sample values(5, 'Fifth')");
+            await db.ExecuteAsync("insert into sample values(6, 'Sixth')");
+            await db.ExecuteAsync("insert into sample values(7, 'Seventh')");
+
+            // --- Act
+            var rows = await db.FetchMultipleAsync<SampleRecord, SampleRecord, SampleRecord, SampleRecord, SampleRecord, SampleRecord, SampleRecord>(
+                @"select * from sample where Id = 1
+                  select * from sample where Id = 2 or Id = 3
+                  select Name, Id from sample where Id >=4 and Id <= 6
+                  select * from sample where Id > 6
+                  select * from sample where Id = 1
+                  select * from sample where Id = 2 or Id = 3
+                  select Name, Id from sample where Id >=4 and Id <= 6");
+            var set1 = rows.Item1;
+            var set2 = rows.Item2;
+            var set3 = rows.Item3;
+            var set4 = rows.Item4;
+            var set5 = rows.Item5;
+            var set6 = rows.Item6;
+            var set7 = rows.Item7;
+
+            // --- Assert
+            set1.ShouldHaveCountOf(1);
+            set2.ShouldHaveCountOf(2);
+            set3.ShouldHaveCountOf(3);
+            set4.ShouldHaveCountOf(1);
+            set5.ShouldHaveCountOf(1);
+            set6.ShouldHaveCountOf(2);
+            set7.ShouldHaveCountOf(3);
+        }
+
+        [TestMethod]
         public async Task FetchMultipleWorksWithMissingSet()
         {
             // --- Arrange
@@ -283,6 +397,123 @@ namespace Seemplest.MsSql.UnitTests.DataAccess
         }
 
         [TestMethod]
+        public async Task FetchMultipleAsyncExpressionWorksWith5Sets()
+        {
+            // --- Arrange
+            var db = new SqlDatabase(DB_CONN);
+            await db.ExecuteAsync(@"create table sample(Id int not null, Name varchar(50) null)");
+            await db.ExecuteAsync("insert into sample values(1, 'First')");
+            await db.ExecuteAsync("insert into sample values(2, 'Second')");
+            await db.ExecuteAsync("insert into sample values(3, 'Third')");
+            await db.ExecuteAsync("insert into sample values(4, 'Fourth')");
+            await db.ExecuteAsync("insert into sample values(5, 'Fifth')");
+            await db.ExecuteAsync("insert into sample values(6, 'Sixth')");
+            await db.ExecuteAsync("insert into sample values(7, 'Seventh')");
+
+            // --- Act
+            var rows = await db.FetchMultipleAsync<SampleRecord, SampleRecord, SampleRecord, SampleRecord, SampleRecord>(
+                SqlExpression.CreateFrom(
+                @"select * from sample where Id = 1
+                  select * from sample where Id = 2 or Id = 3
+                  select Name, Id from sample where Id >=4 and Id <= 6
+                  select * from sample where Id > 6
+                  select * from sample where Id = 1"));
+            var set1 = rows.Item1;
+            var set2 = rows.Item2;
+            var set3 = rows.Item3;
+            var set4 = rows.Item4;
+            var set5 = rows.Item5;
+
+            // --- Assert
+            set1.ShouldHaveCountOf(1);
+            set2.ShouldHaveCountOf(2);
+            set3.ShouldHaveCountOf(3);
+            set4.ShouldHaveCountOf(1);
+            set5.ShouldHaveCountOf(1);
+        }
+
+        [TestMethod]
+        public async Task FetchMultipleAsyncExpressionWorksWith6Sets()
+        {
+            // --- Arrange
+            var db = new SqlDatabase(DB_CONN);
+            await db.ExecuteAsync(@"create table sample(Id int not null, Name varchar(50) null)");
+            await db.ExecuteAsync("insert into sample values(1, 'First')");
+            await db.ExecuteAsync("insert into sample values(2, 'Second')");
+            await db.ExecuteAsync("insert into sample values(3, 'Third')");
+            await db.ExecuteAsync("insert into sample values(4, 'Fourth')");
+            await db.ExecuteAsync("insert into sample values(5, 'Fifth')");
+            await db.ExecuteAsync("insert into sample values(6, 'Sixth')");
+            await db.ExecuteAsync("insert into sample values(7, 'Seventh')");
+
+            // --- Act
+            var rows = await db.FetchMultipleAsync<SampleRecord, SampleRecord, SampleRecord, SampleRecord, SampleRecord, SampleRecord>(
+                SqlExpression.CreateFrom(
+                @"select * from sample where Id = 1
+                  select * from sample where Id = 2 or Id = 3
+                  select Name, Id from sample where Id >=4 and Id <= 6
+                  select * from sample where Id > 6
+                  select * from sample where Id = 1
+                  select * from sample where Id = 2 or Id = 3"));
+            var set1 = rows.Item1;
+            var set2 = rows.Item2;
+            var set3 = rows.Item3;
+            var set4 = rows.Item4;
+            var set5 = rows.Item5;
+            var set6 = rows.Item6;
+
+            // --- Assert
+            set1.ShouldHaveCountOf(1);
+            set2.ShouldHaveCountOf(2);
+            set3.ShouldHaveCountOf(3);
+            set4.ShouldHaveCountOf(1);
+            set5.ShouldHaveCountOf(1);
+            set6.ShouldHaveCountOf(2);
+        }
+
+        [TestMethod]
+        public async Task FetchMultipleAsyncExpressionWorksWith7Sets()
+        {
+            // --- Arrange
+            var db = new SqlDatabase(DB_CONN);
+            await db.ExecuteAsync(@"create table sample(Id int not null, Name varchar(50) null)");
+            await db.ExecuteAsync("insert into sample values(1, 'First')");
+            await db.ExecuteAsync("insert into sample values(2, 'Second')");
+            await db.ExecuteAsync("insert into sample values(3, 'Third')");
+            await db.ExecuteAsync("insert into sample values(4, 'Fourth')");
+            await db.ExecuteAsync("insert into sample values(5, 'Fifth')");
+            await db.ExecuteAsync("insert into sample values(6, 'Sixth')");
+            await db.ExecuteAsync("insert into sample values(7, 'Seventh')");
+
+            // --- Act
+            var rows = await db.FetchMultipleAsync<SampleRecord, SampleRecord, SampleRecord, SampleRecord, SampleRecord, SampleRecord, SampleRecord>(
+                SqlExpression.CreateFrom(
+                @"select * from sample where Id = 1
+                  select * from sample where Id = 2 or Id = 3
+                  select Name, Id from sample where Id >=4 and Id <= 6
+                  select * from sample where Id > 6
+                  select * from sample where Id = 1
+                  select * from sample where Id = 2 or Id = 3
+                  select Name, Id from sample where Id >=4 and Id <= 6"));
+            var set1 = rows.Item1;
+            var set2 = rows.Item2;
+            var set3 = rows.Item3;
+            var set4 = rows.Item4;
+            var set5 = rows.Item5;
+            var set6 = rows.Item6;
+            var set7 = rows.Item7;
+
+            // --- Assert
+            set1.ShouldHaveCountOf(1);
+            set2.ShouldHaveCountOf(2);
+            set3.ShouldHaveCountOf(3);
+            set4.ShouldHaveCountOf(1);
+            set5.ShouldHaveCountOf(1);
+            set6.ShouldHaveCountOf(2);
+            set7.ShouldHaveCountOf(3);
+        }
+
+        [TestMethod]
         public async Task FetchMultipleAsyncWorksWithMapping2Sets()
         {
             // --- Arrange
@@ -348,6 +579,93 @@ namespace Seemplest.MsSql.UnitTests.DataAccess
 
             // --- Assert
             rows.ShouldEqual(7);
+        }
+
+        [TestMethod]
+        public async Task FetchMultipleWorksWithMapping5Sets()
+        {
+            // --- Arrange
+            var db = new SqlDatabase(DB_CONN);
+            await db.ExecuteAsync(@"create table sample(Id int not null, Name varchar(50) null)");
+            await db.ExecuteAsync("insert into sample values(1, 'First')");
+            await db.ExecuteAsync("insert into sample values(2, 'Second')");
+            await db.ExecuteAsync("insert into sample values(3, 'Third')");
+            await db.ExecuteAsync("insert into sample values(4, 'Fourth')");
+            await db.ExecuteAsync("insert into sample values(5, 'Fifth')");
+            await db.ExecuteAsync("insert into sample values(6, 'Sixth')");
+            await db.ExecuteAsync("insert into sample values(7, 'Seventh')");
+
+            // --- Act
+            var rows = await db.FetchMultipleAsync<SampleRecord, SampleRecord, SampleRecord, SampleRecord, SampleRecord, int>(
+                SqlExpression.CreateFrom(
+                @"select * from sample where Id = 1
+                  select * from sample where Id = 2 or Id = 3
+                  select Name, Id from sample where Id >=4 and Id <= 6
+                  select * from sample where Id > 6
+                  select * from sample where Id = 1"),
+                  (l1, l2, l3, l4, l5) => l1.Count + l2.Count + l3.Count + l4.Count + l5.Count);
+
+            // --- Assert
+            rows.ShouldEqual(8);
+        }
+
+        [TestMethod]
+        public async Task FetchMultipleWorksWithMapping6Sets()
+        {
+            // --- Arrange
+            var db = new SqlDatabase(DB_CONN);
+            await db.ExecuteAsync(@"create table sample(Id int not null, Name varchar(50) null)");
+            await db.ExecuteAsync("insert into sample values(1, 'First')");
+            await db.ExecuteAsync("insert into sample values(2, 'Second')");
+            await db.ExecuteAsync("insert into sample values(3, 'Third')");
+            await db.ExecuteAsync("insert into sample values(4, 'Fourth')");
+            await db.ExecuteAsync("insert into sample values(5, 'Fifth')");
+            await db.ExecuteAsync("insert into sample values(6, 'Sixth')");
+            await db.ExecuteAsync("insert into sample values(7, 'Seventh')");
+
+            // --- Act
+            var rows = await db.FetchMultipleAsync<SampleRecord, SampleRecord, SampleRecord, SampleRecord, SampleRecord, SampleRecord, int>(
+                SqlExpression.CreateFrom(
+                @"select * from sample where Id = 1
+                  select * from sample where Id = 2 or Id = 3
+                  select Name, Id from sample where Id >=4 and Id <= 6
+                  select * from sample where Id > 6
+                  select * from sample where Id = 1
+                  select * from sample where Id = 2 or Id = 3"),
+                  (l1, l2, l3, l4, l5, l6) => l1.Count + l2.Count + l3.Count + l4.Count + l5.Count + l6.Count);
+
+            // --- Assert
+            rows.ShouldEqual(10);
+        }
+
+        [TestMethod]
+        public async Task FetchMultipleWorksWithMapping7Sets()
+        {
+            // --- Arrange
+            var db = new SqlDatabase(DB_CONN);
+            await db.ExecuteAsync(@"create table sample(Id int not null, Name varchar(50) null)");
+            await db.ExecuteAsync("insert into sample values(1, 'First')");
+            await db.ExecuteAsync("insert into sample values(2, 'Second')");
+            await db.ExecuteAsync("insert into sample values(3, 'Third')");
+            await db.ExecuteAsync("insert into sample values(4, 'Fourth')");
+            await db.ExecuteAsync("insert into sample values(5, 'Fifth')");
+            await db.ExecuteAsync("insert into sample values(6, 'Sixth')");
+            await db.ExecuteAsync("insert into sample values(7, 'Seventh')");
+
+            // --- Act
+            var rows = await db.FetchMultipleAsync<SampleRecord, SampleRecord, SampleRecord, SampleRecord, SampleRecord, SampleRecord, SampleRecord, int>(
+                SqlExpression.CreateFrom(
+                @"select * from sample where Id = 1
+                  select * from sample where Id = 2 or Id = 3
+                  select Name, Id from sample where Id >=4 and Id <= 6
+                  select * from sample where Id > 6
+                  select * from sample where Id = 1
+                  select * from sample where Id = 2 or Id = 3
+                  select Name, Id from sample where Id >=4 and Id <= 6"),
+                  (l1, l2, l3, l4, l5, l6, l7) => l1.Count + l2.Count + l3.Count + l4.Count + l5.Count + l6.Count + l7.Count);
+
+            // --- Assert
+            rows.ShouldEqual(13);
         }
 
         [TableName("sample")]

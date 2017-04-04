@@ -1843,42 +1843,6 @@ namespace Seemplest.MsSql.DataAccess
         }
 
         /// <summary>
-        /// Fetches multiple result sets in one query -- async
-        /// </summary>
-        /// <typeparam name="T1">Data record type #1</typeparam>
-        /// <typeparam name="T2">Data record type #2</typeparam>
-        /// <typeparam name="T3">Data record type #3</typeparam>
-        /// <typeparam name="T4">Data record type #4</typeparam>
-        /// <param name="sql">SQL batch</param>
-        /// <param name="args">Array of query parameters</param>
-        /// <returns>The tuple that holds lists of dat records fetched from the database.</returns>
-        public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>>> FetchMultipleAsync<T1, T2, T3, T4>(string sql, params object[] args)
-        {
-            return FetchMultipleAsync<T1, T2, T3, T4>(default(CancellationToken), sql, args);
-        }
-
-        /// <summary>
-        /// Fetches multiple result sets in one query -- async
-        /// </summary>
-        /// <typeparam name="T1">Data record type #1</typeparam>
-        /// <typeparam name="T2">Data record type #2</typeparam>
-        /// <typeparam name="T3">Data record type #3</typeparam>
-        /// <typeparam name="T4">Data record type #4</typeparam>
-        /// <param name="token">Optional cancellation token</param>
-        /// <param name="sql">SQL batch</param>
-        /// <param name="args">Array of query parameters</param>
-        /// <returns>The tuple that holds lists of dat records fetched from the database.</returns>
-        public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>>> FetchMultipleAsync<T1, T2, T3, T4>(
-            CancellationToken token, string sql, params object[] args)
-        {
-            return FetchMultipleAsync<T1, T2, T3, T4, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap,
-                Tuple<List<T1>, List<T2>, List<T3>, List<T4>>>(
-                new Func<List<T1>, List<T2>, List<T3>, List<T4>, Tuple<List<T1>, List<T2>, List<T3>, List<T4>>>(
-                    (t1, t2, t3, t4) => new Tuple<List<T1>, List<T2>, List<T3>, List<T4>>(t1, t2, t3, t4)),
-                new SqlExpression(sql, args), token);
-        }
-
-        /// <summary>
         /// Fetches multiple result sets in one query.
         /// </summary>
         /// <typeparam name="T1">Data record type #1</typeparam>
@@ -1968,6 +1932,21 @@ namespace Seemplest.MsSql.DataAccess
         /// <typeparam name="T2">Data record type #2</typeparam>
         /// <typeparam name="T3">Data record type #3</typeparam>
         /// <typeparam name="T4">Data record type #4</typeparam>
+        /// <param name="sql">SQL batch</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <returns>The tuple that holds lists of dat records fetched from the database.</returns>
+        public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>>> FetchMultipleAsync<T1, T2, T3, T4>(string sql, params object[] args)
+        {
+            return FetchMultipleAsync<T1, T2, T3, T4>(default(CancellationToken), sql, args);
+        }
+
+        /// <summary>
+        /// Fetches multiple result sets in one query -- async
+        /// </summary>
+        /// <typeparam name="T1">Data record type #1</typeparam>
+        /// <typeparam name="T2">Data record type #2</typeparam>
+        /// <typeparam name="T3">Data record type #3</typeparam>
+        /// <typeparam name="T4">Data record type #4</typeparam>
         /// <param name="sqlExpr">SQL Expression that defines the query</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns>The tuple that holds lists of dat records fetched from the database.</returns>
@@ -1979,6 +1958,214 @@ namespace Seemplest.MsSql.DataAccess
                 new Func<List<T1>, List<T2>, List<T3>, List<T4>, Tuple<List<T1>, List<T2>, List<T3>, List<T4>>>(
                     (t1, t2, t3, t4) => new Tuple<List<T1>, List<T2>, List<T3>, List<T4>>(t1, t2, t3, t4)),
                 sqlExpr, token);
+        }
+
+        /// <summary>
+        /// Fetches multiple result sets in one query -- async
+        /// </summary>
+        /// <typeparam name="T1">Data record type #1</typeparam>
+        /// <typeparam name="T2">Data record type #2</typeparam>
+        /// <typeparam name="T3">Data record type #3</typeparam>
+        /// <typeparam name="T4">Data record type #4</typeparam>
+        /// <param name="token">Optional cancellation token</param>
+        /// <param name="sql">SQL batch</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <returns>The tuple that holds lists of dat records fetched from the database.</returns>
+        public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>>> FetchMultipleAsync<T1, T2, T3, T4>(
+            CancellationToken token, string sql, params object[] args)
+        {
+            return FetchMultipleAsync<T1, T2, T3, T4, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap,
+                Tuple<List<T1>, List<T2>, List<T3>, List<T4>>>(
+                new Func<List<T1>, List<T2>, List<T3>, List<T4>, Tuple<List<T1>, List<T2>, List<T3>, List<T4>>>(
+                    (t1, t2, t3, t4) => new Tuple<List<T1>, List<T2>, List<T3>, List<T4>>(t1, t2, t3, t4)),
+                new SqlExpression(sql, args), token);
+        }
+
+
+        /// <summary>
+        /// Fetches multiple result sets in one query -- async
+        /// </summary>
+        /// <typeparam name="T1">Data record type #1</typeparam>
+        /// <typeparam name="T2">Data record type #2</typeparam>
+        /// <typeparam name="T3">Data record type #3</typeparam>
+        /// <typeparam name="T4">Data record type #4</typeparam>
+        /// <typeparam name="T5">Data record type #5</typeparam>
+        /// <param name="sql">SQL batch</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <returns>The tuple that holds lists of dat records fetched from the database.</returns>
+        public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>>> FetchMultipleAsync<T1, T2, T3, T4, T5>(string sql, params object[] args)
+        {
+            return FetchMultipleAsync<T1, T2, T3, T4, T5>(default(CancellationToken), sql, args);
+        }
+
+        /// <summary>
+        /// Fetches multiple result sets in one query -- async
+        /// </summary>
+        /// <typeparam name="T1">Data record type #1</typeparam>
+        /// <typeparam name="T2">Data record type #2</typeparam>
+        /// <typeparam name="T3">Data record type #3</typeparam>
+        /// <typeparam name="T4">Data record type #4</typeparam>
+        /// <typeparam name="T5">Data record type #5</typeparam>
+        /// <param name="sqlExpr">SQL Expression that defines the query</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>The tuple that holds lists of dat records fetched from the database.</returns>
+        public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>>> FetchMultipleAsync<T1, T2, T3, T4, T5>(
+            SqlExpression sqlExpr, CancellationToken token = default(CancellationToken))
+        {
+            return FetchMultipleAsync<T1, T2, T3, T4, T5, IDoNotMap, IDoNotMap, IDoNotMap,
+                Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>>>(
+                new Func<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>>>(
+                    (t1, t2, t3, t4, t5) => new Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>>(t1, t2, t3, t4, t5)),
+                sqlExpr, token);
+        }
+
+        /// <summary>
+        /// Fetches multiple result sets in one query -- async
+        /// </summary>
+        /// <typeparam name="T1">Data record type #1</typeparam>
+        /// <typeparam name="T2">Data record type #2</typeparam>
+        /// <typeparam name="T3">Data record type #3</typeparam>
+        /// <typeparam name="T4">Data record type #4</typeparam>
+        /// <typeparam name="T5">Data record type #5</typeparam>
+        /// <param name="token">Optional cancellation token</param>
+        /// <param name="sql">SQL batch</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <returns>The tuple that holds lists of dat records fetched from the database.</returns>
+        public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>>> FetchMultipleAsync<T1, T2, T3, T4, T5>(
+            CancellationToken token, string sql, params object[] args)
+        {
+            return FetchMultipleAsync<T1, T2, T3, T4, T5, IDoNotMap, IDoNotMap, IDoNotMap,
+                Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>>>(
+                new Func<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>>>(
+                    (t1, t2, t3, t4, t5) => new Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>>(t1, t2, t3, t4, t5)),
+                new SqlExpression(sql, args), token);
+        }
+
+        /// <summary>
+        /// Fetches multiple result sets in one query -- async
+        /// </summary>
+        /// <typeparam name="T1">Data record type #1</typeparam>
+        /// <typeparam name="T2">Data record type #2</typeparam>
+        /// <typeparam name="T3">Data record type #3</typeparam>
+        /// <typeparam name="T4">Data record type #4</typeparam>
+        /// <typeparam name="T5">Data record type #5</typeparam>
+        /// <typeparam name="T6">Data record type #6</typeparam>
+        /// <param name="sql">SQL batch</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <returns>The tuple that holds lists of dat records fetched from the database.</returns>
+        public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>>> FetchMultipleAsync<T1, T2, T3, T4, T5, T6>(string sql, params object[] args)
+        {
+            return FetchMultipleAsync<T1, T2, T3, T4, T5, T6>(default(CancellationToken), sql, args);
+        }
+
+        /// <summary>
+        /// Fetches multiple result sets in one query -- async
+        /// </summary>
+        /// <typeparam name="T1">Data record type #1</typeparam>
+        /// <typeparam name="T2">Data record type #2</typeparam>
+        /// <typeparam name="T3">Data record type #3</typeparam>
+        /// <typeparam name="T4">Data record type #4</typeparam>
+        /// <typeparam name="T5">Data record type #5</typeparam>
+        /// <typeparam name="T6">Data record type #6</typeparam>
+        /// <param name="sqlExpr">SQL Expression that defines the query</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>The tuple that holds lists of dat records fetched from the database.</returns>
+        public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>>> FetchMultipleAsync<T1, T2, T3, T4, T5, T6>(
+            SqlExpression sqlExpr, CancellationToken token = default(CancellationToken))
+        {
+            return FetchMultipleAsync<T1, T2, T3, T4, T5, T6, IDoNotMap, IDoNotMap,
+                Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>>>(
+                new Func<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>>>(
+                    (t1, t2, t3, t4, t5, t6) => new Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>>(t1, t2, t3, t4, t5, t6)),
+                sqlExpr, token);
+        }
+
+        /// <summary>
+        /// Fetches multiple result sets in one query -- async
+        /// </summary>
+        /// <typeparam name="T1">Data record type #1</typeparam>
+        /// <typeparam name="T2">Data record type #2</typeparam>
+        /// <typeparam name="T3">Data record type #3</typeparam>
+        /// <typeparam name="T4">Data record type #4</typeparam>
+        /// <typeparam name="T5">Data record type #5</typeparam>
+        /// <typeparam name="T6">Data record type #6</typeparam>
+        /// <param name="token">Optional cancellation token</param>
+        /// <param name="sql">SQL batch</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <returns>The tuple that holds lists of dat records fetched from the database.</returns>
+        public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>>> FetchMultipleAsync<T1, T2, T3, T4, T5, T6>(
+            CancellationToken token, string sql, params object[] args)
+        {
+            return FetchMultipleAsync<T1, T2, T3, T4, T5, T6, IDoNotMap, IDoNotMap,
+                Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>>>(
+                new Func<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>>>(
+                    (t1, t2, t3, t4, t5, t6) => new Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>>(t1, t2, t3, t4, t5, t6)),
+                new SqlExpression(sql, args), token);
+        }
+
+        /// <summary>
+        /// Fetches multiple result sets in one query -- async
+        /// </summary>
+        /// <typeparam name="T1">Data record type #1</typeparam>
+        /// <typeparam name="T2">Data record type #2</typeparam>
+        /// <typeparam name="T3">Data record type #3</typeparam>
+        /// <typeparam name="T4">Data record type #4</typeparam>
+        /// <typeparam name="T5">Data record type #5</typeparam>
+        /// <typeparam name="T6">Data record type #6</typeparam>
+        /// <typeparam name="T7">Data record type #7</typeparam>
+        /// <param name="sql">SQL batch</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <returns>The tuple that holds lists of dat records fetched from the database.</returns>
+        public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, List<T7>>> FetchMultipleAsync<T1, T2, T3, T4, T5, T6, T7>(string sql, params object[] args)
+        {
+            return FetchMultipleAsync<T1, T2, T3, T4, T5, T6, T7>(default(CancellationToken), sql, args);
+        }
+
+        /// <summary>
+        /// Fetches multiple result sets in one query -- async
+        /// </summary>
+        /// <typeparam name="T1">Data record type #1</typeparam>
+        /// <typeparam name="T2">Data record type #2</typeparam>
+        /// <typeparam name="T3">Data record type #3</typeparam>
+        /// <typeparam name="T4">Data record type #4</typeparam>
+        /// <typeparam name="T5">Data record type #5</typeparam>
+        /// <typeparam name="T6">Data record type #6</typeparam>
+        /// <typeparam name="T7">Data record type #7</typeparam>
+        /// <param name="sqlExpr">SQL Expression that defines the query</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>The tuple that holds lists of dat records fetched from the database.</returns>
+        public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, List<T7>>> FetchMultipleAsync<T1, T2, T3, T4, T5, T6, T7>(
+            SqlExpression sqlExpr, CancellationToken token = default(CancellationToken))
+        {
+            return FetchMultipleAsync<T1, T2, T3, T4, T5, T6, T7, IDoNotMap,
+                Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, List<T7>>>(
+                new Func<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, List<T7>, Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, List<T7>>>(
+                    (t1, t2, t3, t4, t5, t6, t7) => new Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, List<T7>>(t1, t2, t3, t4, t5, t6, t7)),
+                sqlExpr, token);
+        }
+
+        /// <summary>
+        /// Fetches multiple result sets in one query -- async
+        /// </summary>
+        /// <typeparam name="T1">Data record type #1</typeparam>
+        /// <typeparam name="T2">Data record type #2</typeparam>
+        /// <typeparam name="T3">Data record type #3</typeparam>
+        /// <typeparam name="T4">Data record type #4</typeparam>
+        /// <typeparam name="T5">Data record type #5</typeparam>
+        /// <typeparam name="T6">Data record type #6</typeparam>
+        /// <typeparam name="T7">Data record type #7</typeparam>
+        /// <param name="token">Optional cancellation token</param>
+        /// <param name="sql">SQL batch</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <returns>The tuple that holds lists of dat records fetched from the database.</returns>
+        public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, List<T7>>> FetchMultipleAsync<T1, T2, T3, T4, T5, T6, T7>(
+            CancellationToken token, string sql, params object[] args)
+        {
+            return FetchMultipleAsync<T1, T2, T3, T4, T5, T6, T7, IDoNotMap,
+                Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, List<T7>>>(
+                new Func<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, List<T7>, Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, List<T7>>>(
+                    (t1, t2, t3, t4, t5, t6, t7) => new Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, List<T7>>(t1, t2, t3, t4, t5, t6, t7)),
+                new SqlExpression(sql, args), token);
         }
 
         /// <summary>
@@ -2087,6 +2274,69 @@ namespace Seemplest.MsSql.DataAccess
             CancellationToken token = default(CancellationToken))
         {
             return FetchMultipleAsync<T1, T2, T3, T4, IDoNotMap, IDoNotMap, IDoNotMap, IDoNotMap, TRet>(correlator, sqlExpr, token);
+        }
+
+        /// <summary>
+        /// Fetches multiple result sets in one query.
+        /// </summary>
+        /// <typeparam name="T1">Data record type #1</typeparam>
+        /// <typeparam name="T2">Data record type #2</typeparam>
+        /// <typeparam name="T3">Data record type #3</typeparam>
+        /// <typeparam name="T4">Data record type #3</typeparam>
+        /// <typeparam name="T5">Data record type #3</typeparam>
+        /// <typeparam name="TRet">Correlated data record type</typeparam>
+        /// <param name="sqlExpr">SQL Expression that defines the query</param>
+        /// <param name="correlator">Function that correlates the result sets</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>The tuple that holds lists of data records fetched from the database.</returns>
+        public Task<TRet> FetchMultipleAsync<T1, T2, T3, T4, T5, TRet>(SqlExpression sqlExpr,
+            Func<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, TRet> correlator,
+            CancellationToken token = default(CancellationToken))
+        {
+            return FetchMultipleAsync<T1, T2, T3, T4, T5, IDoNotMap, IDoNotMap, IDoNotMap, TRet>(correlator, sqlExpr, token);
+        }
+
+        /// <summary>
+        /// Fetches multiple result sets in one query.
+        /// </summary>
+        /// <typeparam name="T1">Data record type #1</typeparam>
+        /// <typeparam name="T2">Data record type #2</typeparam>
+        /// <typeparam name="T3">Data record type #3</typeparam>
+        /// <typeparam name="T4">Data record type #3</typeparam>
+        /// <typeparam name="T5">Data record type #3</typeparam>
+        /// <typeparam name="T6">Data record type #3</typeparam>
+        /// <typeparam name="T7">Data record type #3</typeparam>
+        /// <typeparam name="TRet">Correlated data record type</typeparam>
+        /// <param name="sqlExpr">SQL Expression that defines the query</param>
+        /// <param name="correlator">Function that correlates the result sets</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>The tuple that holds lists of data records fetched from the database.</returns>
+        public Task<TRet> FetchMultipleAsync<T1, T2, T3, T4, T5, T6, T7, TRet>(SqlExpression sqlExpr,
+            Func<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, List<T7>,  TRet> correlator,
+            CancellationToken token = default(CancellationToken))
+        {
+            return FetchMultipleAsync<T1, T2, T3, T4, T5, T6, T7, IDoNotMap, TRet>(correlator, sqlExpr, token);
+        }
+
+        /// <summary>
+        /// Fetches multiple result sets in one query.
+        /// </summary>
+        /// <typeparam name="T1">Data record type #1</typeparam>
+        /// <typeparam name="T2">Data record type #2</typeparam>
+        /// <typeparam name="T3">Data record type #3</typeparam>
+        /// <typeparam name="T4">Data record type #3</typeparam>
+        /// <typeparam name="T5">Data record type #3</typeparam>
+        /// <typeparam name="T6">Data record type #3</typeparam>
+        /// <typeparam name="TRet">Correlated data record type</typeparam>
+        /// <param name="sqlExpr">SQL Expression that defines the query</param>
+        /// <param name="correlator">Function that correlates the result sets</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>The tuple that holds lists of data records fetched from the database.</returns>
+        public Task<TRet> FetchMultipleAsync<T1, T2, T3, T4, T5, T6, TRet>(SqlExpression sqlExpr,
+            Func<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, TRet> correlator,
+            CancellationToken token = default(CancellationToken))
+        {
+            return FetchMultipleAsync<T1, T2, T3, T4, T5, T6, IDoNotMap, IDoNotMap, TRet>(correlator, sqlExpr, token);
         }
 
         /// <summary>
