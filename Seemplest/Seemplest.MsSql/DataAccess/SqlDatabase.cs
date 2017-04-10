@@ -1667,6 +1667,25 @@ namespace Seemplest.MsSql.DataAccess
             return (await FetchAsync<T>(token,""));
         }
 
+
+        /// <summary>
+        /// Fetches records from the database with the specified 
+        /// SQL fragment that calls a stored procedure.
+        /// </summary>
+        /// <typeparam name="T">Type of poco to fetch.</typeparam>
+        /// <param name="sql">SQL fragment</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>
+        /// The list of pocos fetched from the database and the stored procedure call result.
+        /// </returns>
+        public async Task<Tuple<List<T>, int>> FetchFromSpAsync<T>(SqlExpression sql, CancellationToken token = default(CancellationToken))
+        {
+            var transformedSql = "exec @@ReturnValue = " + sql.SqlText + ";\nselect @@ReturnValue";
+            var result = await FetchMultipleAsync<T, ReturnValueData>(new SqlExpression(transformedSql, sql.Arguments), token);
+            var retVal = result.Item2.Count == 0 ? 0 : result.Item2[0].ReturnValue;
+            return new Tuple<List<T>, int>(result.Item1, retVal);
+        }
+
         /// <summary>
         /// Retrieves an enumeration mapped to the specified poco type.
         /// </summary>
@@ -3842,4 +3861,14 @@ namespace Seemplest.MsSql.DataAccess
 
         #endregion
     }
+
+    /// <summary>
+    /// Represents a return value
+    /// </summary>
+    public class ReturnValueData
+    {
+        public int ReturnValue { get; set; }
+    }
+
+
 }
