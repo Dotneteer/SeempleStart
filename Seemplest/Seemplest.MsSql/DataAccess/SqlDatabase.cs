@@ -1667,7 +1667,6 @@ namespace Seemplest.MsSql.DataAccess
             return (await FetchAsync<T>(token,""));
         }
 
-
         /// <summary>
         /// Fetches records from the database with the specified 
         /// SQL fragment that calls a stored procedure.
@@ -1680,10 +1679,51 @@ namespace Seemplest.MsSql.DataAccess
         /// </returns>
         public async Task<Tuple<List<T>, int>> FetchFromSpAsync<T>(SqlExpression sql, CancellationToken token = default(CancellationToken))
         {
-            var transformedSql = "exec @@ReturnValue = " + sql.SqlText + ";\nselect @@ReturnValue";
+            var invokeSpText = sql.SqlText;
+            if (sql.SqlText.StartsWith("execute", StringComparison.InvariantCultureIgnoreCase))
+            {
+                invokeSpText = sql.SqlText.Substring("execute".Length);
+            }
+            else if (sql.SqlText.StartsWith("exec", StringComparison.InvariantCultureIgnoreCase))
+            {
+                invokeSpText = sql.SqlText.Substring("exec".Length);
+            }
+            var transformedSql = "declare @@ReturnValue int;\n" +
+                                 "exec @@ReturnValue = " + 
+                                 invokeSpText + ";\n" +
+                                 "select @@ReturnValue as ReturnValue";
             var result = await FetchMultipleAsync<T, ReturnValueData>(new SqlExpression(transformedSql, sql.Arguments), token);
             var retVal = result.Item2.Count == 0 ? 0 : result.Item2[0].ReturnValue;
             return new Tuple<List<T>, int>(result.Item1, retVal);
+        }
+
+        /// <summary>
+        /// Fetches records from the database with the specified 
+        /// SQL fragment that calls a stored procedure.
+        /// </summary>
+        /// <param name="sql">SQL batch</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <returns>
+        /// The list of pocos fetched from the database and the stored procedure call result.
+        /// </returns>
+        public Task<Tuple<List<T>, int>> FetchFromSpAsync<T>(string sql, params object[] args)
+        {
+            return FetchFromSpAsync<T>(new SqlExpression(sql, args));
+        }
+
+        /// <summary>
+        /// Fetches records from the database with the specified 
+        /// SQL fragment that calls a stored procedure.
+        /// </summary>
+        /// <param name="sql">SQL batch</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>
+        /// The list of pocos fetched from the database and the stored procedure call result.
+        /// </returns>
+        public Task<Tuple<List<T>, int>> FetchFromSpAsync<T>(CancellationToken token, string sql, params object[] args)
+        {
+            return FetchFromSpAsync<T>(new SqlExpression(sql, args), token);
         }
 
         /// <summary>

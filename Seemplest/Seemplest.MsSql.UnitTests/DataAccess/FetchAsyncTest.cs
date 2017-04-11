@@ -25,6 +25,10 @@ namespace Seemplest.MsSql.UnitTests.DataAccess
             db.Execute(
                 @"if exists (select TABLE_NAME from INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'sample')
                   drop table sample");
+            db.Execute(
+                @"if exists (select [ROUTINE_NAME] from [INFORMATION_SCHEMA].[ROUTINES]
+                  where [ROUTINE_NAME] = 'SampleSp')
+                  drop procedure [dbo].[SampleSp]");
         }
 
         [TestMethod]
@@ -72,6 +76,183 @@ namespace Seemplest.MsSql.UnitTests.DataAccess
             rows[0].Name.ShouldEqual("First");
             rows[1].Id.ShouldEqual(2);
             rows[1].Name.ShouldEqual("Second");
+        }
+
+        [TestMethod]
+        public async Task FetchFromSpAsyncWorksAsExpected()
+        {
+            // --- Arrange
+            var db = new SqlDatabase(DB_CONN);
+            await db.ExecuteAsync(@"create table sample(Id int not null, Name varchar(50) null)");
+            await db.ExecuteAsync(@"CREATE PROCEDURE [dbo].[SampleSp] 
+                                    	@@Par1 int, 
+                                       	@@Par2 varchar(100)
+                                    AS
+                                    BEGIN
+                                        select * from sample where Id >= @@Par1
+                                        return 123
+                                    END");
+            await db.ExecuteAsync("insert into sample values(1, 'First')");
+            await db.ExecuteAsync("insert into sample values(2, 'Second')");
+
+            // --- Act
+            var result = await db.FetchFromSpAsync<SampleRecord>(
+                new SqlExpression("[dbo].[SampleSp] @0, @1", 2, "haho"));
+
+            // --- Assert
+            var rows = result.Item1;
+            var retVal = result.Item2;
+            rows.ShouldHaveCountOf(1);
+            rows[0].Id.ShouldEqual(2);
+            rows[0].Name.ShouldEqual("Second");
+            retVal.ShouldEqual(123);
+        }
+
+        [TestMethod]
+        public async Task FetchFromSpAsyncWorksWithExec()
+        {
+            // --- Arrange
+            var db = new SqlDatabase(DB_CONN);
+            await db.ExecuteAsync(@"create table sample(Id int not null, Name varchar(50) null)");
+            await db.ExecuteAsync(@"CREATE PROCEDURE [dbo].[SampleSp] 
+                                    	@@Par1 int, 
+                                       	@@Par2 varchar(100)
+                                    AS
+                                    BEGIN
+                                        select * from sample where Id >= @@Par1
+                                        return 123
+                                    END");
+            await db.ExecuteAsync("insert into sample values(1, 'First')");
+            await db.ExecuteAsync("insert into sample values(2, 'Second')");
+
+            // --- Act
+            var result = await db.FetchFromSpAsync<SampleRecord>(
+                new SqlExpression("exEC [dbo].[SampleSp] @0, @1", 2, "haho"));
+
+            // --- Assert
+            var rows = result.Item1;
+            var retVal = result.Item2;
+            rows.ShouldHaveCountOf(1);
+            rows[0].Id.ShouldEqual(2);
+            rows[0].Name.ShouldEqual("Second");
+            retVal.ShouldEqual(123);
+        }
+
+        [TestMethod]
+        public async Task FetchFromSpAsyncWorksWithExecute()
+        {
+            // --- Arrange
+            var db = new SqlDatabase(DB_CONN);
+            await db.ExecuteAsync(@"create table sample(Id int not null, Name varchar(50) null)");
+            await db.ExecuteAsync(@"CREATE PROCEDURE [dbo].[SampleSp] 
+                                    	@@Par1 int, 
+                                       	@@Par2 varchar(100)
+                                    AS
+                                    BEGIN
+                                        select * from sample where Id >= @@Par1
+                                        return 123
+                                    END");
+            await db.ExecuteAsync("insert into sample values(1, 'First')");
+            await db.ExecuteAsync("insert into sample values(2, 'Second')");
+
+            // --- Act
+            var result = await db.FetchFromSpAsync<SampleRecord>(
+                new SqlExpression("execUTE [dbo].[SampleSp] @0, @1", 2, "haho"));
+
+            // --- Assert
+            var rows = result.Item1;
+            var retVal = result.Item2;
+            rows.ShouldHaveCountOf(1);
+            rows[0].Id.ShouldEqual(2);
+            rows[0].Name.ShouldEqual("Second");
+            retVal.ShouldEqual(123);
+        }
+
+        [TestMethod]
+        public async Task FetchFromSpAsyncWithSqlWorksAsExpected()
+        {
+            // --- Arrange
+            var db = new SqlDatabase(DB_CONN);
+            await db.ExecuteAsync(@"create table sample(Id int not null, Name varchar(50) null)");
+            await db.ExecuteAsync(@"CREATE PROCEDURE [dbo].[SampleSp] 
+                                    	@@Par1 int, 
+                                       	@@Par2 varchar(100)
+                                    AS
+                                    BEGIN
+                                        select * from sample where Id >= @@Par1
+                                        return 123
+                                    END");
+            await db.ExecuteAsync("insert into sample values(1, 'First')");
+            await db.ExecuteAsync("insert into sample values(2, 'Second')");
+
+            // --- Act
+            var result = await db.FetchFromSpAsync<SampleRecord>("[dbo].[SampleSp] @0, @1", 2, "haho");
+
+            // --- Assert
+            var rows = result.Item1;
+            var retVal = result.Item2;
+            rows.ShouldHaveCountOf(1);
+            rows[0].Id.ShouldEqual(2);
+            rows[0].Name.ShouldEqual("Second");
+            retVal.ShouldEqual(123);
+        }
+
+        [TestMethod]
+        public async Task FetchFromSpAsyncWithSqlWorksWithExec()
+        {
+            // --- Arrange
+            var db = new SqlDatabase(DB_CONN);
+            await db.ExecuteAsync(@"create table sample(Id int not null, Name varchar(50) null)");
+            await db.ExecuteAsync(@"CREATE PROCEDURE [dbo].[SampleSp] 
+                                    	@@Par1 int, 
+                                       	@@Par2 varchar(100)
+                                    AS
+                                    BEGIN
+                                        select * from sample where Id >= @@Par1
+                                        return 123
+                                    END");
+            await db.ExecuteAsync("insert into sample values(1, 'First')");
+            await db.ExecuteAsync("insert into sample values(2, 'Second')");
+
+            // --- Act
+            var result = await db.FetchFromSpAsync<SampleRecord>("exEC [dbo].[SampleSp] @0, @1", 2, "haho");
+
+            // --- Assert
+            var rows = result.Item1;
+            var retVal = result.Item2;
+            rows.ShouldHaveCountOf(1);
+            rows[0].Id.ShouldEqual(2);
+            rows[0].Name.ShouldEqual("Second");
+            retVal.ShouldEqual(123);
+        }
+
+        [TestMethod]
+        public async Task FetchFromSpAsyncWithSqlWorkWithExecute()
+        {
+            // --- Arrange
+            var db = new SqlDatabase(DB_CONN);
+            await db.ExecuteAsync(@"create table sample(Id int not null, Name varchar(50) null)");
+            await db.ExecuteAsync(@"CREATE PROCEDURE [dbo].[SampleSp] 
+                                    	@@Par1 int, 
+                                       	@@Par2 varchar(100)
+                                    AS
+                                    BEGIN
+                                        select * from sample where Id >= @@Par1
+                                        return 123
+                                    END");
+            await db.ExecuteAsync("insert into sample values(1, 'First')");
+            await db.ExecuteAsync("insert into sample values(2, 'Second')");
+
+            // --- Act
+            var result = await db.FetchFromSpAsync<SampleRecord>("execUTE [dbo].[SampleSp] @0, @1", 2, "haho");
+
+            // --- Assert
+            var rows = result.Item1;
+            var retVal = result.Item2;
+            rows.ShouldHaveCountOf(1);
+            rows[0].Id.ShouldEqual(2);
+            rows[0].Name.ShouldEqual("Second");
+            retVal.ShouldEqual(123);
         }
 
         [TestMethod]
