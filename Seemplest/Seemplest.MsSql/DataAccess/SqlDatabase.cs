@@ -1679,19 +1679,7 @@ namespace Seemplest.MsSql.DataAccess
         /// </returns>
         public async Task<Tuple<List<T>, int>> FetchFromSpAsync<T>(SqlExpression sql, CancellationToken token = default(CancellationToken))
         {
-            var invokeSpText = sql.SqlText;
-            if (sql.SqlText.StartsWith("execute", StringComparison.InvariantCultureIgnoreCase))
-            {
-                invokeSpText = sql.SqlText.Substring("execute".Length);
-            }
-            else if (sql.SqlText.StartsWith("exec", StringComparison.InvariantCultureIgnoreCase))
-            {
-                invokeSpText = sql.SqlText.Substring("exec".Length);
-            }
-            var transformedSql = "declare @@ReturnValue int;\n" +
-                                 "exec @@ReturnValue = " + 
-                                 invokeSpText + ";\n" +
-                                 "select @@ReturnValue as ReturnValue";
+            var transformedSql = GenerateSpCallWithReturnValue(sql);
             var result = await FetchMultipleAsync<T, ReturnValueData>(new SqlExpression(transformedSql, sql.Arguments), token);
             var retVal = result.Item2.Count == 0 ? 0 : result.Item2[0].ReturnValue;
             return new Tuple<List<T>, int>(result.Item1, retVal);
@@ -1724,6 +1712,304 @@ namespace Seemplest.MsSql.DataAccess
         public Task<Tuple<List<T>, int>> FetchFromSpAsync<T>(CancellationToken token, string sql, params object[] args)
         {
             return FetchFromSpAsync<T>(new SqlExpression(sql, args), token);
+        }
+
+        /// <summary>
+        /// Fetches records from the database with the specified 
+        /// SQL fragment that calls a stored procedure.
+        /// </summary>
+        /// <typeparam name="T1">First resultset type.</typeparam>
+        /// <typeparam name="T2">Second resultset type.</typeparam>
+        /// <param name="sql">SQL fragment</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>
+        /// The list of pocos fetched from the database and the stored procedure call result.
+        /// </returns>
+        public async Task<Tuple<List<T1>, List<T2>, int>> FetchFromSpAsync<T1, T2>(SqlExpression sql, 
+            CancellationToken token = default(CancellationToken))
+        {
+            var transformedSql = GenerateSpCallWithReturnValue(sql);
+            var result = await FetchMultipleAsync<T1, T2, ReturnValueData>(new SqlExpression(transformedSql, sql.Arguments), token);
+            var retVal = result.Item3.Count == 0 ? 0 : result.Item3[0].ReturnValue;
+            return new Tuple<List<T1>, List<T2>, int>(result.Item1, result.Item2, retVal);
+        }
+
+        /// <summary>
+        /// Fetches records from the database with the specified 
+        /// SQL fragment that calls a stored procedure.
+        /// </summary>
+        /// <typeparam name="T1">First resultset type.</typeparam>
+        /// <typeparam name="T2">Second resultset type.</typeparam>
+        /// <param name="sql">SQL batch</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <returns>
+        /// The list of pocos fetched from the database and the stored procedure call result.
+        /// </returns>
+        public Task<Tuple<List<T1>, List<T2>, int>> FetchFromSpAsync<T1, T2>(string sql, params object[] args)
+        {
+            return FetchFromSpAsync<T1, T2>(new SqlExpression(sql, args));
+        }
+
+        /// <summary>
+        /// Fetches records from the database with the specified 
+        /// SQL fragment that calls a stored procedure.
+        /// </summary>
+        /// <typeparam name="T1">First resultset type.</typeparam>
+        /// <typeparam name="T2">Second resultset type.</typeparam>
+        /// <param name="sql">SQL batch</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>
+        /// The list of pocos fetched from the database and the stored procedure call result.
+        /// </returns>
+        public Task<Tuple<List<T1>, List<T2>, int>> FetchFromSpAsync<T1, T2>(CancellationToken token, string sql, params object[] args)
+        {
+            return FetchFromSpAsync<T1, T2>(new SqlExpression(sql, args), token);
+        }
+
+        /// <summary>
+        /// Fetches records from the database with the specified 
+        /// SQL fragment that calls a stored procedure.
+        /// </summary>
+        /// <typeparam name="T1">First resultset type.</typeparam>
+        /// <typeparam name="T2">Second resultset type.</typeparam>
+        /// <typeparam name="T3">Third resultset type.</typeparam>
+        /// <param name="sql">SQL fragment</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>
+        /// The list of pocos fetched from the database and the stored procedure call result.
+        /// </returns>
+        public async Task<Tuple<List<T1>, List<T2>, List<T3>, int>> FetchFromSpAsync<T1, T2, T3>(SqlExpression sql,
+            CancellationToken token = default(CancellationToken))
+        {
+            var transformedSql = GenerateSpCallWithReturnValue(sql);
+            var result = await FetchMultipleAsync<T1, T2, T3, ReturnValueData>(new SqlExpression(transformedSql, sql.Arguments), token);
+            var retVal = result.Item4.Count == 0 ? 0 : result.Item4[0].ReturnValue;
+            return new Tuple<List<T1>, List<T2>, List<T3>, int>(result.Item1, result.Item2, result.Item3, retVal);
+        }
+
+        /// <summary>
+        /// Fetches records from the database with the specified 
+        /// SQL fragment that calls a stored procedure.
+        /// </summary>
+        /// <typeparam name="T1">First resultset type.</typeparam>
+        /// <typeparam name="T2">Second resultset type.</typeparam>
+        /// <typeparam name="T3">Third resultset type.</typeparam>
+        /// <param name="sql">SQL batch</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <returns>
+        /// The list of pocos fetched from the database and the stored procedure call result.
+        /// </returns>
+        public Task<Tuple<List<T1>, List<T2>, List<T3>, int>> FetchFromSpAsync<T1, T2, T3>(string sql, params object[] args)
+        {
+            return FetchFromSpAsync<T1, T2, T3>(new SqlExpression(sql, args));
+        }
+
+        /// <summary>
+        /// Fetches records from the database with the specified 
+        /// SQL fragment that calls a stored procedure.
+        /// </summary>
+        /// <typeparam name="T1">First resultset type.</typeparam>
+        /// <typeparam name="T2">Second resultset type.</typeparam>
+        /// <typeparam name="T3">Third resultset type.</typeparam>
+        /// <param name="sql">SQL batch</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>
+        /// The list of pocos fetched from the database and the stored procedure call result.
+        /// </returns>
+        public Task<Tuple<List<T1>, List<T2>, List<T3>, int>> FetchFromSpAsync<T1, T2, T3>(CancellationToken token, string sql, params object[] args)
+        {
+            return FetchFromSpAsync<T1, T2, T3>(new SqlExpression(sql, args), token);
+        }
+
+        /// <summary>
+        /// Fetches records from the database with the specified 
+        /// SQL fragment that calls a stored procedure.
+        /// </summary>
+        /// <typeparam name="T1">First resultset type.</typeparam>
+        /// <typeparam name="T2">Second resultset type.</typeparam>
+        /// <typeparam name="T3">Third resultset type.</typeparam>
+        /// <typeparam name="T4">Fourth resultset type.</typeparam>
+        /// <param name="sql">SQL fragment</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>
+        /// The list of pocos fetched from the database and the stored procedure call result.
+        /// </returns>
+        public async Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>, int>> FetchFromSpAsync<T1, T2, T3, T4>(SqlExpression sql,
+            CancellationToken token = default(CancellationToken))
+        {
+            var transformedSql = GenerateSpCallWithReturnValue(sql);
+            var result = await FetchMultipleAsync<T1, T2, T3, T4, ReturnValueData>(new SqlExpression(transformedSql, sql.Arguments), token);
+            var retVal = result.Item5.Count == 0 ? 0 : result.Item5[0].ReturnValue;
+            return new Tuple<List<T1>, List<T2>, List<T3>, List<T4>, int>(result.Item1, result.Item2, result.Item3, 
+                result.Item4, retVal);
+        }
+
+        /// <summary>
+        /// Fetches records from the database with the specified 
+        /// SQL fragment that calls a stored procedure.
+        /// </summary>
+        /// <typeparam name="T1">First resultset type.</typeparam>
+        /// <typeparam name="T2">Second resultset type.</typeparam>
+        /// <typeparam name="T3">Third resultset type.</typeparam>
+        /// <typeparam name="T4">Fourth resultset type.</typeparam>
+        /// <param name="sql">SQL batch</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <returns>
+        /// The list of pocos fetched from the database and the stored procedure call result.
+        /// </returns>
+        public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>, int>> FetchFromSpAsync<T1, T2, T3, T4>(string sql, params object[] args)
+        {
+            return FetchFromSpAsync<T1, T2, T3, T4>(new SqlExpression(sql, args));
+        }
+
+        /// <summary>
+        /// Fetches records from the database with the specified 
+        /// SQL fragment that calls a stored procedure.
+        /// </summary>
+        /// <typeparam name="T1">First resultset type.</typeparam>
+        /// <typeparam name="T2">Second resultset type.</typeparam>
+        /// <typeparam name="T3">Third resultset type.</typeparam>
+        /// <typeparam name="T4">Fourth resultset type.</typeparam>
+        /// <param name="sql">SQL batch</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>
+        /// The list of pocos fetched from the database and the stored procedure call result.
+        /// </returns>
+        public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>, int>> FetchFromSpAsync<T1, T2, T3, T4>(CancellationToken token, string sql, params object[] args)
+        {
+            return FetchFromSpAsync<T1, T2, T3, T4>(new SqlExpression(sql, args), token);
+        }
+
+        /// <summary>
+        /// Fetches records from the database with the specified 
+        /// SQL fragment that calls a stored procedure.
+        /// </summary>
+        /// <typeparam name="T1">First resultset type.</typeparam>
+        /// <typeparam name="T2">Second resultset type.</typeparam>
+        /// <typeparam name="T3">Third resultset type.</typeparam>
+        /// <typeparam name="T4">Fourth resultset type.</typeparam>
+        /// <typeparam name="T5">Fifth resultset type.</typeparam>
+        /// <param name="sql">SQL fragment</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>
+        /// The list of pocos fetched from the database and the stored procedure call result.
+        /// </returns>
+        public async Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, int>> FetchFromSpAsync<T1, T2, T3, T4, T5>(SqlExpression sql,
+            CancellationToken token = default(CancellationToken))
+        {
+            var transformedSql = GenerateSpCallWithReturnValue(sql);
+            var result = await FetchMultipleAsync<T1, T2, T3, T4, T5, ReturnValueData>(new SqlExpression(transformedSql, sql.Arguments), token);
+            var retVal = result.Item6.Count == 0 ? 0 : result.Item6[0].ReturnValue;
+            return new Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, int>(result.Item1, result.Item2, result.Item3,
+                result.Item4, result.Item5, retVal);
+        }
+
+        /// <summary>
+        /// Fetches records from the database with the specified 
+        /// SQL fragment that calls a stored procedure.
+        /// </summary>
+        /// <typeparam name="T1">First resultset type.</typeparam>
+        /// <typeparam name="T2">Second resultset type.</typeparam>
+        /// <typeparam name="T3">Third resultset type.</typeparam>
+        /// <typeparam name="T4">Fourth resultset type.</typeparam>
+        /// <typeparam name="T5">Fifth resultset type.</typeparam>
+        /// <param name="sql">SQL batch</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <returns>
+        /// The list of pocos fetched from the database and the stored procedure call result.
+        /// </returns>
+        public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, int>> FetchFromSpAsync<T1, T2, T3, T4, T5>(string sql, params object[] args)
+        {
+            return FetchFromSpAsync<T1, T2, T3, T4, T5>(new SqlExpression(sql, args));
+        }
+
+        /// <summary>
+        /// Fetches records from the database with the specified 
+        /// SQL fragment that calls a stored procedure.
+        /// </summary>
+        /// <typeparam name="T1">First resultset type.</typeparam>
+        /// <typeparam name="T2">Second resultset type.</typeparam>
+        /// <typeparam name="T3">Third resultset type.</typeparam>
+        /// <typeparam name="T4">Fourth resultset type.</typeparam>
+        /// <typeparam name="T5">Fifth resultset type.</typeparam>
+        /// <param name="sql">SQL batch</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>
+        /// The list of pocos fetched from the database and the stored procedure call result.
+        /// </returns>
+        public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, int>> FetchFromSpAsync<T1, T2, T3, T4, T5>(CancellationToken token, string sql, params object[] args)
+        {
+            return FetchFromSpAsync<T1, T2, T3, T4, T5>(new SqlExpression(sql, args), token);
+        }
+
+        /// <summary>
+        /// Fetches records from the database with the specified 
+        /// SQL fragment that calls a stored procedure.
+        /// </summary>
+        /// <typeparam name="T1">First resultset type.</typeparam>
+        /// <typeparam name="T2">Second resultset type.</typeparam>
+        /// <typeparam name="T3">Third resultset type.</typeparam>
+        /// <typeparam name="T4">Fourth resultset type.</typeparam>
+        /// <typeparam name="T5">Fifth resultset type.</typeparam>
+        /// <typeparam name="T6">Sixth resultset type.</typeparam>
+        /// <param name="sql">SQL fragment</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>
+        /// The list of pocos fetched from the database and the stored procedure call result.
+        /// </returns>
+        public async Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, int>> FetchFromSpAsync<T1, T2, T3, T4, T5, T6>(SqlExpression sql,
+            CancellationToken token = default(CancellationToken))
+        {
+            var transformedSql = GenerateSpCallWithReturnValue(sql);
+            var result = await FetchMultipleAsync<T1, T2, T3, T4, T5, T6, ReturnValueData>(new SqlExpression(transformedSql, sql.Arguments), token);
+            var retVal = result.Item7.Count == 0 ? 0 : result.Item7[0].ReturnValue;
+            return new Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, int>(result.Item1, result.Item2, result.Item3,
+                result.Item4, result.Item5, result.Item6, retVal);
+        }
+
+        /// <summary>
+        /// Fetches records from the database with the specified 
+        /// SQL fragment that calls a stored procedure.
+        /// </summary>
+        /// <typeparam name="T1">First resultset type.</typeparam>
+        /// <typeparam name="T2">Second resultset type.</typeparam>
+        /// <typeparam name="T3">Third resultset type.</typeparam>
+        /// <typeparam name="T4">Fourth resultset type.</typeparam>
+        /// <typeparam name="T5">Fifth resultset type.</typeparam>
+        /// <typeparam name="T6">Sixth resultset type.</typeparam>
+        /// <param name="sql">SQL batch</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <returns>
+        /// The list of pocos fetched from the database and the stored procedure call result.
+        /// </returns>
+        public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, int>> FetchFromSpAsync<T1, T2, T3, T4, T5, T6>(string sql, params object[] args)
+        {
+            return FetchFromSpAsync<T1, T2, T3, T4, T5, T6>(new SqlExpression(sql, args));
+        }
+
+        /// <summary>
+        /// Fetches records from the database with the specified 
+        /// SQL fragment that calls a stored procedure.
+        /// </summary>
+        /// <typeparam name="T1">First resultset type.</typeparam>
+        /// <typeparam name="T2">Second resultset type.</typeparam>
+        /// <typeparam name="T3">Third resultset type.</typeparam>
+        /// <typeparam name="T4">Fourth resultset type.</typeparam>
+        /// <typeparam name="T5">Fifth resultset type.</typeparam>
+        /// <typeparam name="T6">Sixth resultset type.</typeparam>
+        /// <param name="sql">SQL batch</param>
+        /// <param name="args">Array of query parameters</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>
+        /// The list of pocos fetched from the database and the stored procedure call result.
+        /// </returns>
+        public Task<Tuple<List<T1>, List<T2>, List<T3>, List<T4>, List<T5>, List<T6>, int>> FetchFromSpAsync<T1, T2, T3, T4, T5, T6>(CancellationToken token, string sql, params object[] args)
+        {
+            return FetchFromSpAsync<T1, T2, T3, T4, T5, T6>(new SqlExpression(sql, args), token);
         }
 
         /// <summary>
@@ -3860,6 +4146,29 @@ namespace Seemplest.MsSql.DataAccess
                 ? $"select {cols} from {tableName} {sql}"
                 : $"select {cols} {sql}";
             return sql;
+        }
+
+        /// <summary>
+        /// Generates a stored procedure invocation call
+        /// </summary>
+        /// <param name="sql">SQL expression with the invocation string</param>
+        /// <returns>Treansformed invocation string</returns>
+        private static string GenerateSpCallWithReturnValue(SqlExpression sql)
+        {
+            var invokeSpText = sql.SqlText;
+            if (sql.SqlText.StartsWith("execute", StringComparison.InvariantCultureIgnoreCase))
+            {
+                invokeSpText = sql.SqlText.Substring("execute".Length);
+            }
+            else if (sql.SqlText.StartsWith("exec", StringComparison.InvariantCultureIgnoreCase))
+            {
+                invokeSpText = sql.SqlText.Substring("exec".Length);
+            }
+            var transformedSql = "declare @@ReturnValue int;\n" +
+                                 "exec @@ReturnValue = " +
+                                 invokeSpText + ";\n" +
+                                 "select @@ReturnValue as ReturnValue";
+            return transformedSql;
         }
 
         /// <summary>

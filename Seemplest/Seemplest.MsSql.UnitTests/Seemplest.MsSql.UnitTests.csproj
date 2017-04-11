@@ -68,6 +68,7 @@
     <Compile Include="DataAccess\DataRecordTest.cs" />
     <Compile Include="DataAccess\DefaultSqlParameterMapperTest.cs" />
     <Compile Include="DataAccess\DeleteTest.cs" />
+    <Compile Include="DataAccess\FetchFromSpAsyncTest.cs" />
     <Compile Include="DataAccess\FetchMultipleTest.cs" />
     <Compile Include="DataAccess\FetchTest.cs" />
     <Compile Include="DataAccess\InsertTest.cs" />
