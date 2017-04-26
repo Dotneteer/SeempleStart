@@ -637,7 +637,7 @@ namespace Seemplest.FbSql.DataAccess
             object argVal = null;
             foreach (var obj in argsSrc)
             {
-                var propInfo = obj.GetType().GetProperty(param);
+                var propInfo = obj?.GetType().GetProperty(param);
                 if (propInfo == null) continue;
                 argVal = propInfo.GetValue(obj, null);
                 found = true;
