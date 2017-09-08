@@ -47,6 +47,24 @@ namespace Seemplest.Core.DataAccess.Mapping
         }
 
         /// <summary>
+        /// Retrieves the count of mappers
+        /// </summary>
+        /// <returns></returns>
+        public static int GetMapperCount()
+        {
+            return s_Mappers.Count;
+        }
+
+        /// <summary>
+        /// Retrieves the count of converters
+        /// </summary>
+        /// <returns></returns>
+        public static int GetConverterCount()
+        {
+            return s_Converters.Count;
+        }
+
+        /// <summary>
         /// </summary>
         /// <typeparam name="T">Data record type</typeparam>
         /// <param name="reader">Data reader instance</param>

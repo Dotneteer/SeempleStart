@@ -111,6 +111,7 @@
     <Compile Include="AppConfig\LocalizedResourceManager.cs" />
     <Compile Include="AppConfig\MsSqlConfigurationHandler.cs" />
     <Compile Include="Diagnostics\CommonDiagnosticsAspectsAttribute.cs" />
+    <Compile Include="Diagnostics\DataReaderMappingTraceAttribute.cs" />
     <Compile Include="Diagnostics\PerformanceCounterAttribute.cs" />
     <Compile Include="Diagnostics\TraceAttribute.cs" />
     <Compile Include="Diagnostics\Tracer.cs" />
